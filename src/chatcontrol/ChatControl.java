@@ -67,7 +67,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 				saveConfig();
 				return;
 			}
-			PacketListener.initPacketListener();
+			new PacketListener().initPacketListener();
 			getLogger().info("Successfully hooked with ProtocolLib!");
 		}
 
