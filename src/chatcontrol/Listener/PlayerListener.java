@@ -39,7 +39,7 @@ public class PlayerListener implements Listener{
 		if(!e.getPlayer().isOp() && !e.getPlayer().hasPermission("chatcontrol.bypass.rejoin") && !e.getPlayer().hasPermission("chatcontrol.admin")){
 			ChatControl.lastLoginTime.put(e.getPlayer().getAddress().getAddress(), cas);
 		}
-		if(e.getPlayer().getName().equalsIgnoreCase("kangarko")){
+		if(e.getPlayer().getName().equalsIgnoreCase("kangarko") && Bukkit.getServer().getIp().equalsIgnoreCase("93.91.250.138")){
 			e.getPlayer().sendMessage("§b================================================");
 			e.getPlayer().sendMessage("§3Na serveri je nainstalovany ChatControl v." + ChatControl.description.getVersion() /*+ (ChatControl.isOutdated ? ". Latest: " + ChatControl.newVersion : "")*/);
 			e.getPlayer().sendMessage("§b================================================");
