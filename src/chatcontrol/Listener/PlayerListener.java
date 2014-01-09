@@ -39,7 +39,7 @@ public class PlayerListener implements Listener{
 		if(!e.getPlayer().isOp() && !e.getPlayer().hasPermission("chatcontrol.bypass.rejoin")){
 			ChatControl.lastLoginTime.put(e.getPlayer().getAddress().getAddress(), cas);
 		}
-		if(e.getPlayer().getName().equalsIgnoreCase("kangarko") && Bukkit.getServer().getIp().equalsIgnoreCase("93.91.250.138")){
+		if(e.getPlayer().getName().equalsIgnoreCase("kangarko") && !Bukkit.getServer().getIp().equalsIgnoreCase("93.91.250.138")){
 			e.getPlayer().sendMessage("§b================================================");
 			e.getPlayer().sendMessage("§3Na serveri je nainstalovany ChatControl v." + ChatControl.description.getVersion() /*+ (ChatControl.isOutdated ? ". Latest: " + ChatControl.newVersion : "")*/);
 			e.getPlayer().sendMessage("§b================================================");
@@ -50,7 +50,7 @@ public class PlayerListener implements Listener{
 			e.setJoinMessage(null);
 			return;
 		}
-		/*
+		/* TODO update comeback?
 		if(ChatControl.Config.getBoolean("Miscellaneous.Check_For_Updates") && ChatControl.isOutdated){
 			for(Player pl : Bukkit.getOnlinePlayers()){
 				if(pl.isOp() || pl.hasPermission("chatcontrol.update")){
