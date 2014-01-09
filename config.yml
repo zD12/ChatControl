@@ -1,0 +1,188 @@
+# Note: This is a configuration of the ChatControl plugin
+# Official page: http://dev.bukkit.org/server-mods/chat-control
+# SLOVAK DEVELOPER FTW
+# Supports color codes: & + 0 - F
+
+Chat:
+  Block_Duplicate_Messages: true
+  Message_Delay: 1
+  Write_To_File: true
+  # Do not write conversation of these players:
+  Ignore_Players:
+    - anonymouser1
+
+Messages:
+  # Default - not handled by ChatControl; none - message will not shown. Or just write your own message .
+  # Example: Join_Message: "&e&o%player &6just quit the game"
+  # Variables: %player and %prefix
+  Common:
+    Join_Message: default
+    Quit_Message: default
+    Kick_Message: default
+
+Grammar:
+  Capitalise: true
+  Insert_Dot: true
+  Replace_Characters: true
+  # Replace following characters with built-in smileys:  :) :-) :( :-( ;) ;-) :square: :rectangle: :love: <3 
+  Replace_With_Smileys: true
+  Replace_List:
+    # Supports RegEx!
+    dis: this
+    wanna: want
+    gonna: going
+    (can|may|would you like if) i (have|be|become|get|has) (op|admin|mod|builder): can i has nodus?
+    (do|are) you (need|wish|looking for) (any|some|one|good) (op|ops|operators|admins|mods|builders|new people|ateam): u need some pig zaps
+    this server (is bad|sucks): i just griefed some crap castle /w nodus u noob kiddos
+    ((admin|op|ateam|server|owner) (is|are)) + *(dick|cock|duck|noob|kid): i am a kiddo gimme ban pl0x
+    owner (fucks|sucks) (kids|dicks|birds): piewdiepie sucks
+
+Commands:
+  Block_Duplicate_Commands: true
+  Command_Delay: 1
+  Whitelist_Time:
+    - tell
+  Whitelist_Duplication:
+    - tpa
+    - spawn
+    - home
+
+Console:
+  Filter_Enabled: true
+  Filter_Plugin_Messages: true
+  Filter_Messages:
+    - Reached end of stream for.*
+    - Connection reset
+    - .*lost connection.*
+    - .*CONSOLE: (Save complete.|Forcing save..).*
+
+Protect:
+  Prevent_Tab_Complete: true
+
+Signs:
+  Advertising_Check: true
+  # If false, plugin just disallow the text.
+  Rewrite_Lines: true
+  Rewrite_Text: "Advertising was:&4detected.:Please do not:advertise."
+  # Check for signs text duplication. Fair players can get annoyed, deal with caution.
+  Duplication_Check: false
+
+Mute:
+  Broadcast: true
+  Disable:
+    Join_Messages: true
+    Quit_Messages: true
+    Kick_Messages: true
+    Death_Messages: true
+  Disabled_Commands_During_Mute:
+    - me
+    
+Clear:
+  Broadcast: true
+  Do_Not_Clear_For_Staff: false
+  # New in 4.3.6
+  Amount_Of_Lines_To_Clear_In_Console: 300
+
+Anti_Bot:
+  Rejoin_Time: 4
+
+Anti_Caps:
+  Enabled: true
+  Pattern: "(\\p{Lu}|\\s){6,120}"
+  Warn_Player: true
+  Whitelist:
+    - OMG
+
+Anti_Swear:
+  Enabled: true
+  Enabled_In_Commands: true
+  Block_Message: false
+  Warn_Player: true
+  Inform_Admins: true
+  Replace_Word: true
+  Replacement: "[CENSORED]"
+  # Use %player for player and %message for message.
+  Custom_Command: none
+  # Careful with Regular Expressions. Can broke the plugin!
+  Word_List:
+    - ".*f+u+c+k+.*|.*f+u+k+.*|.*f+v+c+k+.*|.*f+u+q+.*|.*\\bf'ing\\b.*|.*\\bfck\\b.*|.*\\bfk\\b.*"
+    - "bitch|b1tch|b!tch"
+    - ".*fuck you.*|.*fuck off.*|.*piss off.*|.*suck my dick.*"
+    - ".*shut up.*|\\bnoob\\b|\\bloser\\b"
+    - ".*p+u+s+s+(y|ies|y+s).*"
+    - "\\bcunt\\b|whore|\\bhore\\b|\\bfag\\b|slut|\\bqueer\\b|bastard|\\bgay\\b|shit|\\bdamn\\b|\\bdouchebag\\b|\\bstripper\\b|\\borgasm\\b|\\bcum\\b|jizz|\\bsex\\b|titties|titty|blowjob|fellatio|Cunnilingus|\\bass\\b|asshole|boobies|\\bporn\\b|\\bpron\\b|\\bpiss|sh1t|shlt|p1ss|dick|d1ck|\\btwat\\b"
+    - "n[^a]gg+(a|er|uh)|\\bchink\\b|\\bchinc\\b|\\bredneck\\b|\\bwhitetrash\\b|\\bwhite trash\\b|\\bgreaser\\b|\\bwop\\b|\\bdago\\b|\\bwetback\\b|\\bspic\\b|\\bpigshit\\b|\\bkike\\b|\\btrailer trash\\b|\\btowel head\\b|\\bbeaner\\b|\\bspick\\b|\\bsand nigger\\b|\\bwap\\b|\\bgook\\b|\\bcurry muncher\\b"
+    
+
+Anti_Ad:
+  Enabled: true
+  Enabled_In_Commands: true
+  Command_Whitelist:
+    - /register
+    - /reg
+    - /login
+    - /l
+    - /auction
+  Inform_Admins: true
+  Console_Message: true
+  Broadcast: false
+  Write_To_File: true
+  # Filter based on RegEx improves the standard filters below. It replaces characters [,],(,) by default.
+  Filter_Pre_Process: "[(\\[\\])]"
+  # Careful with the Regular Expressions. Random changing might blow of your server!
+  IP_Filter: "\\b[0-9]{1,3}(\\.|dot|-|;|:|,|(\\W|\\d|_)*\\s)+[0-9]{1,3}(\\.|dot|-|;|:|,|(\\W|\\d|_)*\\s)+[0-9]{1,3}(\\.|dot|-|;|:|,|(\\W|\\d|_)*\\s)+[0-9]{1,3}\\b"
+  Domain_Filter: "[a-zA-Z0-9\\-\\.]+\\s?(\\.|dot|\\(dot\\)|-|;|:|,)\\s?(com|org|net|mil|cz|co|uk|sk|cc|ws|ca|biz|mobi|xxx|tv|eu)\\b"
+  Custom_Filter: none
+  Custom_Command: none
+  Whitelisted:
+    IP:
+      - 0.0.0.0
+    Domains:
+      - youtube.com
+      - google.com
+
+Miscellaneous:
+  Minimum_Players_To_Enable_Plugin: 0
+  Block_Chat_Until_Moved: true
+  Op_Has_Permissions: true
+  Automatically_Update_Config: true
+  Check_For_Updates: true
+  Debug: false
+
+Localization:
+  # Use %prefix to add the prefix.
+  Dupe_Message: "&cPlease do not repeat the same message."
+  Dupe_Command: "&cPlease do not repeat the same command."
+  Dupe_Sign: "&cPlease do not repeat the same text on sign."
+  Time_Message: "&cPlease wait %time second(s) before next message."
+  Command_Message: "&cPlease wait %time second(s) before next command."
+  Ad_Message: "&7Please do not advertise other websites or IP adresses."
+  Ad_Staff_Message: "&c%player possibly advertises: &f%message "
+  Ad_Broadcast_Message: "&c%player possibly advertises!"
+  Ad_Console_Message: "&c%player possibly advertises: &f%message"
+  Caps_Message: "&cDo not use so much CAPS LOCK"
+  Successful_Mute: "&7Chat was successfully muted."
+  Successful_Unmute: "&7The chat is now unmuted."
+  Broadcast_Mute: "%prefix &eChat was muted by %player!"
+  Broadcast_Unmute: "%prefix &eChat was unmuted by %player!"  
+  Broadcast_Clear: "%prefix &eChat was cleared by %player!"
+  Staff_Chat_Clear_Message: "&7^----- [ == &fChat was cleared by %player &7== ] -----^"
+  # New in 4.3.6
+  Successful_Console_Clear: "%prefix &7Console was successfuly cleared."
+  Do_Not_Swear: "&cPlease do not swear!"
+  Swear_Admin_Message: "&c%player swears:&f %message"
+  Cannot_Chat_While_Muted: "&7You cannot chat while the chat is muted."
+  Cannot_Command_While_Muted: "&7You cannot use this command while the chat is muted."
+  Cannot_Chat_Until_Moved: "&7You cannot chat until you move."
+  Rejoin_Message: "&6Please wait &7%time second(s)&6 before logging in."
+  Update_Needed: "&6There is a new version of &cChatControl&6 available.\n&6Current version: &7%current&6; New version: &7%new"
+    
+  Reload_Complete: "&7Plugin was reloaded successfully."
+  Reload_Failed: "&cUnable to reload the plugin."
+  No_Permission: "&cYou do not have permission for this."
+  Wrong_Args: "&7Wrong arguments. Type &f/chatcontrol&7 help for help."
+  Reason: "&7Reason:&f%reason"
+  Prefix: "&c[&6ChatControl&c]&7"
+  Console: "&4server"
+
+Do_Not_Change_Version_Number: 4.3.6

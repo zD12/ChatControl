@@ -1,0 +1,8 @@
+name: ChatControl
+main: chatcontrol.ChatControl
+version: 4.3.6
+authors: [kangarko, craftik7]
+soft-depend: [ProtocolLib]
+commands: 
+  chatcontrol:
+    aliases: [ccontrol, chatc, chc]
