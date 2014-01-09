@@ -90,7 +90,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 			sender.sendMessage(ChatColor.DARK_AQUA + "ChatControl §8// §f" + "Website: §7www.ultracraft.6f.sk");  	  
 		} else if(args.length == 1){
 			if (args[0].equalsIgnoreCase("mute") || args[0].equalsIgnoreCase("m")) {
-				if(!sender.hasPermission("chatcontrol.commands.mute") && !sender.hasPermission("chatcontrol.admin")){
+				if(!sender.hasPermission("chatcontrol.commands.mute")){
 					Common.sendMsg(sender, "Localization.No_Permission");
 					return false;
 				}
@@ -104,12 +104,12 @@ public class ChatControl extends JavaPlugin implements Listener {
 					Common.sendMsg(sender, "Localization.Successful_Mute");
 				}
 			} else if (args[0].equalsIgnoreCase("clear") || args[0].equalsIgnoreCase("c")) {
-				if(!sender.hasPermission("chatcontrol.commands.clear") && !sender.hasPermission("chatcontrol.admin")){
+				if(!sender.hasPermission("chatcontrol.commands.clear")){
 					Common.sendMsg(sender, "Localization.No_Permission");
 					return false;
 				}
 				for(Player pl : getServer().getOnlinePlayers()){
-					if(getConfig().getBoolean("Clear.Do_Not_Clear_For_Staff") && (pl.isOp() || pl.hasPermission("chatcontrol.admin") || pl.hasPermission("chatcontrol.bypass.clear"))){
+					if(getConfig().getBoolean("Clear.Do_Not_Clear_For_Staff") && (pl.isOp() || pl.hasPermission("chatcontrol.bypass.clear"))){
 						pl.sendMessage(getConfig().getString("Localization.Staff_Chat_Clear_Message").replace("&", "§").replace("%prefix", Common.prefix()).replace("%player", Common.resolvedSender(sender)));
 						return false;
 					}
@@ -119,7 +119,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 				}
 				Common.broadcastMsg(sender, "Clear.Broadcast", "Localization.Broadcast_Clear");
 			} else if (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("r")) {
-				if(!sender.hasPermission("chatcontrol.commands.reload") && !sender.hasPermission("chatcontrol.admin")){
+				if(!sender.hasPermission("chatcontrol.commands.reload")){
 					Common.sendMsg(sender, "Localization.No_Permission");
 					return false;
 				}
@@ -132,13 +132,13 @@ public class ChatControl extends JavaPlugin implements Listener {
 				}
 				Common.sendMsg(sender, "Localization.Reload_Complete");
 			} else if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("h")) {
-				if(!sender.hasPermission("chatcontrol.commands.help") && !sender.hasPermission("chatcontrol.admin")){
+				if(!sender.hasPermission("chatcontrol.commands.help")){
 					Common.sendMsg(sender, "Localization.No_Permission");
 					return false;
 				}
 				chatControlHelp(sender);
 			} else {
-				if(!sender.hasPermission("chatcontrol.commands") && !sender.hasPermission("chatcontrol.admin")){
+				if(!sender.hasPermission("chatcontrol.commands")){
 					Common.sendMsg(sender, "Localization.No_Permission");
 					return false;
 				}
@@ -150,7 +150,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 				dovod = dovod + " " + args[msg];
 			}
 			if (args[0].equalsIgnoreCase("mute") || args[0].equalsIgnoreCase("m")) {
-				if(!sender.hasPermission("chatcontrol.commands.mute") && !sender.hasPermission("chatcontrol.admin")){
+				if(!sender.hasPermission("chatcontrol.commands.mute")){
 					Common.sendMsg(sender, "Localization.No_Permission");
 					return false;
 				}
@@ -166,7 +166,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 					Common.sendMsg(sender, "Localization.Successful_Mute");
 				}
 			} else if (args[0].equalsIgnoreCase("clear") || args[0].equalsIgnoreCase("c")) {
-				if(!sender.hasPermission("chatcontrol.commands.clear") && !sender.hasPermission("chatcontrol.admin")){
+				if(!sender.hasPermission("chatcontrol.commands.clear")){
 					Common.sendMsg(sender, "Localization.No_Permission");
 					return false;
 				}
@@ -177,7 +177,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 					Common.sendMsg(sender, "Localization.Successful_Console_Clear");
 				} else {
 					for(Player pl : getServer().getOnlinePlayers()){
-						if(getConfig().getBoolean("Clear.Do_Not_Clear_For_Staff") && (pl.isOp() || pl.hasPermission("chatcontrol.admin") || pl.hasPermission("chatcontrol.bypass.clear"))){
+						if(getConfig().getBoolean("Clear.Do_Not_Clear_For_Staff") && (pl.isOp() || pl.hasPermission("chatcontrol.bypass.clear"))){
 							pl.sendMessage(getConfig().getString("Localization.Staff_Chat_Clear_Message").replace("&", "§").replace("%prefix", Common.prefix()).replace("%player", Common.resolvedSender(sender)));
 							return false;
 						}
@@ -190,7 +190,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 					}
 				}
 			} else {
-				if(!sender.hasPermission("chatcontrol.commands") && !sender.hasPermission("chatcontrol.admin")){
+				if(!sender.hasPermission("chatcontrol.commands")){
 					Common.sendMsg(sender, "Localization.No_Permission");
 					return false;
 				}

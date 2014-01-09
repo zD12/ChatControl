@@ -17,7 +17,7 @@ public class PacketListener {
 			@Override
 			public void onPacketReceiving(PacketEvent e){
 				if (e.getPacketType() == PacketType.Play.Client.TAB_COMPLETE) {
-					if (e.getPlayer().hasPermission("chatcontrol.bypass.tabcomplete") || e.getPlayer().hasPermission("chatcontrol.admin") || e.getPlayer().isOp()){
+					if (e.getPlayer().hasPermission("chatcontrol.bypass.tabcomplete") || e.getPlayer().isOp()){
 						return;
 					}
 					String message = e.getPacket().getStrings().read(0);
@@ -36,7 +36,7 @@ public class PacketListener {
 			public void onPacketReceiving(PacketEvent e) {
 				if (e.getPacketID() == 203) {
 					
-						if ((e.getPlayer().hasPermission("chatcontrol.bypass.tabcomplete")) || (e.getPlayer().hasPermission("chatcontrol.admin")) || (e.getPlayer().isOp())) {
+						if (e.getPlayer().hasPermission("chatcontrol.bypass.tabcomplete") || e.getPlayer().isOp()) {
 							return;
 						}
 						PacketContainer packet = e.getPacket();

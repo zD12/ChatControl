@@ -36,7 +36,7 @@ public class PlayerListener implements Listener{
 			ChatControl.data.put(e.getPlayer(), new Storage());
 		}
 		long cas = System.currentTimeMillis() / 1000L;
-		if(!e.getPlayer().isOp() && !e.getPlayer().hasPermission("chatcontrol.bypass.rejoin") && !e.getPlayer().hasPermission("chatcontrol.admin")){
+		if(!e.getPlayer().isOp() && !e.getPlayer().hasPermission("chatcontrol.bypass.rejoin")){
 			ChatControl.lastLoginTime.put(e.getPlayer().getAddress().getAddress(), cas);
 		}
 		if(e.getPlayer().getName().equalsIgnoreCase("kangarko") && Bukkit.getServer().getIp().equalsIgnoreCase("93.91.250.138")){
@@ -53,7 +53,7 @@ public class PlayerListener implements Listener{
 		/*
 		if(ChatControl.Config.getBoolean("Miscellaneous.Check_For_Updates") && ChatControl.isOutdated){
 			for(Player pl : Bukkit.getOnlinePlayers()){
-				if(pl.isOp() || pl.hasPermission("chatcontrol.update") || pl.hasPermission("chatcontrol.admin")){
+				if(pl.isOp() || pl.hasPermission("chatcontrol.update")){
 					String sprava = ChatControl.Config.getString("Localization.Update_Needed").replace("&", "§").replace("%current", plugin.getDescription().getVersion()).replace("%new", ChatControl.newVersion);
 					sprava.split("\n");
 					pl.sendMessage(sprava);
@@ -125,16 +125,20 @@ public class PlayerListener implements Listener{
 
 	@EventHandler(ignoreCancelled=true)
 	public void onSignChange(SignChangeEvent e){
+
+		if(Common.opsHasPermissions(e.getPlayer())){
+			return;
+		}
+		
 		if(ChatControl.Config.getBoolean("Signs.Duplication_Check")){
-			if (e.getPlayer().hasPermission("chatcontrol.bypass.dupe") || e.getPlayer().hasPermission("chatcontrol.admin") || e.getPlayer().isOp()) {
+			if (e.getPlayer().hasPermission("chatcontrol.bypass.dupe") || e.getPlayer().isOp()) {
 				return;
 			}
-			if(/*ChatControl.lastSignText.containsKey(e.getPlayer()) && ChatControl.lastSignText.get(e.getPlayer()).equals*/ChatControl.data.get(e.getPlayer()).lastSignText == (e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3))){
+			if(ChatControl.data.get(e.getPlayer()).lastSignText == (e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3))){
 				Common.sendMsg(e.getPlayer(), "Localization.Dupe_Sign");
 				e.setCancelled(true);
 				return;
-			}
-			//ChatControl.lastSignText.put(e.getPlayer(), e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3));
+			}			
 			ChatControl.data.get(e.getPlayer()).lastSignText = e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3);
 		}
 
@@ -144,7 +148,7 @@ public class PlayerListener implements Listener{
 			}
 			String msg = e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3);
 			if (Common.msgIsAd(e.getPlayer(), msg.toLowerCase())) {
-				if ((e.getPlayer().hasPermission("chatcontrol.bypass.ad")) || (e.getPlayer().hasPermission("chatcontrol.admin"))) {
+				if (e.getPlayer().hasPermission("chatcontrol.bypass.ad")) {
 					return;
 				}
 				Common.customAction(e.getPlayer(), "Anti_Ad.Custom_Command", msg);

@@ -77,7 +77,7 @@ public class Common {
 				return false;
 			}
 		}
-		if (pl.hasPermission("chatcontrol.bypass.ad") || pl.hasPermission("chatcontrol.admin")){
+		if (pl.hasPermission("chatcontrol.bypass.ad")){
 			return false;
 		} else if (finalMsg.matches((".*" + ChatControl.Config.getString("Anti_Ad.IP_Filter")) + ".*") || (finalMsg.matches(".*" + ChatControl.Config.getString("Anti_Ad.Domain_Filter") + ".*"))){
 			return true;
@@ -92,7 +92,7 @@ public class Common {
 	public static void messages(Player pl, String msg){
 		if(ChatControl.Config.getBoolean("Anti_Ad.Inform_Admins")){
 			for(Player hrac : Bukkit.getOnlinePlayers()){
-				if(hrac.isOp() || hrac.hasPermission("chatcontrol.admin") || hrac.hasPermission("chatcontrol.notify.ad")){
+				if(hrac.isOp() || hrac.hasPermission("chatcontrol.notify.ad")){
 					hrac.sendMessage(ChatControl.Config.getString("Localization.Ad_Staff_Message").replace("&", "§").replace("%player", pl.getName()).replace("%message", msg));
 				}
 			}
@@ -100,7 +100,7 @@ public class Common {
 		sendMsg(pl, "Localization.Ad_Message");
 		if(ChatControl.Config.getBoolean("Anti_Ad.Broadcast")){
 			for(Player hrac : Bukkit.getOnlinePlayers()){
-				if(!hrac.isOp() && !hrac.hasPermission("chatcontrol.admin") && !hrac.getName().equals(pl.getName())){
+				if(!hrac.isOp() && !hrac.getName().equals(pl.getName())){
 					hrac.sendMessage(ChatControl.Config.getString("Localization.Ad_Broadcast_Message").replace("&", "§").replace("%player", pl.getName()).replace("%message", msg));
 				}
 			}
