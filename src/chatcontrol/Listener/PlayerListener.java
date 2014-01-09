@@ -126,7 +126,7 @@ public class PlayerListener implements Listener{
 	@EventHandler(ignoreCancelled=true)
 	public void onSignChange(SignChangeEvent e){
 
-		if(Common.opsHasPermissions(e.getPlayer())){
+		if(Common.playerIsPrivileged(e.getPlayer())){
 			return;
 		}
 		

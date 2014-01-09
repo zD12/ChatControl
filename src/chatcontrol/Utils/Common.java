@@ -114,13 +114,16 @@ public class Common {
 	}
 
 	public static boolean hasPermission(Player pl, String str){
-		if(pl.hasPermission(str) || (pl.isOp() && opsHasPermissions(pl))){
+		if(pl.hasPermission(str) || (pl.isOp() && playerIsPrivileged(pl))){
 			return true;
 		}
 		return false;
 	}
 
-	public static boolean opsHasPermissions(Player pl){
+	public static boolean playerIsPrivileged(Player pl){
+		if(pl.hasPermission("chatcontrol.bypass")) {
+			return true;
+		}
 		if(pl.isOp()){
 			if(ChatControl.Config.getBoolean("Miscellaneous.Op_Has_Permissions", true)){
 				return true;

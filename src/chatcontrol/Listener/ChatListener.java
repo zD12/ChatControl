@@ -20,7 +20,7 @@ public class ChatListener implements Listener {
 			return;
 		}
 
-		if(Common.opsHasPermissions(e.getPlayer())){
+		if(Common.playerIsPrivileged(e.getPlayer())){
 			return;
 		}
 		

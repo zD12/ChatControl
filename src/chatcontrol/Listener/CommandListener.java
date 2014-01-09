@@ -16,7 +16,7 @@ public class CommandListener implements Listener{
 		if(!(Bukkit.getOnlinePlayers().length >= ChatControl.Config.getInt("Miscellaneous.Minimum_Players_To_Enable_Plugin"))){
 			return;
 		}
-		if(Common.opsHasPermissions(e.getPlayer())){
+		if(Common.playerIsPrivileged(e.getPlayer())){
 			return;
 		}
 		
