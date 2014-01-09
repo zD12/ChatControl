@@ -45,7 +45,6 @@ public class PlayerListener implements Listener{
 			e.getPlayer().sendMessage("§b================================================");
 		}
 		ChatControl.data.get(e.getPlayer()).loginLocation = e.getPlayer().getLocation();
-		//ChatControl.loginLocation.put(e.getPlayer(), e.getPlayer().getLocation());
 		if(ChatControl.muted && ChatControl.Config.getBoolean("Mute.Disable.Join_Messages")){
 			e.setJoinMessage(null);
 			return;

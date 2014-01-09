@@ -33,7 +33,7 @@ public class ConfigUpdater {
 			status = Status.DISABLED;
 			return;
 		}
-
+		// TODO A better way to make it?
 		if (!latestVersion.equals(plVersion)) {
 			if (plVersion.equals("4.1.5")) {
 				updateConfigTo416();
