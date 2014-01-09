@@ -67,7 +67,12 @@ public class ChatControl extends JavaPlugin implements Listener {
 				saveConfig();
 				return;
 			}
-			new PacketListener().initPacketListener();
+			if(getServer().getBukkitVersion().startsWith("1.7")) {
+				new PacketListener().initPacketListener();
+			} else {
+				new PacketListener().initOlderPacketListener();
+				getLogger().info("Detected Minecraft older than 1.7.2, using older packet listener.");
+			}		
 			getLogger().info("Successfully hooked with ProtocolLib!");
 		}
 
