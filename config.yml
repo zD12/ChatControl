@@ -5,6 +5,10 @@
 
 Chat:
   Block_Duplicate_Messages: true
+  # When blocking duplicate message, should we strip UTF-8 special characters from it?
+  # e.g messages "Hello" and "<<Hello!?!" will after this strip be detected as equals.
+  # Which can lower spam and preventing users bypassing this check by adding some characters like ! ? etc.
+  Strip_Unicode: true
   Message_Delay: 1
   Write_To_File: true
   # Do not write conversation of these players:
@@ -80,7 +84,6 @@ Mute:
 Clear:
   Broadcast: true
   Do_Not_Clear_For_Staff: false
-  # New in 4.3.6
   Amount_Of_Lines_To_Clear_In_Console: 300
 
 Anti_Bot:
@@ -96,11 +99,16 @@ Anti_Caps:
 Anti_Swear:
   Enabled: true
   Enabled_In_Commands: true
+  Command_Whitelist:
+    - /register
+    - /reg
+    - /login
+    - /l
   Block_Message: false
   Warn_Player: true
   Inform_Admins: true
   Replace_Word: true
-  Replacement: "[CENSORED]"
+  Replacement: "I love this filter!"
   # Use %player for player and %message for message.
   Custom_Command: none
   # Careful with Regular Expressions. Can broke the plugin!
@@ -185,4 +193,4 @@ Localization:
   Prefix: "&c[&6ChatControl&c]&7"
   Console: "&4server"
 
-Do_Not_Change_Version_Number: 4.3.6
+Do_Not_Change_Version_Number: 4.3.7

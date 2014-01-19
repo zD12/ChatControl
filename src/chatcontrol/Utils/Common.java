@@ -1,10 +1,13 @@
 package chatcontrol.Utils;
 
+import java.util.logging.Level;
+
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import chatcontrol.ChatControl;
+import chatcontrol.Misc.Permissions;
 
 public class Common {
 
@@ -77,7 +80,7 @@ public class Common {
 				return false;
 			}
 		}
-		if (pl.hasPermission("chatcontrol.bypass.ad")){
+		if (pl.hasPermission(Permissions.Bypasses.ads)){
 			return false;
 		} else if (finalMsg.matches((".*" + ChatControl.Config.getString("Anti_Ad.IP_Filter")) + ".*") || (finalMsg.matches(".*" + ChatControl.Config.getString("Anti_Ad.Domain_Filter") + ".*"))){
 			return true;
@@ -92,7 +95,7 @@ public class Common {
 	public static void messages(Player pl, String msg){
 		if(ChatControl.Config.getBoolean("Anti_Ad.Inform_Admins")){
 			for(Player hrac : Bukkit.getOnlinePlayers()){
-				if(hrac.isOp() || hrac.hasPermission("chatcontrol.notify.ad")){
+				if(hrac.isOp() || hrac.hasPermission(Permissions.Notify.ad)){
 					hrac.sendMessage(ChatControl.Config.getString("Localization.Ad_Staff_Message").replace("&", "§").replace("%player", pl.getName()).replace("%message", msg));
 				}
 			}
@@ -114,7 +117,7 @@ public class Common {
 	}
 
 	public static boolean playerIsPrivileged(Player pl){
-		if(pl.hasPermission("chatcontrol.bypass")) {
+		if(pl.hasPermission(Permissions.Bypasses.global_perm)) {
 			return true;
 		}
 		if(pl.isOp()){
@@ -171,7 +174,7 @@ public class Common {
 			return osmajlikovat(msg);
 		}				
 		for (String character : ChatControl.Config.getConfigurationSection("Grammar.Replace_List").getKeys(false)) {
-			msg = msg.replaceAll(character, ChatControl.Config.getString("Grammar.Replace_List." + character));			
+			msg = msg.replaceAll(character.toLowerCase(), ChatControl.Config.getString("Grammar.Replace_List." + character));			
 		}
 
 		return osmajlikovat(msg);
@@ -199,10 +202,18 @@ public class Common {
 	public static void Log(String str){
 		System.out.println("(ChatControl) " + str.replace("&", "§"));
 	}
+	
+	public static void Log(String str, Throwable error){
+		ChatControl.plugin.getLogger().log(Level.SEVERE, str.replace("&", "§"), error);
+	}
 
 	public static String resolvedSender(CommandSender sender){
 		if (sender instanceof Player)
 			return sender.getName();
 		return console();
 	}
+	
+    public static String stripSpecialCharacters(String str) {
+        return str.toLowerCase().replaceAll("§([0-9a-fk-or])", "").replaceAll("[^a-zA-Z0-9]", "");
+    }
 }

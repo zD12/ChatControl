@@ -4,7 +4,9 @@ import java.io.File;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.logging.Filter;
+import java.util.logging.Logger;
 
+import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -13,20 +15,18 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import chatcontrol.Listener.ChatListener;
 import chatcontrol.Listener.CommandListener;
 import chatcontrol.Listener.PlayerListener;
+import chatcontrol.Misc.Permissions;
 import chatcontrol.PacketListener.PacketListener;
 import chatcontrol.Utils.Common;
 import chatcontrol.Utils.ConfigUpdater;
 
 public class ChatControl extends JavaPlugin implements Listener {
 
-	public static PluginDescriptionFile description;
-	public static File directory;
 	public static FileConfiguration Config;
 	public static ChatControl plugin;
 
@@ -37,27 +37,29 @@ public class ChatControl extends JavaPlugin implements Listener {
 
 	public void onEnable(){
 		plugin = this;
-		directory = getDataFolder();
 		Config = getConfig();
-		description = getDescription();
-
+		
 		getServer().getPluginManager().registerEvents(new ChatListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		getServer().getPluginManager().registerEvents(new CommandListener(), this);
 		getConfig().options().copyDefaults(true);
-		saveDefaultConfig();		
+		saveDefaultConfig();
 
 		ConfigUpdater.configCheck();
 
 		if(getConfig().getBoolean("Console.Filter_Enabled")){
 			Filter filter = new ConsoleFilter();
-			getLogger().setFilter(filter);
-			Bukkit.getLogger().setFilter(filter);
 			if(getConfig().getBoolean("Console.Filter_Plugin_Messages")){
 				for (Plugin p : getServer().getPluginManager().getPlugins()) {
 					p.getLogger().setFilter(filter);
 				}
-			}
+			}			
+            getLogger().setFilter(filter);
+            Bukkit.getLogger().setFilter(filter);
+            Logger.getLogger("Minecraft").setFilter(filter);
+
+            org.apache.logging.log4j.core.Logger coreLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+            coreLogger.addFilter(new ConsoleFilter());
 		}
 
 		if(getConfig().getBoolean("Protect.Prevent_Tab_Complete")){
@@ -83,6 +85,13 @@ public class ChatControl extends JavaPlugin implements Listener {
 		}
 	}
 
+	public void onDisable() {
+		plugin = null;
+		Config = null;
+		data.clear();
+		lastLoginTime.clear();
+	}
+
 	public boolean onCommand(CommandSender sender, Command cmd, String cL, String[] args){
 		if (args.length == 0){
 			sender.sendMessage(ChatColor.DARK_AQUA + "ChatControl §8// §f" + "Running §7v" + getDescription().getVersion());
@@ -90,7 +99,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 			sender.sendMessage(ChatColor.DARK_AQUA + "ChatControl §8// §f" + "Website: §7www.ultracraft.6f.sk");  	  
 		} else if(args.length == 1){
 			if (args[0].equalsIgnoreCase("mute") || args[0].equalsIgnoreCase("m")) {
-				if(!sender.hasPermission("chatcontrol.commands.mute")){
+				if(!sender.hasPermission(Permissions.Commands.mute)){
 					Common.sendMsg(sender, "Localization.No_Permission");
 					return false;
 				}
@@ -104,12 +113,12 @@ public class ChatControl extends JavaPlugin implements Listener {
 					Common.sendMsg(sender, "Localization.Successful_Mute");
 				}
 			} else if (args[0].equalsIgnoreCase("clear") || args[0].equalsIgnoreCase("c")) {
-				if(!sender.hasPermission("chatcontrol.commands.clear")){
+				if(!sender.hasPermission(Permissions.Commands.clear)){
 					Common.sendMsg(sender, "Localization.No_Permission");
 					return false;
 				}
 				for(Player pl : getServer().getOnlinePlayers()){
-					if(getConfig().getBoolean("Clear.Do_Not_Clear_For_Staff") && (pl.isOp() || pl.hasPermission("chatcontrol.bypass.clear"))){
+					if(getConfig().getBoolean("Clear.Do_Not_Clear_For_Staff") && (pl.isOp() || pl.hasPermission(Permissions.Bypasses.chat_clear))){
 						pl.sendMessage(getConfig().getString("Localization.Staff_Chat_Clear_Message").replace("&", "§").replace("%prefix", Common.prefix()).replace("%player", Common.resolvedSender(sender)));
 						return false;
 					}
@@ -119,7 +128,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 				}
 				Common.broadcastMsg(sender, "Clear.Broadcast", "Localization.Broadcast_Clear");
 			} else if (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("r")) {
-				if(!sender.hasPermission("chatcontrol.commands.reload")){
+				if(!sender.hasPermission(Permissions.Commands.reload)){
 					Common.sendMsg(sender, "Localization.No_Permission");
 					return false;
 				}
@@ -132,13 +141,13 @@ public class ChatControl extends JavaPlugin implements Listener {
 				}
 				Common.sendMsg(sender, "Localization.Reload_Complete");
 			} else if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("h")) {
-				if(!sender.hasPermission("chatcontrol.commands.help")){
+				if(!sender.hasPermission(Permissions.Commands.help)){
 					Common.sendMsg(sender, "Localization.No_Permission");
 					return false;
 				}
 				chatControlHelp(sender);
 			} else {
-				if(!sender.hasPermission("chatcontrol.commands")){
+				if(!sender.hasPermission(Permissions.Commands.global_perm)){
 					Common.sendMsg(sender, "Localization.No_Permission");
 					return false;
 				}
@@ -150,7 +159,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 				dovod = dovod + " " + args[msg];
 			}
 			if (args[0].equalsIgnoreCase("mute") || args[0].equalsIgnoreCase("m")) {
-				if(!sender.hasPermission("chatcontrol.commands.mute")){
+				if(!sender.hasPermission(Permissions.Commands.mute)){
 					Common.sendMsg(sender, "Localization.No_Permission");
 					return false;
 				}
@@ -166,7 +175,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 					Common.sendMsg(sender, "Localization.Successful_Mute");
 				}
 			} else if (args[0].equalsIgnoreCase("clear") || args[0].equalsIgnoreCase("c")) {
-				if(!sender.hasPermission("chatcontrol.commands.clear")){
+				if(!sender.hasPermission(Permissions.Commands.clear)){
 					Common.sendMsg(sender, "Localization.No_Permission");
 					return false;
 				}
@@ -177,7 +186,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 					Common.sendMsg(sender, "Localization.Successful_Console_Clear");
 				} else {
 					for(Player pl : getServer().getOnlinePlayers()){
-						if(getConfig().getBoolean("Clear.Do_Not_Clear_For_Staff") && (pl.isOp() || pl.hasPermission("chatcontrol.bypass.clear"))){
+						if(getConfig().getBoolean("Clear.Do_Not_Clear_For_Staff") && (pl.isOp() || pl.hasPermission(Permissions.Bypasses.chat_clear))){
 							pl.sendMessage(getConfig().getString("Localization.Staff_Chat_Clear_Message").replace("&", "§").replace("%prefix", Common.prefix()).replace("%player", Common.resolvedSender(sender)));
 							return false;
 						}
@@ -190,7 +199,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 					}
 				}
 			} else {
-				if(!sender.hasPermission("chatcontrol.commands")){
+				if(!sender.hasPermission(Permissions.Commands.global_perm)){
 					Common.sendMsg(sender, "Localization.No_Permission");
 					return false;
 				}

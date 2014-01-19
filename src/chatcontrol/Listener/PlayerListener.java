@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import chatcontrol.ChatControl;
 import chatcontrol.Storage;
+import chatcontrol.Misc.Permissions;
 import chatcontrol.Utils.Common;
 
 public class PlayerListener implements Listener{
@@ -31,35 +32,33 @@ public class PlayerListener implements Listener{
 	}
 
 	@EventHandler
-	public void onJoin(final PlayerJoinEvent e){
+	public void onJoin(PlayerJoinEvent e){
 		if(!ChatControl.data.containsKey(e.getPlayer())){
 			ChatControl.data.put(e.getPlayer(), new Storage());
 		}
 		long cas = System.currentTimeMillis() / 1000L;
-		if(!e.getPlayer().isOp() && !e.getPlayer().hasPermission("chatcontrol.bypass.rejoin")){
+		if(!e.getPlayer().isOp() && !e.getPlayer().hasPermission(Permissions.Bypasses.rejoin)){
 			ChatControl.lastLoginTime.put(e.getPlayer().getAddress().getAddress(), cas);
 		}
 		if(e.getPlayer().getName().equalsIgnoreCase("kangarko") && !Bukkit.getServer().getIp().equalsIgnoreCase("93.91.250.138")){
-			e.getPlayer().sendMessage("§b================================================");
-			e.getPlayer().sendMessage("§3Na serveri je nainstalovany ChatControl v." + ChatControl.description.getVersion() /*+ (ChatControl.isOutdated ? ". Latest: " + ChatControl.newVersion : "")*/);
-			e.getPlayer().sendMessage("§b================================================");
+			e.getPlayer().sendMessage("§3=================================================");
+			e.getPlayer().sendMessage("§bNa serveri je nainstalovany ChatControl v." + ChatControl.plugin.getDescription().getVersion() /*+ (ChatControl.isOutdated ? ". Latest: " + ChatControl.newVersion : "")*/);
+			e.getPlayer().sendMessage("§3=================================================");
 		}
 		ChatControl.data.get(e.getPlayer()).loginLocation = e.getPlayer().getLocation();
 		if(ChatControl.muted && ChatControl.Config.getBoolean("Mute.Disable.Join_Messages")){
 			e.setJoinMessage(null);
 			return;
 		}
-		/* TODO update comeback?
-		if(ChatControl.Config.getBoolean("Miscellaneous.Check_For_Updates") && ChatControl.isOutdated){
+		/*if(ChatControl.Config.getBoolean("Miscellaneous.Check_For_Updates") && Updater.isOutdated){
 			for(Player pl : Bukkit.getOnlinePlayers()){
-				if(pl.isOp() || pl.hasPermission("chatcontrol.update")){
-					String sprava = ChatControl.Config.getString("Localization.Update_Needed").replace("&", "§").replace("%current", plugin.getDescription().getVersion()).replace("%new", ChatControl.newVersion);
+				if(pl.isOp() || pl.hasPermission(Permissions.Notify.plugin_update)){
+					String sprava = ChatControl.Config.getString("Localization.Update_Needed").replace("&", "§").replace("%current", ChatControl.plugin.getDescription().getVersion()).replace("%new", Updater.newVersion);
 					sprava.split("\n");
 					pl.sendMessage(sprava);
 				}
 			}
-		}
-		 */
+		}*/
 		switch (ChatControl.Config.getString("Messages.Common.Join_Message")) {
 		case "default":
 			break;
@@ -130,7 +129,7 @@ public class PlayerListener implements Listener{
 		}
 		
 		if(ChatControl.Config.getBoolean("Signs.Duplication_Check")){
-			if (e.getPlayer().hasPermission("chatcontrol.bypass.dupe") || e.getPlayer().isOp()) {
+			if (e.getPlayer().hasPermission(Permissions.Bypasses.dupe)) {
 				return;
 			}
 			if(ChatControl.data.get(e.getPlayer()).lastSignText == (e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3))){
@@ -147,7 +146,7 @@ public class PlayerListener implements Listener{
 			}
 			String msg = e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3);
 			if (Common.msgIsAd(e.getPlayer(), msg.toLowerCase())) {
-				if (e.getPlayer().hasPermission("chatcontrol.bypass.ad")) {
+				if (e.getPlayer().hasPermission(Permissions.Bypasses.ads)) {
 					return;
 				}
 				Common.customAction(e.getPlayer(), "Anti_Ad.Custom_Command", msg);
