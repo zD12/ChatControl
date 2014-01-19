@@ -1,9 +1,8 @@
 package chatcontrol.Utils;
 
-import java.util.logging.Level;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import chatcontrol.ChatControl;
@@ -11,6 +10,8 @@ import chatcontrol.Misc.Permissions;
 
 public class Common {
 
+	private static ConsoleCommandSender console = Bukkit.getConsoleSender();
+	
 	public static void sendMsg(CommandSender pl, String str){
 		try {
 			pl.sendMessage(ChatControl.Config.getString(str).replace("&", "§").replace("%prefix", prefix()).replace("%player", resolvedSender(pl)));
@@ -195,18 +196,23 @@ public class Common {
 
 	public static void debug(String str){
 		if(ChatControl.Config.getBoolean("Miscellaneous.Debug")){
-			System.out.println("(ChatControl) " + str.replace("&", "§"));
+			console.sendMessage("(ChatControl) " + colorize(str));
 		}
 	}
 
 	public static void Log(String str){
-		System.out.println("(ChatControl) " + str.replace("&", "§"));
+		console.sendMessage("(ChatControl) " + colorize(str));
 	}
 	
-	public static void Log(String str, Throwable error){
-		ChatControl.plugin.getLogger().log(Level.SEVERE, str.replace("&", "§"), error);
+	public static void Log(String str, Throwable ex){
+		console.sendMessage("(ChatControl) " + colorize(str));
+		ex.printStackTrace();
 	}
 
+	private static String colorize(String str) {
+		return str.replace("&", "§");
+	}
+	
 	public static String resolvedSender(CommandSender sender){
 		if (sender instanceof Player)
 			return sender.getName();

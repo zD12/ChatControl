@@ -181,7 +181,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 				}
 				if(args[1].equalsIgnoreCase("console")){
 					for(int i = 0; i < getConfig().getInt("Clear.Amount_Of_Lines_To_Clear_In_Console", 300); i++){
-						System.out.println("§r           ");
+						Common.Log("§r           ");
 					}
 					Common.sendMsg(sender, "Localization.Successful_Console_Clear");
 				} else {
