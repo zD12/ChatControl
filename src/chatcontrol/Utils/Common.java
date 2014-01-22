@@ -6,12 +6,31 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import chatcontrol.ChatControl;
-import chatcontrol.Misc.Permissions;
 
 public class Common {
 
 	private static ConsoleCommandSender console = Bukkit.getConsoleSender();
-	
+
+	public static void sendRawMsg(CommandSender pl, String str){
+		pl.sendMessage(str.replace("&", "§").replace("%prefix", prefix()).replace("%player", resolvedSender(pl)));
+	}
+
+	public static void sendRawMsg(Player pl, String str){
+		pl.sendMessage(str.replace("&", "§").replace("%prefix", prefix()).replace("%player", pl.getName()));
+	}
+
+	public static void sendRawMsg(CommandSender pl, String... msgs){
+		for (String msg : msgs) {
+			pl.sendMessage(msg.replace("&", "§").replace("%prefix", prefix()).replace("%player", resolvedSender(pl)));
+		}
+	}
+
+	public static void sendRawMsg(Player pl, String... msgs){
+		for (String msg : msgs) {
+			pl.sendMessage(msg.replace("&", "§").replace("%prefix", prefix()).replace("%player", pl.getName()));
+		}
+	}
+
 	public static void sendMsg(CommandSender pl, String str){
 		try {
 			pl.sendMessage(ChatControl.Config.getString(str).replace("&", "§").replace("%prefix", prefix()).replace("%player", resolvedSender(pl)));
@@ -48,21 +67,21 @@ public class Common {
 		return prefix;
 	}
 
-	public static void broadcastMsg(CommandSender pl, String cfg, String str){
-		try{
-			if(!ChatControl.Config.getBoolean(cfg)){
+	public static void broadcastMsg(CommandSender pl, String configPath, String message, String reason){
+		try {
+			if(!ChatControl.Config.getBoolean(configPath)){
 				return;
 			}
 		} catch (NullPointerException ex){
-			ChatControl.Config.set(cfg, false);
-			Bukkit.broadcastMessage("§e<Missing config key: §6\"" + cfg + "\"§e>");
+			ChatControl.Config.set(configPath, false);
+			Bukkit.broadcastMessage("§e<Missing config key: §6\"" + configPath + "\"§e>");
 			return;
 		}
-		try{
-			String prefix = ChatControl.Config.getString("Localization.Prefix").replace("&", "§");
-			Bukkit.broadcastMessage(ChatControl.Config.getString(str).replace("&", "§").replace("%prefix", prefix).replace("%player", resolvedSender(pl)));
+		try {
+			String finalMessage = ChatControl.Config.getString(message).replace("%prefix", prefix()).replace("%player", (pl == null ? "" : resolvedSender(pl)) );
+			Bukkit.broadcastMessage(colorize(finalMessage + (reason == "" ? "" : " " + ChatControl.Config.getString("Localization.Reason").replace("%reason", reason))) );
 		} catch (NullPointerException ex){
-			Bukkit.broadcastMessage("§e<Missing language key: §6\"" + str + "\"§e>");
+			Bukkit.broadcastMessage("§e<Missing language key: §6\"" + message + "\"§e>");
 		}
 	}
 
@@ -203,23 +222,23 @@ public class Common {
 	public static void Log(String str){
 		console.sendMessage("(ChatControl) " + colorize(str));
 	}
-	
+
 	public static void Log(String str, Throwable ex){
 		console.sendMessage("(ChatControl) " + colorize(str));
 		ex.printStackTrace();
 	}
 
-	private static String colorize(String str) {
+	public static String colorize(String str) {
 		return str.replace("&", "§");
 	}
-	
+
 	public static String resolvedSender(CommandSender sender){
 		if (sender instanceof Player)
 			return sender.getName();
 		return console();
 	}
-	
-    public static String stripSpecialCharacters(String str) {
-        return str.toLowerCase().replaceAll("§([0-9a-fk-or])", "").replaceAll("[^a-zA-Z0-9]", "");
-    }
+
+	public static String stripSpecialCharacters(String str) {
+		return str.toLowerCase().replaceAll("§([0-9a-fk-or])", "").replaceAll("[^a-zA-Z0-9]", "");
+	}
 }

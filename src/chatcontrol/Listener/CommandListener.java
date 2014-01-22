@@ -7,8 +7,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 import chatcontrol.ChatControl;
-import chatcontrol.Misc.Permissions;
 import chatcontrol.Utils.Common;
+import chatcontrol.Utils.Permissions;
 
 public class CommandListener implements Listener{
 			

@@ -34,6 +34,12 @@ public class ConfigUpdater {
 			status = Status.DISABLED;
 			return;
 		}
+		
+		if(plVersion.contains("SNAPSHOT")) {
+			status = Status.DISABLED;
+			return;
+		}
+		
 		// TODO A better way to make it?
 		if (!latestVersion.equals(plVersion)) {
 			try {
@@ -48,6 +54,7 @@ public class ConfigUpdater {
 					updateConfigTo432();
 					updateConfigTo436();
 					updateConfigTo437();
+					updateConfigTo438();
 				} else if (plVersion.equals("4.1.6")) {
 					updateConfigTo418();
 					updateConfigTo419();
@@ -58,6 +65,7 @@ public class ConfigUpdater {
 					updateConfigTo432();
 					updateConfigTo436();
 					updateConfigTo437();
+					updateConfigTo438();
 				} else if (plVersion.equals("4.1.7")) {
 					updateConfigTo418();
 					updateConfigTo419();
@@ -68,6 +76,7 @@ public class ConfigUpdater {
 					updateConfigTo432();
 					updateConfigTo436();
 					updateConfigTo437();
+					updateConfigTo438();
 				} else if (plVersion.equals("4.1.8")) {
 					updateConfigTo419();
 					updateConfigTo422();
@@ -77,6 +86,7 @@ public class ConfigUpdater {
 					updateConfigTo432();
 					updateConfigTo436();
 					updateConfigTo437();
+					updateConfigTo438();
 				} else if (plVersion.equalsIgnoreCase("4.1.9") || plVersion.equalsIgnoreCase("4.2.1")) {
 					updateConfigTo422();
 					updateConfigTo423();
@@ -85,6 +95,7 @@ public class ConfigUpdater {
 					updateConfigTo432();
 					updateConfigTo436();
 					updateConfigTo437();
+					updateConfigTo438();
 				} else if (plVersion.equalsIgnoreCase("4.2.2")) {
 					updateConfigTo423();
 					updateConfigTo424();
@@ -92,26 +103,34 @@ public class ConfigUpdater {
 					updateConfigTo432();
 					updateConfigTo436();
 					updateConfigTo437();
+					updateConfigTo438();
 				} else if (plVersion.equalsIgnoreCase("4.2.3")) {
 					updateConfigTo424();
 					updateConfigTo430();
 					updateConfigTo432();
 					updateConfigTo436();
 					updateConfigTo437();
+					updateConfigTo438();
 				} else if (plVersion.equalsIgnoreCase("4.2.4")) {
 					updateConfigTo430();
 					updateConfigTo432();
 					updateConfigTo436();
 					updateConfigTo437();
+					updateConfigTo438();
 				} else if (plVersion.equalsIgnoreCase("4.3.0") || plVersion.equalsIgnoreCase("4.3.1")) {
 					updateConfigTo432();
 					updateConfigTo436();
 					updateConfigTo437();
+					updateConfigTo438();
 				} else if (plVersion.equalsIgnoreCase("4.3.2") || plVersion.equalsIgnoreCase("4.3.3") || plVersion.equalsIgnoreCase("4.3.4") || plVersion.equalsIgnoreCase("4.3.5")) {
 					updateConfigTo436();
 					updateConfigTo437();
+					updateConfigTo438();
 				} else if (plVersion.equalsIgnoreCase("4.3.6")) {
 					updateConfigTo437();
+					updateConfigTo438();
+				} else if (plVersion.equalsIgnoreCase("4.3.7")) {
+					updateConfigTo438();
 				} else if (Integer.valueOf(plVersion.replace(".", "")) < 415) {
 					status = Status.TOO_OLD;
 				} else if (Integer.valueOf(plVersion.replace(".", "")) > Integer.valueOf(latestVersion.replace(".", ""))) {
@@ -179,7 +198,8 @@ public class ConfigUpdater {
 		ChatControl.Config.set("Messages.Common.Kick_Message", "default");			
 		ChatControl.Config.set("Clear.Do_Not_Clear_For_Staff", "false");			
 		ChatControl.Config.set("Localization.Staff_Chat_Clear_Message", "&7^----- [ == &fChat was cleared by %player &7== ] -----^");
-		ChatControl.Config.set("Localization.Console", "&4server");			
+		ChatControl.Config.set("Localization.Console", "&4server");
+		Common.Log("&cWARNING! You was runnnig an very old version of ChatControl, configuration might not get updated correctly! It is strongly advised to regenerate your config.");
 	}
 
 	public static void updateConfigTo432() {
@@ -203,6 +223,14 @@ public class ConfigUpdater {
 	public static void updateConfigTo437() {
 		ChatControl.Config.set("Chat.Strip_Unicode", true);
 		ChatControl.Config.set("Anti_Swear.Command_Whitelist", Arrays.asList("/register", "/reg", "/login", "/l"));
+	}
+
+	public static void updateConfigTo438() {
+		ChatControl.Config.set("Broadcast_Silent_Mute", "&cInitiated global chat mute.");
+		ChatControl.Config.set("Broadcast_Silent_Unmute", "&cGlobal chat mute was cancelled.");
+		ChatControl.Config.set("Broadcast_Silent_Clear", "&cThe game chat was cleared.");
+		ChatControl.Config.set("Reload_Failed", null);
+		Common.Log("&cNOTICE: Configuration was rearranged in version 4.3.8 along with some minor changes, it is highly recommended to regenerate it!");
 	}
 
 	public static void updateVersionMark() {

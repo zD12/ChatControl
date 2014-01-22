@@ -1,7 +1,7 @@
 package chatcontrol.PacketListener;
 
 import chatcontrol.ChatControl;
-import chatcontrol.Misc.Permissions;
+import chatcontrol.Utils.Permissions;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;

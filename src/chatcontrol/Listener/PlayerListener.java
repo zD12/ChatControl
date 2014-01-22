@@ -13,8 +13,8 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import chatcontrol.ChatControl;
 import chatcontrol.Storage;
-import chatcontrol.Misc.Permissions;
 import chatcontrol.Utils.Common;
+import chatcontrol.Utils.Permissions;
 
 public class PlayerListener implements Listener{
 	

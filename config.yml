@@ -1,5 +1,5 @@
 # Note: This is a configuration of the ChatControl plugin
-# Official page: http://dev.bukkit.org/server-mods/chat-control
+# Official page: http://www.spigotmc.org/resources/chatcontrol.271/
 # SLOVAK DEVELOPER FTW
 # Supports color codes: & + 0 - F
 
@@ -164,33 +164,45 @@ Localization:
   Dupe_Sign: "&cPlease do not repeat the same text on sign."
   Time_Message: "&cPlease wait %time second(s) before next message."
   Command_Message: "&cPlease wait %time second(s) before next command."
+  
   Ad_Message: "&7Please do not advertise other websites or IP adresses."
   Ad_Staff_Message: "&c%player possibly advertises: &f%message "
   Ad_Broadcast_Message: "&c%player possibly advertises!"
   Ad_Console_Message: "&c%player possibly advertises: &f%message"
+  
   Caps_Message: "&cDo not use so much CAPS LOCK"
+  
   Successful_Mute: "&7Chat was successfully muted."
   Successful_Unmute: "&7The chat is now unmuted."
+  
   Broadcast_Mute: "%prefix &eChat was muted by %player!"
+  Broadcast_Silent_Mute: "&cInitiated global chat mute." # New in 4.3.8
+  
   Broadcast_Unmute: "%prefix &eChat was unmuted by %player!"  
+  Broadcast_Silent_Unmute: "&cGlobal chat mute was cancelled." # New in 4.3.8
+  
   Broadcast_Clear: "%prefix &eChat was cleared by %player!"
-  Staff_Chat_Clear_Message: "&7^----- [ == &fChat was cleared by %player &7== ] -----^"
-  # New in 4.3.6
+  Broadcast_Silent_Clear: "&cThe game chat was cleared." # New in 4.3.8
+  
   Successful_Console_Clear: "%prefix &7Console was successfuly cleared."
   Do_Not_Swear: "&cPlease do not swear!"
   Swear_Admin_Message: "&c%player swears:&f %message"
+  
   Cannot_Chat_While_Muted: "&7You cannot chat while the chat is muted."
   Cannot_Command_While_Muted: "&7You cannot use this command while the chat is muted."
   Cannot_Chat_Until_Moved: "&7You cannot chat until you move."
+  
+  Staff_Chat_Clear_Message: "&7^----- [ == &fChat was cleared by %player &7== ] -----^"
   Rejoin_Message: "&6Please wait &7%time second(s)&6 before logging in."
   Update_Needed: "&6There is a new version of &cChatControl&6 available.\n&6Current version: &7%current&6; New version: &7%new"
-    
   Reload_Complete: "&7Plugin was reloaded successfully."
-  Reload_Failed: "&cUnable to reload the plugin."
   No_Permission: "&cYou do not have permission for this."
-  Wrong_Args: "&7Wrong arguments. Type &f/chatcontrol&7 help for help."
+  
+  Wrong_Args: "&cWrong arguments. Type &6/chc list&c for command list."
+  Wrong_Parameters: "&cWrong parameters, available are: &7%params"
+  
   Reason: "&7Reason:&f%reason"
   Prefix: "&c[&6ChatControl&c]&7"
   Console: "&4server"
 
-Do_Not_Change_Version_Number: 4.3.7
+Do_Not_Change_Version_Number: 4.3.8-SNAPSHOT

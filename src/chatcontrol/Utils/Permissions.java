@@ -1,4 +1,4 @@
-package chatcontrol.Misc;
+package chatcontrol.Utils;
 
 public class Permissions {
 
@@ -7,7 +7,7 @@ public class Permissions {
 		public static final String mute = "chatcontrol.commands.mute";
 		public static final String clear = "chatcontrol.commands.clear";
 		public static final String reload = "chatcontrol.commands.reload";
-		public static final String help = "chatcontrol.commands.help";
+		public static final String command_list = "chatcontrol.commands.list";
 	}
 	
 	public class Bypasses {

@@ -9,8 +9,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import chatcontrol.ChatControl;
-import chatcontrol.Misc.Permissions;
 import chatcontrol.Utils.Common;
+import chatcontrol.Utils.Permissions;
 import chatcontrol.Utils.Writer;
 
 public class ChatListener implements Listener {
