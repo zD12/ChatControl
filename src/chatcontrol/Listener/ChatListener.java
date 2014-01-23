@@ -94,6 +94,9 @@ public class ChatListener implements Listener {
 						return;
 					}
 				}
+				if(e.getMessage().length() < ChatControl.Config.getInt("Anti_Caps.Minimum_Message_Length")) { 
+					return;
+				}
 				String msg = e.getMessage().replaceAll("(\\W|\\d|_)*", "");
 				if (msg.matches(ChatControl.Config.getString("Anti_Caps.Pattern"))) {
 					e.setMessage(e.getMessage().toLowerCase());

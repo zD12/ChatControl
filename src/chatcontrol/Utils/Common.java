@@ -197,8 +197,8 @@ public class Common {
 	public static String replaceCharacters(Player pl, String msg){
 		if(!ChatControl.Config.getBoolean("Grammar.Replace_Characters")){
 			return osmajlikovat(msg);
-		}				
-		for (String character : ChatControl.Config.getConfigurationSection("Grammar.Replace_List").getKeys(false)) {
+		}
+		for (String character : ChatControl.Config.getConfigurationSection("Grammar.Replace_List").getKeys(true)) {
 			msg = msg.replaceAll(character.toLowerCase(), ChatControl.Config.getString("Grammar.Replace_List." + character));			
 		}
 

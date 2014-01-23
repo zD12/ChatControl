@@ -231,7 +231,8 @@ public class ConfigUpdater {
 		ChatControl.Config.set("Broadcast_Silent_Clear", "&cThe game chat was cleared.");
 		ChatControl.Config.set("Reload_Failed", null);
 		ChatControl.Config.set("Chat.Include_Commands", Arrays.asList("/tell", "/msg", "/r"));
-		ChatControl.Config.set("Block_Similar_Messages", true);
+		ChatControl.Config.set("Chat.Block_Similar_Messages", true);
+		ChatControl.Config.set("Anti_Caps.Minimum_Message_Length", 5);
 		Common.Log("&cNOTICE: Configuration was rearranged in version 4.3.8 along with some minor changes, it is highly recommended to regenerate it!");
 	}
 

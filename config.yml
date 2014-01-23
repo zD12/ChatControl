@@ -99,6 +99,7 @@ Anti_Bot:
 
 Anti_Caps:
   Enabled: true
+  Minimum_Message_Length: 5
   Pattern: "(\\p{Lu}|\\s){6,120}"
   Warn_Player: true
   Whitelist:
