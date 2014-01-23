@@ -6,6 +6,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import chatcontrol.ChatControl;
+import chatcontrol.Utils.Writer.TypSuboru;
 
 public class Common {
 
@@ -132,7 +133,7 @@ public class Common {
 			System.out.println(ChatControl.Config.getString("Localization.Ad_Console_Message").replace("&", "§").replace("%player", pl.getName()).replace("%message", msg));
 		}		
 		if(ChatControl.Config.getBoolean("Anti_Ad.Write_To_File")){
-			chatcontrol.Utils.Writer.writeAd(pl, msg);
+			Writer.writeToFile(TypSuboru.REKLAMY, pl.getName(), msg);
 		}
 	}
 

@@ -37,11 +37,12 @@ public class ChatControl extends JavaPlugin implements Listener {
 		getServer().getPluginManager().registerEvents(new ChatListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		getServer().getPluginManager().registerEvents(new CommandListener(), this);
+		
 		getConfig().options().copyDefaults(true);
 		saveDefaultConfig();
 
 		ConfigUpdater.configCheck();
-
+		
 		if(getConfig().getBoolean("Console.Filter_Enabled")){
 			if(getServer().getBukkitVersion().startsWith("1.7")) {
 				new Log4jFilter().init();

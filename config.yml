@@ -14,6 +14,11 @@ Chat:
   # Do not write conversation of these players:
   Ignore_Players:
     - anonymouser1
+  # Commands that get writed along with the chat messages.
+  Include_Commands:
+    - /tell
+    - /msg
+    - /r
 
 Messages:
   # Default - not handled by ChatControl; none - message will not shown. Or just write your own message .
@@ -53,6 +58,7 @@ Commands:
 
 Console:
   Filter_Enabled: true
+  # Should we hook into all your plugins to filter messages they display?
   Filter_Plugin_Messages: true
   Filter_Messages:
     - Reached end of stream for.*

@@ -19,8 +19,9 @@ public class Log4jFilter implements Filter {
 	@Override
 	public Result filter(LogEvent record) {
 		try {
-			String m = record.getMessage().getFormattedMessage();
+			String m = record.getMessage().getFormattedMessage().toLowerCase();
 			for (String str : ChatControl.Config.getStringList("Console.Filter_Messages")){
+				str = str.toLowerCase();
 				if(m.contains(str)){
 					return Result.DENY;
 				}
@@ -37,8 +38,9 @@ public class Log4jFilter implements Filter {
 	@Override
 	public Result filter(Logger arg0, Level arg1, Marker arg2, String message, Object... arg4) {		
 		try {
-			String m = message;
+			String m = message.toLowerCase();
 			for (String str : ChatControl.Config.getStringList("Console.Filter_Messages")){
+				str = str.toLowerCase();
 				if(m.contains(str)){
 					return Result.DENY;
 				}
@@ -56,8 +58,9 @@ public class Log4jFilter implements Filter {
 	public Result filter(Logger arg0, Level arg1, Marker arg2, Object message, Throwable arg4) {
 
 		try {
-			String m = message.toString();
+			String m = message.toString().toLowerCase();
 			for (String str : ChatControl.Config.getStringList("Console.Filter_Messages")){
+				str = str.toLowerCase();
 				if(m.contains(str)){
 					return Result.DENY;
 				}
@@ -75,8 +78,9 @@ public class Log4jFilter implements Filter {
 	public Result filter(Logger arg0, Level arg1, Marker arg2, Message message, Throwable arg4) {
 
 		try {
-			String m = message.getFormattedMessage();
+			String m = message.getFormattedMessage().toLowerCase();
 			for (String str : ChatControl.Config.getStringList("Console.Filter_Messages")){
+				str = str.toLowerCase();
 				if(m.contains(str)){
 					return Result.DENY;
 				}
