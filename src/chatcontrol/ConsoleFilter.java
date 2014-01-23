@@ -11,7 +11,7 @@ import org.apache.logging.log4j.message.Message;
 
 public class ConsoleFilter implements java.util.logging.Filter, org.apache.logging.log4j.core.Filter {
 
-	/*public boolean isLoggable(LogRecord record){
+	public boolean isLoggable(LogRecord record){
 		String m = record.getMessage();		
 		for (String str : ChatControl.Config.getStringList("Console.Filter_Messages")){
 			if(m.contains(str)){
@@ -21,23 +21,6 @@ public class ConsoleFilter implements java.util.logging.Filter, org.apache.loggi
 				return false;
 			}
 		}
-		return true;
-	}*/
-
-	@Override
-	public boolean isLoggable(LogRecord record) {
-		/*try {
-			if (record == null || record.getMessage() == null) return true;
-			String logM = record.getMessage().toLowerCase();
-			if (!logM.contains("issued server command:")) return true;
-			if (!logM.contains("/login ") && !logM.contains("/l ") && !logM.contains("/reg ") && !logM.contains("/changepassword ") && !logM.contains("/unregister ")
-					&& !logM.contains("/authme register ") && !logM.contains("/authme changepassword ")&& !logM.contains("/authme reg ")&& !logM.contains("/authme cp ") && !logM.contains("/register ")) return true;
-			String playername = record.getMessage().split(" ")[0];			
-			record.setMessage(playername + " issued an AuthMe command!");
-			return true;
-		} catch (NullPointerException npe) {
-			return true;
-		}*/
 		return true;
 	}
 

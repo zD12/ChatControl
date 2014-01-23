@@ -3,9 +3,9 @@ package chatcontrol;
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.logging.Filter;
-import java.util.logging.Logger;
 
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.core.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -42,18 +42,17 @@ public class ChatControl extends JavaPlugin implements Listener {
 		ConfigUpdater.configCheck();
 
 		if(getConfig().getBoolean("Console.Filter_Enabled")){
-			Filter filter = new ConsoleFilter();
-			if(getConfig().getBoolean("Console.Filter_Plugin_Messages")){
+			//Filter filter = new ConsoleFilter();
+			/*if(getConfig().getBoolean("Console.Filter_Plugin_Messages")){
 				for (Plugin p : getServer().getPluginManager().getPlugins()) {
 					p.getLogger().setFilter(filter);
 				}
-			}			
-            getLogger().setFilter(filter);
-            Bukkit.getLogger().setFilter(filter);
-            Logger.getLogger("Minecraft").setFilter(filter);
-
-            org.apache.logging.log4j.core.Logger coreLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
-            coreLogger.addFilter(new ConsoleFilter());
+			}*/			
+            getLogger().setFilter(new ConsoleFilter());
+            //Bukkit.getLogger().setFilter(filter);
+            //java.util.logging.Logger.getLogger("Minecraft").setFilter(filter);
+            
+            ((Logger) LogManager.getRootLogger()).addFilter(new ConsoleFilter());
 		}
 
 		if(getConfig().getBoolean("Protect.Prevent_Tab_Complete")){
