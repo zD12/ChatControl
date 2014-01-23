@@ -22,9 +22,13 @@ public class Writer {
 	}
 
 	public static void writeToFile(TypSuboru typSuboru, String prefix, String msg) {
-		BufferedWriter bw = null;		        
+		BufferedWriter bw = null;
+		File file = new File(ChatControl.plugin.getDataFolder() + "/logs");
+		if(!file.exists()) {
+			file.mkdir();
+		}
 		try {            
-			bw = new BufferedWriter(new FileWriter(new File(ChatControl.plugin.getDataFolder(), typSuboru.typ), true));            
+			bw = new BufferedWriter(new FileWriter(file + "/" + typSuboru.typ, true));            
 			bw.write("[" + cas() + "] " + (prefix != null ? prefix + ": " : "") + msg);
 			bw.newLine();            
 		} catch (Exception ex) {
