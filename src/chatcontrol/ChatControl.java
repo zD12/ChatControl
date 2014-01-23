@@ -4,8 +4,6 @@ import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.logging.Filter;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -13,10 +11,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import chatcontrol.ConsoleFilter.ConsoleFilter;
+import chatcontrol.ConsoleFilter.Log4jFilter;
 import chatcontrol.Listener.ChatListener;
 import chatcontrol.Listener.CommandListener;
 import chatcontrol.Listener.PlayerListener;
 import chatcontrol.PacketListener.PacketListener;
+import chatcontrol.Utils.Common;
 import chatcontrol.Utils.ConfigUpdater;
 
 public class ChatControl extends JavaPlugin implements Listener {
@@ -32,7 +33,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 	public void onEnable(){
 		plugin = this;
 		Config = getConfig();
-		
+
 		getServer().getPluginManager().registerEvents(new ChatListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		getServer().getPluginManager().registerEvents(new CommandListener(), this);
@@ -42,17 +43,19 @@ public class ChatControl extends JavaPlugin implements Listener {
 		ConfigUpdater.configCheck();
 
 		if(getConfig().getBoolean("Console.Filter_Enabled")){
-			//Filter filter = new ConsoleFilter();
-			/*if(getConfig().getBoolean("Console.Filter_Plugin_Messages")){
-				for (Plugin p : getServer().getPluginManager().getPlugins()) {
-					p.getLogger().setFilter(filter);
+			if(getServer().getBukkitVersion().startsWith("1.7")) {
+				new Log4jFilter().init();
+				Common.Log("Console filtering now using Log4j Filter.");
+			} else {
+				Filter filter = new ConsoleFilter();
+				if(getConfig().getBoolean("Console.Filter_Plugin_Messages")){
+					for (Plugin p : getServer().getPluginManager().getPlugins()) {
+						p.getLogger().setFilter(filter);
+					}
 				}
-			}*/			
-            getLogger().setFilter(new ConsoleFilter());
-            //Bukkit.getLogger().setFilter(filter);
-            //java.util.logging.Logger.getLogger("Minecraft").setFilter(filter);
-            
-            ((Logger) LogManager.getRootLogger()).addFilter(new ConsoleFilter());
+				Bukkit.getLogger().setFilter(filter);
+				Common.Log("Console filtering initiated (MC 1.6.4 and lower).");
+			}
 		}
 
 		if(getConfig().getBoolean("Protect.Prevent_Tab_Complete")){
@@ -66,7 +69,6 @@ public class ChatControl extends JavaPlugin implements Listener {
 				new PacketListener().initPacketListener();
 			} else {
 				new PacketListener().initOlderPacketListener();
-				getLogger().info("Detected Minecraft older than 1.7.2, using older packet listener.");
 			}		
 			getLogger().info("Successfully hooked with ProtocolLib!");
 		}
@@ -76,7 +78,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 				data.put(pl, new Storage());
 			}
 		}
-		
+
 		getCommand("chatcontrol").setExecutor(new CommandsHandler());
 	}
 

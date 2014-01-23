@@ -138,7 +138,7 @@ public class ConfigUpdater {
 				}
 			} catch (Exception ex) {
 				status = Status.ERROR;
-				Common.Log("&cUnable to update ChatControl configuration.", ex);
+				Common.error("&cUnable to update ChatControl configuration.", ex);
 			} finally {
 				try {
 					ChatControl.plugin.saveConfig();
@@ -238,7 +238,7 @@ public class ConfigUpdater {
 			ChatControl.Config.set("Do_Not_Change_Version_Number", latestVersion);
 			ChatControl.Config.save(new File(ChatControl.plugin.getDataFolder(), "config.yml"));
 		} catch (Exception ex) {
-			Common.Log("&cUnable to update ChatControl configuration.", ex);
+			Common.error("&cUnable to update ChatControl configuration.", ex);
 		}
 	}	
 }

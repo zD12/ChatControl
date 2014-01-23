@@ -136,6 +136,7 @@ public class CommandsHandler implements CommandExecutor {
 			Bukkit.getPluginManager().enablePlugin(ChatControl.plugin);
 
 			Common.sendMsg(sender, "Localization.Reload_Complete");
+			return false;
 		}
 
 		if (argument.equalsIgnoreCase("commands") || argument.equalsIgnoreCase("?") || argument.equalsIgnoreCase("list")) {

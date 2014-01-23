@@ -1,27 +1,19 @@
-package chatcontrol;
-
-import java.util.logging.LogRecord;
+package chatcontrol.ConsoleFilter;
 
 import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.message.Message;
 
+import chatcontrol.ChatControl;
 
-public class ConsoleFilter implements java.util.logging.Filter, org.apache.logging.log4j.core.Filter {
+public class Log4jFilter implements Filter {
 
-	public boolean isLoggable(LogRecord record){
-		String m = record.getMessage();		
-		for (String str : ChatControl.Config.getStringList("Console.Filter_Messages")){
-			if(m.contains(str)){
-				return false;
-			}
-			if(m.matches(str)){
-				return false;
-			}
-		}
-		return true;
+	public void init() {
+		((Logger) LogManager.getRootLogger()).addFilter(this);
 	}
 
 	@Override
@@ -62,7 +54,7 @@ public class ConsoleFilter implements java.util.logging.Filter, org.apache.loggi
 
 	@Override
 	public Result filter(Logger arg0, Level arg1, Marker arg2, Object message, Throwable arg4) {
-		
+
 		try {
 			String m = message.toString();
 			for (String str : ChatControl.Config.getStringList("Console.Filter_Messages")){
@@ -81,7 +73,7 @@ public class ConsoleFilter implements java.util.logging.Filter, org.apache.loggi
 
 	@Override
 	public Result filter(Logger arg0, Level arg1, Marker arg2, Message message, Throwable arg4) {
-		
+
 		try {
 			String m = message.getFormattedMessage();
 			for (String str : ChatControl.Config.getStringList("Console.Filter_Messages")){
@@ -107,5 +99,4 @@ public class ConsoleFilter implements java.util.logging.Filter, org.apache.loggi
 	public Result getOnMismatch() {
 		return Result.NEUTRAL;
 	}
-
 }

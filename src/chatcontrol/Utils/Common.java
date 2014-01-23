@@ -213,17 +213,22 @@ public class Common {
 		return str.matches(ChatControl.Config.getString("Anti_Ad.Domain_Filter"));
 	}
 
-	public static void debug(String str){
-		if(ChatControl.Config.getBoolean("Miscellaneous.Debug")){
-			console.sendMessage("(ChatControl) " + colorize(str));
-		}
-	}
 
 	public static void Log(String str){
 		console.sendMessage("(ChatControl) " + colorize(str));
 	}
 
-	public static void Log(String str, Throwable ex){
+	public static void LogPlain(String str){
+		System.out.println("(ChatControl) " + colorize(str));
+	}
+	
+	public static void debug(String str){
+		if(ChatControl.Config.getBoolean("Miscellaneous.Debug")){
+			console.sendMessage("(ChatControl) " + colorize(str));
+		}
+	}
+	
+	public static void error(String str, Throwable ex){
 		console.sendMessage("(ChatControl) " + colorize(str));
 		ex.printStackTrace();
 	}
