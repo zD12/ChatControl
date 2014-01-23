@@ -11,30 +11,6 @@ import chatcontrol.ChatControl;
 
 public class Writer {
 
-	/*public static void writeAd(Player hrac, String sprava){
-		    BufferedWriter w = null;
-		    try{
-		      w = new BufferedWriter(new FileWriter("plugins/ChatControl/advertisements.log", true));
-		      w.write("[" + cas() + "] " + hrac.getName() + ": " + sprava);
-		      w.newLine();
-		    } catch (Exception ex) {
-		      try{
-		        if (w != null) {
-		          w.flush();
-		          w.close();
-		        }
-		      } catch (Exception ex2) {}
-		    }
-		    finally{
-		      try{
-		        if (w != null) {
-		          w.flush();
-		          w.close();
-		        }
-		      } catch (Exception ex) {
-		      }
-		    }
-	  }*/
 	public static enum TypSuboru {
 		REKLAMY("advertisements.log"),
 		ZAZNAM_CHATU("chat.log");

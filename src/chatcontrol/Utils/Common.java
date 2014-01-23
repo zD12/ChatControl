@@ -41,6 +41,10 @@ public class Common {
 	}
 
 	public static void sendMsg(Player pl, String str){
+		if(ChatControl.Config.getString(str).isEmpty() || ChatControl.Config.getString(str).equalsIgnoreCase("none")) {
+			Common.debug("Message in config path \"" + str + "\" is none or \"\", so nothing is sent to " + pl.getName());
+			return;
+		}
 		try {
 			pl.sendMessage(ChatControl.Config.getString(str).replace("&", "§").replace("%prefix", prefix()).replace("%player", pl.getName()));
 		} catch (Exception ex){
@@ -222,13 +226,13 @@ public class Common {
 	public static void LogPlain(String str){
 		System.out.println("(ChatControl) " + colorize(str));
 	}
-	
+
 	public static void debug(String str){
 		if(ChatControl.Config.getBoolean("Miscellaneous.Debug")){
 			console.sendMessage("(ChatControl) " + colorize(str));
 		}
 	}
-	
+
 	public static void error(String str, Throwable ex){
 		console.sendMessage("(ChatControl) " + colorize(str));
 		ex.printStackTrace();
@@ -246,5 +250,47 @@ public class Common {
 
 	public static String stripSpecialCharacters(String str) {
 		return str.toLowerCase().replaceAll("§([0-9a-fk-or])", "").replaceAll("[^a-zA-Z0-9]", "");
+	}
+
+	public static boolean stringsAreSimilar(String string1, String string2) {
+		if ((string1 == null) || (string2 == null))
+			return false;
+		String str1;
+		String str2;
+		if (string2.length() < string1.length()) {
+			str1 = string2;
+			str2 = string1;
+		} else {
+			str1 = string1;
+			str2 = string2;
+		}
+
+		if (str1.length() <= 5) {
+			return str1.equals(str2);
+		}
+
+		int integer = str2.length() - str2.length() / 4;
+
+		if (str1.length() < integer) {
+			return false;
+		}
+
+		int count = 0;
+		for (int lenght = 0; lenght < str1.length(); lenght++) {
+			if (str1.charAt(lenght) == str2.charAt(lenght))
+				count++;
+			if (count > integer) {
+				return true;
+			}
+		}
+
+		for (int lenght = 0; lenght < str1.length(); lenght++) {
+			if (str1.charAt(str1.length() - lenght - 1) == str2.charAt(str2.length() - lenght - 1))
+				count++;
+			if (count > integer) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

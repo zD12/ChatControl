@@ -5,6 +5,8 @@
 
 Chat:
   Block_Duplicate_Messages: true
+  # Block 75% similar messages.
+  Block_Similar_Messages: true
   # When blocking duplicate message, should we strip UTF-8 special characters from it?
   # e.g messages "Hello" and "<<Hello!?!" will after this strip be detected as equals.
   # Which can lower spam and preventing users bypassing this check by adding some characters like ! ? etc.

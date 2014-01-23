@@ -62,7 +62,8 @@ public class ChatListener implements Listener {
 				} else {
 					sprava = e.getMessage().replaceAll("[.:_,!*÷*><}{&#'$|\\/()]", "").toLowerCase();
 				}
-				if (ChatControl.data.get(e.getPlayer()).lastMessage.equalsIgnoreCase(sprava)) {
+				if (ChatControl.data.get(e.getPlayer()).lastMessage.equalsIgnoreCase(sprava) || (Common.stringsAreSimilar(sprava.toLowerCase(), ChatControl.data.get(e.getPlayer()).lastMessage.toLowerCase()) 
+						&& ChatControl.Config.getBoolean("Chat.Block_Similar_Messages")) ) {
 					if (e.getPlayer().hasPermission(Permissions.Bypasses.dupe)) {
 						return;
 					}
