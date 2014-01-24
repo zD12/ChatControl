@@ -32,8 +32,10 @@ Messages:
     Kick_Message: default
 
 Grammar:
-  Capitalise: true
+  Capitalize: true
+    Min_Msg_Length: 3 # Capitalize message longer that 3 letters.
   Insert_Dot: true
+    Min_Msg_Length: 3 # Insert dot to message which is longer that 3 letters.
   Replace_Characters: true
   # Replace following characters with built-in smileys:  :) :-) :( :-( ;) ;-) :square: :rectangle: :love: <3 
   Replace_With_Smileys: true

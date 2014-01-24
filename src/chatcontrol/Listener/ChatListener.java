@@ -135,7 +135,7 @@ public class ChatListener implements Listener {
 			}
 
 			msgLowerCase = Common.replaceCharacters(e.getPlayer(), msgLowerCase);
-			msgLowerCase = Common.capitalise(msgLowerCase);
+			msgLowerCase = Common.capitalize(msgLowerCase);
 			msgLowerCase = Common.insertComma(msgLowerCase);
 			e.setMessage(msgLowerCase);
 			finalMsg = msgLowerCase;

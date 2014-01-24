@@ -233,6 +233,8 @@ public class ConfigUpdater {
 		ChatControl.Config.set("Chat.Include_Commands", Arrays.asList("/tell", "/msg", "/r"));
 		ChatControl.Config.set("Chat.Block_Similar_Messages", true);
 		ChatControl.Config.set("Anti_Caps.Minimum_Message_Length", 5);
+		ChatControl.Config.set("Grammar.Capitalize", ChatControl.Config.getBoolean("Grammar.Capitalise"));
+		ChatControl.Config.set("Grammar.Capitalise", null);
 		Common.Log("&cNOTICE: Configuration was rearranged in version 4.3.8 along with some minor changes, it is highly recommended to regenerate it!");
 	}
 

@@ -1,6 +1,7 @@
 package chatcontrol.Utils;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -13,30 +14,30 @@ public class Common {
 	private static ConsoleCommandSender console = Bukkit.getConsoleSender();
 
 	public static void sendRawMsg(CommandSender pl, String str){
-		pl.sendMessage(str.replace("&", "§").replace("%prefix", prefix()).replace("%player", resolvedSender(pl)));
+		pl.sendMessage( colorize( str.replace("%prefix", prefix()).replace("%player", resolvedSender(pl)) ) );
 	}
 
 	public static void sendRawMsg(Player pl, String str){
-		pl.sendMessage(str.replace("&", "§").replace("%prefix", prefix()).replace("%player", pl.getName()));
+		pl.sendMessage( colorize( str.replace("%prefix", prefix()).replace("%player", pl.getName()) ) );
 	}
 
 	public static void sendRawMsg(CommandSender pl, String... msgs){
 		for (String msg : msgs) {
-			pl.sendMessage(msg.replace("&", "§").replace("%prefix", prefix()).replace("%player", resolvedSender(pl)));
+			pl.sendMessage( colorize(msg.replace("%prefix", prefix()).replace("%player", resolvedSender(pl)) ) );
 		}
 	}
 
 	public static void sendRawMsg(Player pl, String... msgs){
 		for (String msg : msgs) {
-			pl.sendMessage(msg.replace("&", "§").replace("%prefix", prefix()).replace("%player", pl.getName()));
+			pl.sendMessage( colorize( msg.replace("%prefix", prefix()).replace("%player", pl.getName()) ) );
 		}
 	}
 
 	public static void sendMsg(CommandSender pl, String str){
 		try {
-			pl.sendMessage(ChatControl.Config.getString(str).replace("&", "§").replace("%prefix", prefix()).replace("%player", resolvedSender(pl)));
+			pl.sendMessage( colorize(ChatControl.Config.getString(str).replace("%prefix", prefix()).replace("%player", resolvedSender(pl)) ) );
 		} catch (Exception ex){
-			pl.sendMessage("§e<Missing language key: §6\"" + str + "\"§e>");
+			pl.sendMessage( colorize("&e<Missing language key: &6\"" + str + "\"&e>"));
 		}
 	}
 
@@ -46,18 +47,18 @@ public class Common {
 			return;
 		}
 		try {
-			pl.sendMessage(ChatControl.Config.getString(str).replace("&", "§").replace("%prefix", prefix()).replace("%player", pl.getName()));
+			pl.sendMessage( colorize(ChatControl.Config.getString(str).replace("%prefix", prefix()).replace("%player", pl.getName()) ) );
 		} catch (Exception ex){
-			pl.sendMessage("§e<Missing language key: §6\"" + str + "\"§e>");
+			pl.sendMessage( colorize("&e<Missing language key: &6\"" + str + "\"&e>"));
 		}
 	}
 
 	public static String prefix(){
 		String prefix;
 		try {
-			prefix = ChatControl.Config.getString("Localization.Prefix").replace("&", "§");
+			prefix = colorize(ChatControl.Config.getString("Localization.Prefix"));
 		} catch (Exception ex){
-			prefix = "§c[§6ChatControl§c]§7 ";
+			prefix = ChatColor.RED + "[" + ChatColor.GOLD + "ChatControl" + ChatColor.RED + "] " + ChatColor.WHITE;
 		}
 		return prefix;
 	}
@@ -65,9 +66,9 @@ public class Common {
 	public static String console(){
 		String prefix;
 		try {
-			prefix = ChatControl.Config.getString("Localization.Console").replace("&", "§");
+			prefix = colorize(ChatControl.Config.getString("Localization.Console"));
 		} catch (Exception ex){
-			prefix = "§4server";
+			prefix = ChatColor.RED + "server";
 		}
 		return prefix;
 	}
@@ -178,8 +179,8 @@ public class Common {
 		return msg;
 	}
 
-	public static String capitalise(String msg){
-		if(!ChatControl.Config.getBoolean("Grammar.Capitalise")){
+	public static String capitalize(String msg){
+		if(!ChatControl.Config.getBoolean("Grammar.Capitalize")){
 			return msg;
 		}
 		String[] sentences = msg.split("(?<=[!?\\.])\\s");
@@ -210,7 +211,7 @@ public class Common {
 			return msg;
 		}
 		msg = msg.replace(":)", "☺").replace(":-)", "☺").replace(":(", "☹").replace(":-(", "☹").replace(";)", "㋡").replace(";-)", "㋡").replace(":love:", "♥")
-				.replace(":square:", "■").replace(":rectangle:", "█").replace("<3", "♥");
+                .replace(":square:", "■").replace(":rectangle:", "█").replace("<3", "♥");
 		return msg;
 	}
 
