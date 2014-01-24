@@ -36,7 +36,7 @@ public class Log4jFilter implements Filter {
 	}
 
 	@Override
-	public Result filter(Logger arg0, Level arg1, Marker arg2, String message, Object... arg4) {		
+	public Result filter(Logger arg0, Level arg1, Marker arg2, String message, Object... arg4) {
 		try {
 			String m = message.toLowerCase();
 			for (String str : ChatControl.Config.getStringList("Console.Filter_Messages")){

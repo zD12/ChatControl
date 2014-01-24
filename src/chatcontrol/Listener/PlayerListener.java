@@ -18,7 +18,7 @@ import chatcontrol.Utils.Common;
 import chatcontrol.Utils.Permissions;
 
 public class PlayerListener implements Listener{
-	
+
 	@EventHandler
 	public void onPreLogin(AsyncPlayerPreLoginEvent e){
 		long cas = System.currentTimeMillis() / 1000L;
@@ -110,7 +110,7 @@ public class PlayerListener implements Listener{
 			e.setLeaveMessage(Common.colorize(ChatControl.Config.getString("Messages.Common.Kick_Message").replace("%player", e.getPlayer().getName()).replace("%prefix", Common.prefix())));
 			break;
 		}
-	}	
+	}
 
 	@EventHandler
 	public void onDeath(PlayerDeathEvent e){
@@ -128,7 +128,7 @@ public class PlayerListener implements Listener{
 		if(Common.playerIsPrivileged(e.getPlayer())){
 			return;
 		}
-		
+
 		if(ChatControl.Config.getBoolean("Signs.Duplication_Check")){
 			if (e.getPlayer().hasPermission(Permissions.Bypasses.dupe)) {
 				return;
@@ -137,7 +137,7 @@ public class PlayerListener implements Listener{
 				Common.sendMsg(e.getPlayer(), "Localization.Dupe_Sign");
 				e.setCancelled(true);
 				return;
-			}			
+			}
 			ChatControl.data.get(e.getPlayer()).lastSignText = e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3);
 		}
 

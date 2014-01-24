@@ -34,12 +34,12 @@ public class ConfigUpdater {
 			status = Status.DISABLED;
 			return;
 		}
-		
+
 		if(plVersion.contains("SNAPSHOT")) {
 			status = Status.DISABLED;
 			return;
 		}
-		
+
 		// TODO A better way to make it?
 		if (!latestVersion.equals(plVersion)) {
 			try {
@@ -157,7 +157,7 @@ public class ConfigUpdater {
 		if (!status.equals(Status.DISABLED) && !status.equals(Status.UPDATE_NOT_NECESSARY)) {
 			Common.Log(status.msg);
 			if(status.equals(Status.SUCCESS)) {
-				updateVersionMark();			
+				updateVersionMark();
 			}
 		}
 	}
@@ -189,21 +189,21 @@ public class ConfigUpdater {
 	}
 
 	public static void updateConfigTo424() {
-		ChatControl.Config.set("Anti_Ad.Filter_Pre_Process", "[(\\[\\])]");			
+		ChatControl.Config.set("Anti_Ad.Filter_Pre_Process", "[(\\[\\])]");
 	}
 
 	public static void updateConfigTo430() {
 		ChatControl.Config.set("Messages.Common.Join_Message", "default");
 		ChatControl.Config.set("Messages.Common.Quit_Message", "default");
-		ChatControl.Config.set("Messages.Common.Kick_Message", "default");			
-		ChatControl.Config.set("Clear.Do_Not_Clear_For_Staff", "false");			
+		ChatControl.Config.set("Messages.Common.Kick_Message", "default");
+		ChatControl.Config.set("Clear.Do_Not_Clear_For_Staff", "false");
 		ChatControl.Config.set("Localization.Staff_Chat_Clear_Message", "&7^----- [ == &fChat was cleared by %player &7== ] -----^");
 		ChatControl.Config.set("Localization.Console", "&4server");
 		Common.Log("&cWARNING! You was runnnig an very old version of ChatControl, configuration might not get updated correctly! It is strongly advised to regenerate your config.");
 	}
 
 	public static void updateConfigTo432() {
-		ChatControl.Config.set("Grammar.Replace_Characters", true);			
+		ChatControl.Config.set("Grammar.Replace_Characters", true);
 		ChatControl.Config.set("Grammar.Replace_With_Smileys", true);
 
 		ChatControl.Config.set("Grammar.Replace_List.dis", "this");
@@ -216,7 +216,7 @@ public class ConfigUpdater {
 	}
 
 	public static void updateConfigTo436() {
-		ChatControl.Config.set("Localization.Successful_Console_Clear", "%prefix &7Console was successfuly cleared.");			
+		ChatControl.Config.set("Localization.Successful_Console_Clear", "%prefix &7Console was successfuly cleared.");
 		ChatControl.Config.set("Clear.Amount_Of_Lines_To_Clear_In_Console", 300);
 	}
 
@@ -238,7 +238,7 @@ public class ConfigUpdater {
 		ChatControl.Config.set("Grammar.Capitalise", null);
 		ChatControl.Config.set("Grammar.Insert_Dot", null);
 		ChatControl.Config.set("Grammar.Capitalize.Enabled", capitalize);
-		ChatControl.Config.set("Grammar.Capitalize.Minimum_Msg_Length", 5);		
+		ChatControl.Config.set("Grammar.Capitalize.Minimum_Msg_Length", 5);
 		ChatControl.Config.set("Grammar.Insert_Dot.Enabled", dot);
 		ChatControl.Config.set("Grammar.Insert_Dot.Minimum_Msg_Length", 5);
 		ChatControl.ChatConfig.getConfig().set("Replacing_Characters.Replace_List", ChatControl.Config.getStringList("Grammar.Replace_List"));
@@ -248,18 +248,18 @@ public class ConfigUpdater {
 		ChatControl.Config.set("Anti_Caps.Pattern", null);
 		ChatControl.ConsoleConfig.getConfig().set("Console.Filter_Messages", ChatControl.Config.getStringList("Console.Filter_Messages"));
 		ChatControl.Config.set("Console", null);
-		
+
 		Common.Log("&c* NOTICE: Configuration was rearranged & edited in version 4.3.8 *");
 		Common.Log("&c*********** It is highly recommended to regenerate it! ***********");
 		Common.Log("&cAlso please notice that Console Filter and Replacing characters was moved into separate files!");
 	}
 
 	public static void updateVersionMark() {
-		try {		
+		try {
 			ChatControl.Config.set("Do_Not_Change_Version_Number", latestVersion);
 			ChatControl.Config.save(new File(ChatControl.plugin.getDataFolder(), "config.yml"));
 		} catch (Exception ex) {
 			Common.error("&cUnable to update ChatControl configuration.", ex);
 		}
-	}	
+	}
 }

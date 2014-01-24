@@ -15,13 +15,13 @@ public class CustomConfig {
 	private FileConfiguration config = null;
 	private File configFile = null;
 	private String fileName = null;
-	
+
 	public CustomConfig(FileType type) {
 		fileName = type.string;
 	}
 
 	public void reload() {
-		
+
 		if (configFile == null) {
 			configFile = new File(ChatControl.plugin.getDataFolder(), fileName);
 		}
@@ -56,7 +56,7 @@ public class CustomConfig {
 		if (configFile == null) {
 			configFile = new File(ChatControl.plugin.getDataFolder(), fileName);
 		}
-		if (!configFile.exists()) {            
+		if (!configFile.exists()) {
 			ChatControl.plugin.saveResource(fileName, false);
 		}
 	}

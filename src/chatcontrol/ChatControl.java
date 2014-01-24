@@ -25,9 +25,9 @@ import chatcontrol.config.FileType;
 public class ChatControl extends JavaPlugin implements Listener {
 
 	public static ChatControl plugin;
-	
-	public static FileConfiguration Config;	
-	
+
+	public static FileConfiguration Config;
+
 	public static CustomConfig ChatConfig = new CustomConfig(FileType.CHAT);
 	public static CustomConfig ConsoleConfig = new CustomConfig(FileType.CONSOLE);
 
@@ -43,15 +43,15 @@ public class ChatControl extends JavaPlugin implements Listener {
 		getServer().getPluginManager().registerEvents(new ChatListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		getServer().getPluginManager().registerEvents(new CommandListener(), this);
-		
+
 		getConfig().options().copyDefaults(true);
 		saveDefaultConfig();
-		
+
 		ChatConfig.saveDefaultConfig();
 		ConsoleConfig.saveDefaultConfig();
 
 		ConfigUpdater.configCheck();
-		
+
 		if(ConsoleConfig.getConfig().getBoolean("Console.Filter_Enabled")){
 			if(getServer().getBukkitVersion().startsWith("1.7")) {
 				new Log4jFilter().init();
@@ -79,7 +79,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 				new PacketListener().initPacketListener();
 			} else {
 				new PacketListener().initOlderPacketListener();
-			}		
+			}
 			getLogger().info("Successfully hooked with ProtocolLib!");
 		}
 

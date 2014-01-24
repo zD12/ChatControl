@@ -27,17 +27,17 @@ public class Writer {
 		if(!file.exists()) {
 			file.mkdir();
 		}
-		try {            
+		try {
 			bw = new BufferedWriter(new FileWriter(file + "/" + typSuboru.typ, true));
 			bw.write("[" + cas() + "] " + (prefix != null ? prefix + ": " : "") + msg);
-			bw.newLine();            
+			bw.newLine();
 		} catch (Exception ex) {
 		} finally {
 			try {
 				if (bw != null) {
 					bw.flush();
 					bw.close();
-				}		         
+				}
 			} catch (Exception ex) {
 			}
 		}

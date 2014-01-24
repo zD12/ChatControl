@@ -25,7 +25,7 @@ public class ChatListener implements Listener {
 		}
 		String finalMsg = null;
 		if(!Common.playerIsPrivileged(e.getPlayer())){
-			if (ChatControl.Config.getBoolean("Miscellaneous.Block_Chat_Until_Moved") && 
+			if (ChatControl.Config.getBoolean("Miscellaneous.Block_Chat_Until_Moved") &&
 					(e.getPlayer().getLocation() == ChatControl.data.get(e.getPlayer()).loginLocation)) {
 				if (!e.getPlayer().hasPermission(Permissions.Bypasses.move)) {
 					Common.sendMsg(e.getPlayer(), "Localization.Cannot_Chat_Until_Moved");
@@ -58,7 +58,7 @@ public class ChatListener implements Listener {
 				} else {
 					sprava = e.getMessage().replaceAll("[.:_,!*÷*><}{&#'$|\\/()]", "");
 				}
-				if (ChatControl.data.get(e.getPlayer()).lastMessage.equalsIgnoreCase(sprava) || (Common.stringsAreSimilar(sprava.toLowerCase(), ChatControl.data.get(e.getPlayer()).lastMessage.toLowerCase()) 
+				if (ChatControl.data.get(e.getPlayer()).lastMessage.equalsIgnoreCase(sprava) || (Common.stringsAreSimilar(sprava.toLowerCase(), ChatControl.data.get(e.getPlayer()).lastMessage.toLowerCase())
 						&& ChatControl.Config.getBoolean("Chat.Block_Similar_Messages")) ) {
 					if (!e.getPlayer().hasPermission(Permissions.Bypasses.dupe)) {
 						Common.sendMsg(e.getPlayer(), "Localization.Dupe_Message");
@@ -106,7 +106,7 @@ public class ChatListener implements Listener {
 						}
 
 						e.setMessage(StringUtils.join(parts, " "));
-						
+
 						if (ChatControl.Config.getBoolean("Anti_Caps.Warn_Player")) {
 							Common.sendMsg(e.getPlayer(), "Localization.Caps_Message");
 

@@ -103,7 +103,7 @@ public class Common {
 			if(msg.matches(".*" + ip + ".*")){
 				return false;
 			}
-		}  
+		}
 		for(String domeny : ChatControl.Config.getStringList("Anti_Ad.Whitelisted.Domains")){
 			if(msg.toLowerCase().matches(".*" + domeny + ".*")){
 				return false;
@@ -118,7 +118,7 @@ public class Common {
 				return true;
 			}
 		}
-		return false;		
+		return false;
 	}
 
 	public static void messages(Player pl, String msg){
@@ -139,7 +139,7 @@ public class Common {
 		}
 		if(ChatControl.Config.getBoolean("Anti_Ad.Console_Message")){
 			Log(ChatControl.Config.getString("Localization.Ad_Console_Message").replace("%player", pl.getName()).replace("%message", msg));
-		}		
+		}
 		if(ChatControl.Config.getBoolean("Anti_Ad.Write_To_File")){
 			Writer.writeToFile(TypSuboru.REKLAMY, pl.getName(), msg);
 		}
@@ -165,8 +165,8 @@ public class Common {
 				public void run() {
 					Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), colorize(ChatControl.Config.getString(action).replace("%player", pl.getName()).replace("%message", msg)));
 				}
-			});			
-		}		
+			});
+		}
 	}
 
 	public static String insertDot(String msg){
@@ -211,7 +211,7 @@ public class Common {
 		}
 		if(ChatControl.ChatConfig.getConfig().getBoolean("Replacing_Characters.Enabled")){
 			for (String character : ChatControl.ChatConfig.getConfig().getConfigurationSection("Replacing_Characters.Replace_List").getKeys(false)) {
-				finalMsg = finalMsg.replaceAll("(?i)" + Common.colorize(character), ChatControl.ChatConfig.getConfig().getString("Replacing_Characters.Replace_List." + character));			
+				finalMsg = finalMsg.replaceAll("(?i)" + Common.colorize(character), ChatControl.ChatConfig.getConfig().getString("Replacing_Characters.Replace_List." + character));
 			}
 		}
 
@@ -253,8 +253,9 @@ public class Common {
 	}
 
 	public static String resolvedSender(CommandSender sender){
-		if (sender instanceof Player)
+		if (sender instanceof Player) {
 			return sender.getName();
+		}
 		return console();
 	}
 
@@ -263,8 +264,9 @@ public class Common {
 	}
 
 	public static boolean stringsAreSimilar(String string1, String string2) {
-		if ((string1 == null) || (string2 == null))
+		if ((string1 == null) || (string2 == null)) {
 			return false;
+		}
 		String str1;
 		String str2;
 		if (string2.length() < string1.length()) {
@@ -287,16 +289,18 @@ public class Common {
 
 		int count = 0;
 		for (int lenght = 0; lenght < str1.length(); lenght++) {
-			if (str1.charAt(lenght) == str2.charAt(lenght))
+			if (str1.charAt(lenght) == str2.charAt(lenght)) {
 				count++;
+			}
 			if (count > integer) {
 				return true;
 			}
 		}
 
 		for (int lenght = 0; lenght < str1.length(); lenght++) {
-			if (str1.charAt(str1.length() - lenght - 1) == str2.charAt(str2.length() - lenght - 1))
+			if (str1.charAt(str1.length() - lenght - 1) == str2.charAt(str2.length() - lenght - 1)) {
 				count++;
+			}
 			if (count > integer) {
 				return true;
 			}
@@ -318,9 +322,9 @@ public class Common {
 		String msg = StringUtils.join(parts, " ");
 
 		for (int j = 0; j < msg.length(); j++) {
-			if ((Character.isUpperCase(msg.charAt(j))) && (Character.isLetter(msg.charAt(j))))
+			if ((Character.isUpperCase(msg.charAt(j))) && (Character.isLetter(msg.charAt(j)))) {
 				editedMsg[j] = 1;
-			else {
+			} else {
 				editedMsg[j] = 0;
 			}
 		}
@@ -351,30 +355,30 @@ public class Common {
 		}
 		return sum;
 	}
-	
-	public static String toAnsiColors(String str) {		
-        str = str.replace("&0", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLACK).boldOff().toString());
-        str = str.replace("&1", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLUE).boldOff().toString());
-        str = str.replace("&2", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.GREEN).boldOff().toString());
-        str = str.replace("&3", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.CYAN).boldOff().toString());
-        str = str.replace("&4", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.RED).boldOff().toString());
-        str = str.replace("&5", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.MAGENTA).boldOff().toString());
-        str = str.replace("&6", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.YELLOW).boldOff().toString());
-        str = str.replace("&7", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.WHITE).boldOff().toString());
-        str = str.replace("&8", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLACK).bold().toString());
-        str = str.replace("&9", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLUE).bold().toString());
-        str = str.replace("&a", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.GREEN).bold().toString());
-        str = str.replace("&b", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.CYAN).bold().toString());
-        str = str.replace("&c", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.RED).bold().toString());
-        str = str.replace("&d", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.MAGENTA).bold().toString());
-        str = str.replace("&e", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.YELLOW).bold().toString());
-        str = str.replace("&e", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.WHITE).bold().toString());
-        str = str.replace("&k", Ansi.ansi().a(Attribute.BLINK_SLOW).toString());
-        str = str.replace("&l", Ansi.ansi().a(Attribute.UNDERLINE_DOUBLE).toString());
-        str = str.replace("&m", Ansi.ansi().a(Attribute.STRIKETHROUGH_ON).toString());
-        str = str.replace("&n", Ansi.ansi().a(Attribute.UNDERLINE).toString());
-        str = str.replace("&o", Ansi.ansi().a(Attribute.ITALIC).toString());
-        str = str.replace("&r", Ansi.ansi().a(Attribute.RESET).toString());
+
+	public static String toAnsiColors(String str) {
+		str = str.replace("&0", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLACK).boldOff().toString());
+		str = str.replace("&1", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLUE).boldOff().toString());
+		str = str.replace("&2", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.GREEN).boldOff().toString());
+		str = str.replace("&3", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.CYAN).boldOff().toString());
+		str = str.replace("&4", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.RED).boldOff().toString());
+		str = str.replace("&5", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.MAGENTA).boldOff().toString());
+		str = str.replace("&6", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.YELLOW).boldOff().toString());
+		str = str.replace("&7", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.WHITE).boldOff().toString());
+		str = str.replace("&8", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLACK).bold().toString());
+		str = str.replace("&9", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLUE).bold().toString());
+		str = str.replace("&a", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.GREEN).bold().toString());
+		str = str.replace("&b", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.CYAN).bold().toString());
+		str = str.replace("&c", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.RED).bold().toString());
+		str = str.replace("&d", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.MAGENTA).bold().toString());
+		str = str.replace("&e", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.YELLOW).bold().toString());
+		str = str.replace("&e", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.WHITE).bold().toString());
+		str = str.replace("&k", Ansi.ansi().a(Attribute.BLINK_SLOW).toString());
+		str = str.replace("&l", Ansi.ansi().a(Attribute.UNDERLINE_DOUBLE).toString());
+		str = str.replace("&m", Ansi.ansi().a(Attribute.STRIKETHROUGH_ON).toString());
+		str = str.replace("&n", Ansi.ansi().a(Attribute.UNDERLINE).toString());
+		str = str.replace("&o", Ansi.ansi().a(Attribute.ITALIC).toString());
+		str = str.replace("&r", Ansi.ansi().a(Attribute.RESET).toString());
 		return str;
 	}
 }

@@ -25,7 +25,7 @@ public class PacketListener {
 					if ((message.startsWith("/")) && (!message.contains(" "))){
 						e.setCancelled(true);
 					}
-				}	
+				}
 			}
 
 		});
@@ -36,16 +36,16 @@ public class PacketListener {
 		ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(ChatControl.plugin, ConnectionSide.CLIENT_SIDE, ListenerPriority.NORMAL, 203) {
 			public void onPacketReceiving(PacketEvent e) {
 				if (e.getPacketID() == 203) {
-					
-						if (e.getPlayer().hasPermission(Permissions.Bypasses.tab_complete) || e.getPlayer().isOp()) {
-							return;
-						}
-						PacketContainer packet = e.getPacket();
-						String message = (String)packet.getSpecificModifier(String.class).read(0);
 
-						if (message.startsWith("/") && !message.contains(" ")) {
-							e.setCancelled(true);
-						}
+					if (e.getPlayer().hasPermission(Permissions.Bypasses.tab_complete) || e.getPlayer().isOp()) {
+						return;
+					}
+					PacketContainer packet = e.getPacket();
+					String message = packet.getSpecificModifier(String.class).read(0);
+
+					if (message.startsWith("/") && !message.contains(" ")) {
+						e.setCancelled(true);
+					}
 				}
 			}
 		});

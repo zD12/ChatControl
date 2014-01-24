@@ -24,7 +24,7 @@ public class CommandsHandler implements CommandExecutor {
 			sender.sendMessage(Common.colorize("&3ChatControl &8// &fRunning &7v" + ChatControl.plugin.getDescription().getVersion()));
 			sender.sendMessage(Common.colorize("&3ChatControl &8// &fBy &7kangarko &f© 2013 - 2014"));
 			if(!Bukkit.getIp().equalsIgnoreCase("93.91.250.138") && Bukkit.getPort() != 27975) {
-				sender.sendMessage(Common.colorize("&3ChatControl &8// &fWebsite: &7http://ultracraft.6f.sk" + (new Random().nextInt(7) == 1 ? " &b< Príï si zahra!" : "") ));	
+				sender.sendMessage(Common.colorize("&3ChatControl &8// &fWebsite: &7http://ultracraft.6f.sk" + (new Random().nextInt(7) == 1 ? " &b< Prid si zahrat!" : "") ));
 			}
 			return false;
 		}
@@ -44,7 +44,7 @@ public class CommandsHandler implements CommandExecutor {
 			}
 		}
 
-		/** 
+		/**
 		 * MUTE COMMAND
 		 */
 		if (argument.equalsIgnoreCase("mute") || argument.equalsIgnoreCase("m")) {
@@ -68,7 +68,7 @@ public class CommandsHandler implements CommandExecutor {
 				Common.sendMsg(sender, "Localization.Successful_Unmute");
 
 			} else {
-				ChatControl.muted = true;					
+				ChatControl.muted = true;
 
 				if(volba.equalsIgnoreCase("-silent") || volba.equalsIgnoreCase("-s")) {
 					// do nothing
@@ -83,8 +83,8 @@ public class CommandsHandler implements CommandExecutor {
 			return false;
 		}
 
-		/** 
-		 * CLEAR COMMAND 
+		/**
+		 * CLEAR COMMAND
 		 */
 		if (argument.equalsIgnoreCase("clear") || argument.equalsIgnoreCase("c")) {
 
@@ -148,7 +148,7 @@ public class CommandsHandler implements CommandExecutor {
 				Common.sendMsg(sender, "Localization.No_Permission");
 				return false;
 			}
-			Common.sendRawMsg(sender, 
+			Common.sendRawMsg(sender,
 					" ",
 					"&3  ChatControl &f(v" + ChatControl.plugin.getDescription().getVersion() + ")",
 					"&2  [] &f= optional arguments (use only 1 at once)",
@@ -167,7 +167,7 @@ public class CommandsHandler implements CommandExecutor {
 		} else {
 			Common.sendMsg(sender, "Localization.No_Permission");
 		}
-		
+
 		return false;
 	}
 

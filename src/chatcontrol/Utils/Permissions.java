@@ -9,7 +9,7 @@ public class Permissions {
 		public static final String reload = "chatcontrol.commands.reload";
 		public static final String command_list = "chatcontrol.commands.list";
 	}
-	
+
 	public class Bypasses {
 		public static final String global_perm = "chatcontrol.bypass";
 		public static final String mute = "chatcontrol.bypass.mute";
@@ -23,7 +23,7 @@ public class Permissions {
 		public static final String tab_complete = "chatcontrol.bypass.tabcomplete";
 		public static final String chat_clear = "chatcontrol.bypass.clear";
 	}
-	
+
 	public class Notify {
 		public static final String swear = "chatcontrol.notify.swear";
 		public static final String ad = "chatcontrol.notify.ad";

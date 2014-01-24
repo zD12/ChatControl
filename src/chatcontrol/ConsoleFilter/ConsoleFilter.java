@@ -8,22 +8,22 @@ import chatcontrol.Utils.Common;
 
 public class ConsoleFilter implements Filter {
 
-	public boolean isLoggable(LogRecord record){		
+	public boolean isLoggable(LogRecord record){
 		String msg = record.getMessage();
 		String higherMsg = record.getMessage().toLowerCase();
-		
+
 		for(String str : ChatControl.ConsoleConfig.getConfig().getConfigurationSection("Console.Replace_Messages").getKeys(false)) {
 			msg = msg.replaceAll("(?i)" + str.replace("<DOT>", "\\."), ChatControl.ConsoleConfig.getConfig().getString("Console.Replace_Messages." + str));
 		}
 		record.setMessage(Common.toAnsiColors(msg));
-		
-		for (String str : ChatControl.ConsoleConfig.getConfig().getStringList("Console.Filter_Messages")){			
+
+		for (String str : ChatControl.ConsoleConfig.getConfig().getStringList("Console.Filter_Messages")){
 			str = str.toLowerCase();
 			if(higherMsg.matches(str) || higherMsg.equalsIgnoreCase(str) || higherMsg.contains(str) || higherMsg.startsWith(str) || higherMsg.endsWith(str)){
 				return false;
 			}
 		}
-		
+
 		return true;
 	}
 }

@@ -19,7 +19,7 @@ public class CommandListener implements Listener{
 		if(!(Bukkit.getOnlinePlayers().length >= ChatControl.Config.getInt("Miscellaneous.Minimum_Players_To_Enable_Plugin"))){
 			return;
 		}
-		
+
 		if(!Common.playerIsPrivileged(e.getPlayer()) ) {
 			if(ChatControl.muted){
 				if (e.getPlayer().hasPermission(Permissions.Bypasses.mute)) {
@@ -39,13 +39,13 @@ public class CommandListener implements Listener{
 			if((cas - ChatControl.data.get(e.getPlayer()).lastCommandTime) < ChatControl.Config.getLong("Commands.Command_Delay")){
 				if(e.getPlayer().hasPermission(Permissions.Bypasses.time)){
 					return;
-				}			
+				}
 				for (String sprava : ChatControl.Config.getStringList("Commands.Whitelist_Time")){
 					if(e.getMessage().startsWith("/" + sprava)){
 						return;
 					}
 				}
-				Common.sendRawMsg(e.getPlayer(), ChatControl.Config.getString("Localization.Command_Message").replace("%time", String.valueOf(ChatControl.Config.getLong("Commands.Command_Delay") - (cas - ChatControl.data.get(e.getPlayer()).lastCommandTime))));  
+				Common.sendRawMsg(e.getPlayer(), ChatControl.Config.getString("Localization.Command_Message").replace("%time", String.valueOf(ChatControl.Config.getLong("Commands.Command_Delay") - (cas - ChatControl.data.get(e.getPlayer()).lastCommandTime))));
 				e.setCancelled(true);
 				return;
 			} else {
@@ -71,7 +71,7 @@ public class CommandListener implements Listener{
 			}
 
 			if(ChatControl.Config.getBoolean("Anti_Ad.Enabled_In_Commands")){
-				if(Common.msgIsAd(e.getPlayer(), e.getMessage())){	   
+				if(Common.msgIsAd(e.getPlayer(), e.getMessage())){
 					if(e.getPlayer().hasPermission(Permissions.Bypasses.ads)){
 						return;
 					}
