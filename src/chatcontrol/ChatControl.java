@@ -19,11 +19,14 @@ import chatcontrol.Listener.PlayerListener;
 import chatcontrol.PacketListener.PacketListener;
 import chatcontrol.Utils.Common;
 import chatcontrol.Utils.ConfigUpdater;
+import chatcontrol.config.CustomConfig;
+import chatcontrol.config.FileType;
 
 public class ChatControl extends JavaPlugin implements Listener {
 
-	public static FileConfiguration Config;
 	public static ChatControl plugin;
+	
+	public static FileConfiguration Config;
 
 	public static HashMap<InetAddress, Long> lastLoginTime = new HashMap<InetAddress, Long>();
 	public static HashMap<Player, Storage> data = new HashMap<Player, Storage>();

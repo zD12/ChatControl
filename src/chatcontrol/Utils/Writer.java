@@ -14,7 +14,7 @@ public class Writer {
 	public static enum TypSuboru {
 		REKLAMY("advertisements.log"),
 		ZAZNAM_CHATU("chat.log");
-		
+
 		public String typ;
 		TypSuboru (String typ_suboru) {
 			typ = typ_suboru;
@@ -28,7 +28,7 @@ public class Writer {
 			file.mkdir();
 		}
 		try {            
-			bw = new BufferedWriter(new FileWriter(file + "/" + typSuboru.typ, true));            
+			bw = new BufferedWriter(new FileWriter(file + "/" + typSuboru.typ, true));
 			bw.write("[" + cas() + "] " + (prefix != null ? prefix + ": " : "") + msg);
 			bw.newLine();            
 		} catch (Exception ex) {

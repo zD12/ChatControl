@@ -194,7 +194,7 @@ public class Common {
 		}
 		return tempMessage.trim();
 	}
-
+	
 	public static String replaceCharacters(Player pl, String msg){
 		if(!ChatControl.Config.getBoolean("Grammar.Replace_Characters")){
 			return osmajlikovat(msg);
