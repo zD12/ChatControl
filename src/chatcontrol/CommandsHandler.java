@@ -162,10 +162,10 @@ public class CommandsHandler implements CommandExecutor {
 		}
 
 		// AK BOL UVEDENY NEPLATNY ARGUMENT
-		if(sender.hasPermission(Permissions.Commands.global_perm)) {
-			Common.sendMsg(sender, "Localization.Wrong_Args");
-		} else {
+		if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.global_perm)) {
 			Common.sendMsg(sender, "Localization.No_Permission");
+		} else {
+			Common.sendMsg(sender, "Localization.Wrong_Args");
 		}
 
 		return false;

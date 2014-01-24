@@ -242,12 +242,12 @@ public class ConfigUpdater {
 		ChatControl.Config.set("Grammar.Capitalize.Minimum_Msg_Length", 5);
 		ChatControl.Config.set("Grammar.Insert_Dot.Enabled", dot);
 		ChatControl.Config.set("Grammar.Insert_Dot.Minimum_Msg_Length", 5);
-		ChatControl.ChatConfig.getConfig().set("Replacing_Characters.Replace_List", ChatControl.Config.getStringList("Grammar.Replace_List"));
+		ChatControl.ChatConfig.getConfig().set("Replacing_Characters.Replace_List", ChatControl.Config.getList("Grammar.Replace_List"));
 		ChatControl.Config.set("Grammar.Replace_List", null);
 		ChatControl.Config.set("Grammar.Replace_Characters", null);
 		ChatControl.Config.set("Grammar.Replace_With_Smileys", null);
 		ChatControl.Config.set("Anti_Caps.Pattern", null);
-		ChatControl.ConsoleConfig.getConfig().set("Console.Filter_Messages", ChatControl.Config.getStringList("Console.Filter_Messages"));
+		ChatControl.ConsoleConfig.getConfig().set("Console.Filter_Messages", ChatControl.Config.getList("Console.Filter_Messages"));
 		ChatControl.Config.set("Console", null);
 
 		Common.Log("&cNOTICE: Configuration was rearranged & edited in version 4.3.8");
