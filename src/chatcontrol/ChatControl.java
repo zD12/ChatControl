@@ -90,6 +90,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 		}
 
 		getCommand("chatcontrol").setExecutor(new CommandsHandler());
+		getLogger().info("Was enabled. Remember, this is a BETA release!");
 	}
 
 	public void onDisable() {
