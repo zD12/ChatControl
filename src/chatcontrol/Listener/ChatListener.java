@@ -79,9 +79,7 @@ public class ChatListener implements Listener {
 				if(e.getMessage().length() >= ChatControl.Config.getInt("Anti_Caps.Minimum_Message_Length")) {
 
 					int[] newMessage = Common.checkCaps(e.getMessage());
-					int totalCapsPercentage = 50;
-					int capsInRow = 5;
-					if ((Common.percentageCaps(newMessage) >= totalCapsPercentage) || (Common.checkCapsInRow(newMessage) >= capsInRow)){
+					if ((Common.percentageCaps(newMessage) >= ChatControl.Config.getInt("Anti_Caps.Total_Caps_Percentage")) || (Common.checkCapsInRow(newMessage) >= ChatControl.Config.getInt("Anti_Caps.Caps_In_A_Row"))){
 
 						String[] parts = e.getMessage().split(" ");
 						boolean capsAllowed = false;
