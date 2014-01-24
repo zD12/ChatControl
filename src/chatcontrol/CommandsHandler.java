@@ -133,6 +133,8 @@ public class CommandsHandler implements CommandExecutor {
 			}
 
 			ChatControl.plugin.reloadConfig();
+			ChatControl.ChatConfig.reload();
+			ChatControl.ConsoleConfig.reload();
 			Bukkit.getPluginManager().disablePlugin(ChatControl.plugin);
 			Bukkit.getPluginManager().enablePlugin(ChatControl.plugin);
 

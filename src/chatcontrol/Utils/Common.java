@@ -187,8 +187,6 @@ public class Common {
 		if(!ChatControl.Config.getBoolean("Grammar.Capitalize.Enabled")){
 			return msg;
 		}
-		System.out.println("MSG LENTHG: " + msg.length());
-		System.out.println("CONFIG SET: " + ChatControl.Config.getInt("Grammar.Capitalize.Minimum_Msg_Length"));
 		if(msg.length() < ChatControl.Config.getInt("Grammar.Capitalize.Min_Msg_Length")) {
 			return msg;
 		}
@@ -205,20 +203,20 @@ public class Common {
 	}
 
 	public static String replaceCharacters(Player pl, String msg){
-		if(!ChatControl.Config.getBoolean("Grammar.Replace_Characters")){
-			return osmajlikovat(msg);
+		String finalMsg = msg;
+		if(ChatControl.ChatConfig.getConfig().getBoolean("Replacing_Characters.Supply_With_Smileys")) {
+			finalMsg = osmajlikovat(msg);
 		}
-		for (String character : ChatControl.Config.getConfigurationSection("Grammar.Replace_List").getKeys(true)) {
-			msg = msg.replaceAll("(?i)" + character, ChatControl.Config.getString("Grammar.Replace_List." + character));			
+		if(ChatControl.ChatConfig.getConfig().getBoolean("Replacing_Characters.Enabled")){
+			for (String character : ChatControl.ChatConfig.getConfig().getConfigurationSection("Replacing_Characters.Replace_List").getKeys(false)) {
+				finalMsg = finalMsg.replaceAll("(?i)" + Common.colorize(character), ChatControl.ChatConfig.getConfig().getString("Replacing_Characters.Replace_List." + character));			
+			}
 		}
 
-		return osmajlikovat(msg);
+		return finalMsg;
 	}
 
 	public static String osmajlikovat(String msg){
-		if(!ChatControl.Config.getBoolean("Grammar.Replace_With_Smileys")){
-			return msg;
-		}
 		msg = msg.replace(":)", "☺").replace(":-)", "☺").replace(":(", "☹").replace(":-(", "☹").replace(";)", "㋡").replace(";-)", "㋡").replace(":love:", "♥")
 				.replace(":square:", "■").replace(":rectangle:", "█").replace("<3", "♥");
 		return msg;

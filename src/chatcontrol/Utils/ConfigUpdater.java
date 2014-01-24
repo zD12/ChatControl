@@ -241,11 +241,17 @@ public class ConfigUpdater {
 		ChatControl.Config.set("Grammar.Capitalize.Minimum_Msg_Length", 5);		
 		ChatControl.Config.set("Grammar.Insert_Dot.Enabled", dot);
 		ChatControl.Config.set("Grammar.Insert_Dot.Minimum_Msg_Length", 5);
-		
+		ChatControl.ChatConfig.getConfig().set("Replacing_Characters.Replace_List", ChatControl.Config.getStringList("Grammar.Replace_List"));
+		ChatControl.Config.set("Grammar.Replace_List", null);
+		ChatControl.Config.set("Grammar.Replace_Characters", null);
+		ChatControl.Config.set("Grammar.Replace_With_Smileys", null);
 		ChatControl.Config.set("Anti_Caps.Pattern", null);
+		ChatControl.ConsoleConfig.getConfig().set("Console.Filter_Messages", ChatControl.Config.getStringList("Console.Filter_Messages"));
+		ChatControl.Config.set("Console", null);
 		
 		Common.Log("&c* NOTICE: Configuration was rearranged & edited in version 4.3.8 *");
 		Common.Log("&c*********** It is highly recommended to regenerate it! ***********");
+		Common.Log("&cAlso please notice that Console Filter and Replacing characters was moved into separate files!");
 	}
 
 	public static void updateVersionMark() {

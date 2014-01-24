@@ -19,12 +19,17 @@ import chatcontrol.Listener.PlayerListener;
 import chatcontrol.PacketListener.PacketListener;
 import chatcontrol.Utils.Common;
 import chatcontrol.Utils.ConfigUpdater;
+import chatcontrol.config.CustomConfig;
+import chatcontrol.config.FileType;
 
 public class ChatControl extends JavaPlugin implements Listener {
 
 	public static ChatControl plugin;
 	
 	public static FileConfiguration Config;	
+	
+	public static CustomConfig ChatConfig = new CustomConfig(FileType.CHAT);
+	public static CustomConfig ConsoleConfig = new CustomConfig(FileType.CONSOLE);
 
 	public static HashMap<InetAddress, Long> lastLoginTime = new HashMap<InetAddress, Long>();
 	public static HashMap<Player, Storage> data = new HashMap<Player, Storage>();
@@ -41,16 +46,19 @@ public class ChatControl extends JavaPlugin implements Listener {
 		
 		getConfig().options().copyDefaults(true);
 		saveDefaultConfig();
+		
+		ChatConfig.saveDefaultConfig();
+		ConsoleConfig.saveDefaultConfig();
 
 		ConfigUpdater.configCheck();
 		
-		if(getConfig().getBoolean("Console.Filter_Enabled")){
+		if(ConsoleConfig.getConfig().getBoolean("Console.Filter_Enabled")){
 			if(getServer().getBukkitVersion().startsWith("1.7")) {
 				new Log4jFilter().init();
 				Common.Log("Console filtering now using Log4j Filter.");
 			} else {
 				Filter filter = new ConsoleFilter();
-				if(getConfig().getBoolean("Console.Filter_Plugin_Messages")){
+				if(ConsoleConfig.getConfig().getBoolean("Console.Filter_Plugin_Messages")){
 					for (Plugin p : getServer().getPluginManager().getPlugins()) {
 						p.getLogger().setFilter(filter);
 					}

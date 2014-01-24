@@ -1,0 +1,18 @@
+# This file manages replacing characters in the game chat.
+# Reason moving the content into separate file was that it can
+# get really big after a while. (Especially the Replace_List)
+
+Replacing_Characters: 
+  Enabled: true
+  # Replace following characters with built-in smileys:  :) :-) :( :-( ;) ;-) :square: :rectangle: :love: <3
+  Supply_With_Smileys: true
+  Replace_List:
+    # Supports RegEx!
+    dis: this
+    wanna: want
+    gonna: going
+    (can|may|would you like if) i (have|be|become|get|has) (op|admin|mod|builder): can i has nodus?
+    (do|are) you (need|wish|looking for) (any|some|one|good) (op|ops|operators|admins|mods|builders|new people|ateam): u need some pig zaps
+    this server (is bad|sucks): i just griefed some crap castle /w nodus u noob kiddos
+    ((admin|op|ateam|server|owner) (is|are)) + *(dick|cock|duck|noob|kid): i am a kiddo gimme ban pl0x
+    owner (fucks|sucks) (kids|dicks|birds): piewdiepie sucks

@@ -38,19 +38,6 @@ Grammar:
   Insert_Dot: 
     Enabled: true
     Minimum_Msg_Length: 5
-  Replace_Characters: true
-  # Replace following characters with built-in smileys:  :) :-) :( :-( ;) ;-) :square: :rectangle: :love: <3
-  Replace_With_Smileys: true
-  Replace_List:
-    # Supports RegEx!
-    \bdis\b: this
-    wanna: want
-    gonna: going
-    (can|may|would you like if) i (have|be|become|get|has) (op|admin|mod|builder): can i has nodus?
-    (do|are) you (need|wish|looking for) (any|some|one|good) (op|ops|operators|admins|mods|builders|new people|ateam): u need some pig zaps
-    this server (is bad|sucks): i just griefed some crap castle /w nodus u noob kiddos
-    ((admin|op|ateam|server|owner) (is|are)) + *(dick|cock|duck|noob|kid): i am a kiddo gimme ban pl0x
-    owner (fucks|sucks) (kids|dicks|birds): piewdiepie sucks
 
 Commands:
   Block_Duplicate_Commands: true
@@ -61,16 +48,6 @@ Commands:
     - tpa
     - spawn
     - home
-
-Console:
-  Filter_Enabled: true
-  # Should we hook into all your plugins to filter messages they display?
-  Filter_Plugin_Messages: true
-  Filter_Messages:
-    - Reached end of stream for.*
-    - Connection reset
-    - .*lost connection.*
-    - .*CONSOLE: (Save complete.|Forcing save..).*
 
 Protect:
   Prevent_Tab_Complete: true

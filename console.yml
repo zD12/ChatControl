@@ -1,0 +1,19 @@
+# This file manages the server console.
+# Reason moving the content into separate file
+# was that it can get really big after a while.
+
+Console:
+  Filter_Enabled: true
+  # Should we hook into all your plugins to filter messages they display?
+  Filter_Plugin_Messages: true
+  Filter_Messages:
+    - Reached end of stream for.*
+    - Connection reset
+    - .*lost connection.*
+    - .*CONSOLE: (Save complete.|Forcing save..).*
+    
+  # To make a dot (.) on the left side, simply type <DOT>
+  # Color codes has to be in "" to be functional.
+  # Remember this is an EXPERIMENTAL feature!
+  Replace_Messages:
+     "Reload complete<DOT>": "&bSuccessfuly reloaded by magic powers."
