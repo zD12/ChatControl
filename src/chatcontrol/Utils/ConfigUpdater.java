@@ -226,6 +226,8 @@ public class ConfigUpdater {
 	}
 
 	public static void updateConfigTo438() {
+		boolean capitalize = ChatControl.Config.getBoolean("Grammar.Capitalise");
+		boolean dot = ChatControl.Config.getBoolean("Grammar.Insert_Dot");
 		ChatControl.Config.set("Broadcast_Silent_Mute", "&cInitiated global chat mute.");
 		ChatControl.Config.set("Broadcast_Silent_Unmute", "&cGlobal chat mute was cancelled.");
 		ChatControl.Config.set("Broadcast_Silent_Clear", "&cThe game chat was cleared.");
@@ -233,9 +235,17 @@ public class ConfigUpdater {
 		ChatControl.Config.set("Chat.Include_Commands", Arrays.asList("/tell", "/msg", "/r"));
 		ChatControl.Config.set("Chat.Block_Similar_Messages", true);
 		ChatControl.Config.set("Anti_Caps.Minimum_Message_Length", 5);
-		ChatControl.Config.set("Grammar.Capitalize", ChatControl.Config.getBoolean("Grammar.Capitalise"));
 		ChatControl.Config.set("Grammar.Capitalise", null);
-		Common.Log("&cNOTICE: Configuration was rearranged in version 4.3.8 along with some minor changes, it is highly recommended to regenerate it!");
+		ChatControl.Config.set("Grammar.Insert_Dot", null);
+		ChatControl.Config.set("Grammar.Capitalize.Enabled", capitalize);
+		ChatControl.Config.set("Grammar.Capitalize.Minimum_Msg_Length", 5);		
+		ChatControl.Config.set("Grammar.Insert_Dot.Enabled", dot);
+		ChatControl.Config.set("Grammar.Insert_Dot.Minimum_Msg_Length", 5);
+		
+		ChatControl.Config.set("Anti_Caps.Pattern", null);
+		
+		Common.Log("&c* NOTICE: Configuration was rearranged & edited in version 4.3.8 *");
+		Common.Log("&c*********** It is highly recommended to regenerate it! ***********");
 	}
 
 	public static void updateVersionMark() {

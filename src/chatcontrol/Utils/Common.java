@@ -1,5 +1,6 @@
 package chatcontrol.Utils;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -166,8 +167,11 @@ public class Common {
 		}		
 	}
 
-	public static String insertComma(String msg){
-		if(!ChatControl.Config.getBoolean("Grammar.Insert_Dot")){
+	public static String insertDot(String msg){
+		if(!ChatControl.Config.getBoolean("Grammar.Insert_Dot.Enabled")){
+			return msg;
+		}
+		if(msg.length() < ChatControl.Config.getInt("Grammar.Insert_Dot.Minimum_Msg_Length")) {
 			return msg;
 		}
 		String lastChar = msg.substring(msg.length() - 1);
@@ -180,7 +184,12 @@ public class Common {
 	}
 
 	public static String capitalize(String msg){
-		if(!ChatControl.Config.getBoolean("Grammar.Capitalize")){
+		if(!ChatControl.Config.getBoolean("Grammar.Capitalize.Enabled")){
+			return msg;
+		}
+		System.out.println("MSG LENTHG: " + msg.length());
+		System.out.println("CONFIG SET: " + ChatControl.Config.getInt("Grammar.Capitalize.Minimum_Msg_Length"));
+		if(msg.length() < ChatControl.Config.getInt("Grammar.Capitalize.Min_Msg_Length")) {
 			return msg;
 		}
 		String[] sentences = msg.split("(?<=[!?\\.])\\s");
@@ -194,13 +203,13 @@ public class Common {
 		}
 		return tempMessage.trim();
 	}
-	
+
 	public static String replaceCharacters(Player pl, String msg){
 		if(!ChatControl.Config.getBoolean("Grammar.Replace_Characters")){
 			return osmajlikovat(msg);
 		}
 		for (String character : ChatControl.Config.getConfigurationSection("Grammar.Replace_List").getKeys(true)) {
-			msg = msg.replaceAll(character.toLowerCase(), ChatControl.Config.getString("Grammar.Replace_List." + character));			
+			msg = msg.replaceAll("(?i)" + character, ChatControl.Config.getString("Grammar.Replace_List." + character));			
 		}
 
 		return osmajlikovat(msg);
@@ -211,7 +220,7 @@ public class Common {
 			return msg;
 		}
 		msg = msg.replace(":)", "☺").replace(":-)", "☺").replace(":(", "☹").replace(":-(", "☹").replace(";)", "㋡").replace(";-)", "㋡").replace(":love:", "♥")
-                .replace(":square:", "■").replace(":rectangle:", "█").replace("<3", "♥");
+				.replace(":square:", "■").replace(":rectangle:", "█").replace("<3", "♥");
 		return msg;
 	}
 
@@ -293,5 +302,53 @@ public class Common {
 			}
 		}
 		return false;
+	}
+
+	public static int[] checkCaps(String message) {
+		int[] editedMsg = new int[message.length()];
+		String[] parts = message.split(" ");
+		for (int i = 0; i < parts.length; i++) {
+			for (String whitelisted : ChatControl.Config.getStringList("Anti_Caps.Whitelist")) {
+				if (whitelisted.equalsIgnoreCase(parts[i])) {
+					parts[i] = parts[i].toLowerCase();
+				}
+			}
+		}
+
+		String msg = StringUtils.join(parts, " ");
+
+		for (int j = 0; j < msg.length(); j++) {
+			if ((Character.isUpperCase(msg.charAt(j))) && (Character.isLetter(msg.charAt(j))))
+				editedMsg[j] = 1;
+			else {
+				editedMsg[j] = 0;
+			}
+		}
+		return editedMsg;
+	}
+
+	public static int percentageCaps(int[] caps) {
+		int sum = 0;
+		for (int i = 0; i < caps.length; i++) {
+			sum += caps[i];
+		}
+		double ratioCaps = sum / caps.length;
+		int percentCaps = (int)(100.0D * ratioCaps);
+		return percentCaps;
+	}
+
+	public static int checkCapsInRow(int[] caps) {
+		int sum = 0;
+		int sumTemp = 0;
+
+		for (int i : caps) {
+			if (i == 1) {
+				sumTemp++;
+				sum = Math.max(sum, sumTemp);
+			} else {
+				sumTemp = 0;
+			}
+		}
+		return sum;
 	}
 }

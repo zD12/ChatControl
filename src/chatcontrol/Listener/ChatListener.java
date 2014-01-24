@@ -2,6 +2,7 @@ package chatcontrol.Listener;
 
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,18 +27,14 @@ public class ChatListener implements Listener {
 		if(!Common.playerIsPrivileged(e.getPlayer())){
 			if (ChatControl.Config.getBoolean("Miscellaneous.Block_Chat_Until_Moved") && 
 					(e.getPlayer().getLocation() == ChatControl.data.get(e.getPlayer()).loginLocation)) {
-				if (e.getPlayer().hasPermission(Permissions.Bypasses.move)) {
+				if (!e.getPlayer().hasPermission(Permissions.Bypasses.move)) {
+					Common.sendMsg(e.getPlayer(), "Localization.Cannot_Chat_Until_Moved");
+					e.setCancelled(true);
 					return;
 				}
-				Common.sendMsg(e.getPlayer(), "Localization.Cannot_Chat_Until_Moved");
-				e.setCancelled(true);
-				return;
 			}
 
-			if (ChatControl.muted) {
-				if (e.getPlayer().hasPermission(Permissions.Bypasses.mute)) {
-					return;
-				}
+			if (ChatControl.muted && !e.getPlayer().hasPermission(Permissions.Bypasses.mute)) {
 				Common.sendMsg(e.getPlayer(), "Localization.Cannot_Chat_While_Muted");
 				e.setCancelled(true);
 				return;
@@ -46,12 +43,11 @@ public class ChatListener implements Listener {
 			Long cas = Long.valueOf(new Date().getTime());
 			cas = Long.valueOf(cas.longValue() / 1000L);
 			if ((cas.longValue() - ChatControl.data.get(e.getPlayer()).lastMessageTime) < ChatControl.Config.getLong("Chat.Message_Delay")) {
-				if (e.getPlayer().hasPermission(Permissions.Bypasses.time)) {
+				if (!e.getPlayer().hasPermission(Permissions.Bypasses.time)) {
+					Common.sendRawMsg(e.getPlayer(), ChatControl.Config.getString("Localization.Time_Message").replace("%time", String.valueOf(ChatControl.Config.getLong("Chat.Message_Delay") - (cas.longValue() - ChatControl.data.get(e.getPlayer()).lastMessageTime))));
+					e.setCancelled(true);
 					return;
 				}
-				Common.sendRawMsg(e.getPlayer(), ChatControl.Config.getString("Localization.Time_Message").replace("%time", String.valueOf(ChatControl.Config.getLong("Chat.Message_Delay") - (cas.longValue() - ChatControl.data.get(e.getPlayer()).lastMessageTime))));
-				e.setCancelled(true);
-				return;
 			}
 			ChatControl.data.get(e.getPlayer()).lastMessageTime = Long.valueOf(cas.longValue());
 
@@ -60,56 +56,68 @@ public class ChatListener implements Listener {
 				if(ChatControl.Config.getBoolean("Chat.Strip_Unicode")) {
 					sprava = Common.stripSpecialCharacters(e.getMessage());
 				} else {
-					sprava = e.getMessage().replaceAll("[.:_,!*÷*><}{&#'$|\\/()]", "").toLowerCase();
+					sprava = e.getMessage().replaceAll("[.:_,!*÷*><}{&#'$|\\/()]", "");
 				}
 				if (ChatControl.data.get(e.getPlayer()).lastMessage.equalsIgnoreCase(sprava) || (Common.stringsAreSimilar(sprava.toLowerCase(), ChatControl.data.get(e.getPlayer()).lastMessage.toLowerCase()) 
 						&& ChatControl.Config.getBoolean("Chat.Block_Similar_Messages")) ) {
-					if (e.getPlayer().hasPermission(Permissions.Bypasses.dupe)) {
+					if (!e.getPlayer().hasPermission(Permissions.Bypasses.dupe)) {
+						Common.sendMsg(e.getPlayer(), "Localization.Dupe_Message");
+						e.setCancelled(true);
 						return;
 					}
-					Common.sendMsg(e.getPlayer(), "Localization.Dupe_Message");
-					e.setCancelled(true);
-					return;
 				}
 				ChatControl.data.get(e.getPlayer()).lastMessage = sprava;
 			}
 
-			String msgLowerCase = e.getMessage().toLowerCase();
-
-			if (Common.msgIsAd(e.getPlayer(), msgLowerCase)) {
-				if (e.getPlayer().hasPermission(Permissions.Bypasses.ads)) {
-					return;
-				}
+			if (Common.msgIsAd(e.getPlayer(), e.getMessage().toLowerCase()) && !e.getPlayer().hasPermission(Permissions.Bypasses.ads)) {
 				Common.customAction(e.getPlayer(), "Anti_Ad.Custom_Command", e.getMessage());
 				Common.messages(e.getPlayer(), e.getMessage());
 				e.setCancelled(true);
 			}
 
-			if (ChatControl.Config.getBoolean("Anti_Caps.Enabled")) {
-				if (e.getPlayer().hasPermission(Permissions.Bypasses.caps)) {
-					return;
-				}
-				for (String msg : ChatControl.Config.getStringList("Anti_Caps.Whitelist")) {
-					if (e.getMessage().matches(".*" + msg + ".*")) {
-						return;
-					}
-				}
-				if(e.getMessage().length() < ChatControl.Config.getInt("Anti_Caps.Minimum_Message_Length")) { 
-					return;
-				}
-				String msg = e.getMessage().replaceAll("(\\W|\\d|_)*", "");
-				if (msg.matches(ChatControl.Config.getString("Anti_Caps.Pattern"))) {
-					e.setMessage(e.getMessage().toLowerCase());
-					if (ChatControl.Config.getBoolean("Anti_Caps.Warn_Player")) {
-						Common.sendMsg(e.getPlayer(), "Localization.Caps_Message");
+			if (ChatControl.Config.getBoolean("Anti_Caps.Enabled") && !e.getPlayer().hasPermission(Permissions.Bypasses.caps)) {
+				if(e.getMessage().length() >= ChatControl.Config.getInt("Anti_Caps.Minimum_Message_Length")) {
+
+					int[] newMessage = Common.checkCaps(e.getMessage());
+					int totalCapsPercentage = 50;
+					int capsInRow = 5;
+					if ((Common.percentageCaps(newMessage) >= totalCapsPercentage) || (Common.checkCapsInRow(newMessage) >= capsInRow)){
+
+						String[] parts = e.getMessage().split(" ");
+						boolean capsAllowed = false;
+						for (int i = 0; i < parts.length; i++) {
+							boolean isOnWhitelist = false;
+							for (String whitelist : ChatControl.Config.getStringList("Anti_Caps.Whitelist")) {
+								if (whitelist.equalsIgnoreCase(parts[i])) {
+									isOnWhitelist = true;
+									capsAllowed = true;
+									break;
+								}
+							}
+
+							if (!isOnWhitelist) {
+								if (!capsAllowed) {
+									char firstChar = parts[i].charAt(0);
+									parts[i] = (firstChar + parts[i].toLowerCase().substring(1));
+								} else {
+									parts[i] = parts[i].toLowerCase();
+								}
+
+								capsAllowed = (!parts[i].endsWith(".")) && (!parts[i].endsWith("!"));
+							}
+						}
+
+						e.setMessage(StringUtils.join(parts, " "));
+						
+						if (ChatControl.Config.getBoolean("Anti_Caps.Warn_Player")) {
+							Common.sendMsg(e.getPlayer(), "Localization.Caps_Message");
+
+						}
 					}
 				}
 			}
 
-			if (ChatControl.Config.getBoolean("Anti_Swear.Enabled")) {
-				if (e.getPlayer().hasPermission(Permissions.Bypasses.swear)) {
-					return;
-				}
+			if (ChatControl.Config.getBoolean("Anti_Swear.Enabled") && !e.getPlayer().hasPermission(Permissions.Bypasses.swear)) {
 				for (String msg : ChatControl.Config.getStringList("Anti_Swear.Word_List")) {
 					if (e.getMessage().toLowerCase().contains(msg.toLowerCase()) || e.getMessage().toLowerCase().matches(".*" + msg + ".*")) {
 						if (ChatControl.Config.getBoolean("Anti_Swear.Inform_Admins")) {
@@ -134,13 +142,14 @@ public class ChatListener implements Listener {
 				}
 			}
 
-			msgLowerCase = Common.replaceCharacters(e.getPlayer(), msgLowerCase);
-			msgLowerCase = Common.capitalize(msgLowerCase);
-			msgLowerCase = Common.insertComma(msgLowerCase);
-			e.setMessage(msgLowerCase);
-			finalMsg = msgLowerCase;
+			String message = e.getMessage();
+			message = Common.replaceCharacters(e.getPlayer(), message);
+			message = Common.capitalize(message);
+			message = Common.insertDot(message);
+			e.setMessage(message);
+			finalMsg = message;
 		}
-		
+
 		if (ChatControl.Config.getBoolean("Chat.Write_To_File") && !ChatControl.Config.getStringList("Chat.Ignore_Players").contains(e.getPlayer().getName())) {
 			Writer.writeToFile(TypSuboru.ZAZNAM_CHATU, e.getPlayer().getName(), (finalMsg != null ? finalMsg : e.getMessage()));
 		}

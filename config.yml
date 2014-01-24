@@ -32,16 +32,18 @@ Messages:
     Kick_Message: default
 
 Grammar:
-  Capitalize: true
-    Min_Msg_Length: 3 # Capitalize message longer that 3 letters.
-  Insert_Dot: true
-    Min_Msg_Length: 3 # Insert dot to message which is longer that 3 letters.
+  Capitalize: 
+    Enabled: true
+    Minimum_Msg_Length: 5
+  Insert_Dot: 
+    Enabled: true
+    Minimum_Msg_Length: 5
   Replace_Characters: true
   # Replace following characters with built-in smileys:  :) :-) :( :-( ;) ;-) :square: :rectangle: :love: <3 
   Replace_With_Smileys: true
   Replace_List:
     # Supports RegEx!
-    dis: this
+    \bdis\b: this
     wanna: want
     gonna: going
     (can|may|would you like if) i (have|be|become|get|has) (op|admin|mod|builder): can i has nodus?
