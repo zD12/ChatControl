@@ -80,14 +80,14 @@ public class Common {
 			}
 		} catch (NullPointerException ex){
 			ChatControl.Config.set(configPath, false);
-			Bukkit.broadcastMessage("§e<Missing config key: §6\"" + configPath + "\"§e>");
+			Bukkit.broadcastMessage(colorize("&e<Missing config key: &6\"" + configPath + "\"&e>"));
 			return;
 		}
 		try {
 			String finalMessage = ChatControl.Config.getString(message).replace("%prefix", prefix()).replace("%player", (pl == null ? "" : resolvedSender(pl)) );
 			Bukkit.broadcastMessage(colorize(finalMessage + (reason == "" ? "" : " " + ChatControl.Config.getString("Localization.Reason").replace("%reason", reason))) );
 		} catch (NullPointerException ex){
-			Bukkit.broadcastMessage("§e<Missing language key: §6\"" + message + "\"§e>");
+			Bukkit.broadcastMessage(colorize("&e<Missing language key: &6\"" + message + "\"&e>"));
 		}
 	}
 
@@ -122,7 +122,7 @@ public class Common {
 		if(ChatControl.Config.getBoolean("Anti_Ad.Inform_Admins")){
 			for(Player hrac : Bukkit.getOnlinePlayers()){
 				if(hrac.isOp() || hrac.hasPermission(Permissions.Notify.ad)){
-					hrac.sendMessage(ChatControl.Config.getString("Localization.Ad_Staff_Message").replace("&", "§").replace("%player", pl.getName()).replace("%message", msg));
+					sendRawMsg(hrac, ChatControl.Config.getString("Localization.Ad_Staff_Message").replace("%message", msg));
 				}
 			}
 		}
@@ -130,12 +130,12 @@ public class Common {
 		if(ChatControl.Config.getBoolean("Anti_Ad.Broadcast")){
 			for(Player hrac : Bukkit.getOnlinePlayers()){
 				if(!hrac.isOp() && !hrac.getName().equals(pl.getName())){
-					hrac.sendMessage(ChatControl.Config.getString("Localization.Ad_Broadcast_Message").replace("&", "§").replace("%player", pl.getName()).replace("%message", msg));
+					sendRawMsg(hrac, ChatControl.Config.getString("Localization.Ad_Broadcast_Message").replace("%message", msg));
 				}
 			}
 		}
 		if(ChatControl.Config.getBoolean("Anti_Ad.Console_Message")){
-			System.out.println(ChatControl.Config.getString("Localization.Ad_Console_Message").replace("&", "§").replace("%player", pl.getName()).replace("%message", msg));
+			Log(ChatControl.Config.getString("Localization.Ad_Console_Message").replace("%player", pl.getName()).replace("%message", msg));
 		}		
 		if(ChatControl.Config.getBoolean("Anti_Ad.Write_To_File")){
 			Writer.writeToFile(TypSuboru.REKLAMY, pl.getName(), msg);
@@ -160,7 +160,7 @@ public class Common {
 		if(!ChatControl.Config.getString(action).equalsIgnoreCase("none")){
 			Bukkit.getScheduler().scheduleSyncDelayedTask(ChatControl.plugin, new Runnable() {
 				public void run() {
-					Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), ChatControl.Config.getString(action).replace("&", "§").replace("%player", pl.getName()).replace("%message", msg.replace("&", "§")));
+					Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), colorize(ChatControl.Config.getString(action).replace("%player", pl.getName()).replace("%message", msg)));
 				}
 			});			
 		}		

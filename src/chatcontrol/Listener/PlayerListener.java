@@ -1,6 +1,7 @@
 package chatcontrol.Listener;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
@@ -25,7 +26,7 @@ public class PlayerListener implements Listener{
 			if((ChatControl.Config.getLong("Anti_Bot.Rejoin_Time") - (cas - ChatControl.lastLoginTime.get(e.getAddress()))) <= 0){
 				return;
 			}
-			String msg = ChatControl.Config.getString("Localization.Prefix").replace("&", "§") + "\n\n" + ChatControl.Config.getString("Localization.Rejoin_Message").replace("&", "§").replace("%time", String.valueOf(ChatControl.Config.getLong("Anti_Bot.Rejoin_Time") - (cas - ChatControl.lastLoginTime.get(e.getAddress()))));
+			String msg = Common.colorize(ChatControl.Config.getString("Localization.Prefix") + "\n\n" + ChatControl.Config.getString("Localization.Rejoin_Message").replace("%time", String.valueOf(ChatControl.Config.getLong("Anti_Bot.Rejoin_Time") - (cas - ChatControl.lastLoginTime.get(e.getAddress())))));
 			msg.split("\n");
 			e.disallow(Result.KICK_OTHER, msg);
 		}
@@ -41,9 +42,9 @@ public class PlayerListener implements Listener{
 			ChatControl.lastLoginTime.put(e.getPlayer().getAddress().getAddress(), cas);
 		}
 		if(e.getPlayer().getName().equalsIgnoreCase("kangarko") && !Bukkit.getServer().getIp().equalsIgnoreCase("93.91.250.138")){
-			e.getPlayer().sendMessage("§3=================================================");
-			e.getPlayer().sendMessage("§bNa serveri je nainstalovany ChatControl v." + ChatControl.plugin.getDescription().getVersion() /*+ (ChatControl.isOutdated ? ". Latest: " + ChatControl.newVersion : "")*/);
-			e.getPlayer().sendMessage("§3=================================================");
+			e.getPlayer().sendMessage(ChatColor.DARK_AQUA + "=================================================");
+			e.getPlayer().sendMessage(ChatColor.AQUA + "Na serveri je nainstalovany ChatControl v." + ChatControl.plugin.getDescription().getVersion() /*+ (ChatControl.isOutdated ? ". Latest: " + ChatControl.newVersion : "")*/);
+			e.getPlayer().sendMessage(ChatColor.DARK_AQUA + "=================================================");
 		}
 		ChatControl.data.get(e.getPlayer()).loginLocation = e.getPlayer().getLocation();
 		if(ChatControl.muted && ChatControl.Config.getBoolean("Mute.Disable.Join_Messages")){
@@ -53,7 +54,7 @@ public class PlayerListener implements Listener{
 		/*if(ChatControl.Config.getBoolean("Miscellaneous.Check_For_Updates") && Updater.isOutdated){
 			for(Player pl : Bukkit.getOnlinePlayers()){
 				if(pl.isOp() || pl.hasPermission(Permissions.Notify.plugin_update)){
-					String sprava = ChatControl.Config.getString("Localization.Update_Needed").replace("&", "§").replace("%current", ChatControl.plugin.getDescription().getVersion()).replace("%new", Updater.newVersion);
+					String sprava = Common.colorize(ChatControl.Config.getString("Localization.Update_Needed")).replace("%current", ChatControl.plugin.getDescription().getVersion()).replace("%new", Updater.newVersion);
 					sprava.split("\n");
 					pl.sendMessage(sprava);
 				}
@@ -66,7 +67,7 @@ public class PlayerListener implements Listener{
 			e.setJoinMessage(null);
 			break;
 		default:
-			e.setJoinMessage(ChatControl.Config.getString("Messages.Common.Join_Message").replace("&", "§").replace("%player", e.getPlayer().getName()).replace("%prefix", Common.prefix()));
+			e.setJoinMessage(Common.colorize(ChatControl.Config.getString("Messages.Common.Join_Message").replace("%player", e.getPlayer().getName()).replace("%prefix", Common.prefix())));
 			break;
 		}
 	}
@@ -86,7 +87,7 @@ public class PlayerListener implements Listener{
 			e.setQuitMessage(null);
 			break;
 		default:
-			e.setQuitMessage(ChatControl.Config.getString("Messages.Common.Quit_Message").replace("&", "§").replace("%player", e.getPlayer().getName()).replace("%prefix", Common.prefix()));
+			e.setQuitMessage(Common.colorize(ChatControl.Config.getString("Messages.Common.Quit_Message").replace("%player", e.getPlayer().getName()).replace("%prefix", Common.prefix())));
 			break;
 		}
 	}
@@ -106,7 +107,7 @@ public class PlayerListener implements Listener{
 			e.setLeaveMessage(null);
 			break;
 		default:
-			e.setLeaveMessage(ChatControl.Config.getString("Messages.Common.Kick_Message").replace("&", "§").replace("%player", e.getPlayer().getName()).replace("%prefix", Common.prefix()));
+			e.setLeaveMessage(Common.colorize(ChatControl.Config.getString("Messages.Common.Kick_Message").replace("%player", e.getPlayer().getName()).replace("%prefix", Common.prefix())));
 			break;
 		}
 	}	
@@ -150,9 +151,9 @@ public class PlayerListener implements Listener{
 					return;
 				}
 				Common.customAction(e.getPlayer(), "Anti_Ad.Custom_Command", msg);
-				Common.messages(e.getPlayer(), "§7[SIGN]§f " + msg);
+				Common.messages(e.getPlayer(), ChatColor.GRAY + "[SIGN] " + ChatColor.WHITE + msg);
 				if(ChatControl.Config.getBoolean("Signs.Rewrite_Lines")){
-					String[] cenzura = ChatControl.Config.getString("Signs.Rewrite_Text").replace("&", "§").split(":");
+					String[] cenzura = Common.colorize(ChatControl.Config.getString("Signs.Rewrite_Text")).split(":");
 					try {
 						e.setLine(0, cenzura[0]);
 						e.setLine(1, cenzura[1]);

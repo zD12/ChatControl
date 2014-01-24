@@ -49,7 +49,7 @@ public class ChatListener implements Listener {
 				if (e.getPlayer().hasPermission(Permissions.Bypasses.time)) {
 					return;
 				}
-				e.getPlayer().sendMessage(ChatControl.Config.getString("Localization.Time_Message").replace("&", "§").replace("%prefix", Common.prefix()).replace("%time", String.valueOf(ChatControl.Config.getLong("Chat.Message_Delay") - (cas.longValue() - ChatControl.data.get(e.getPlayer()).lastMessageTime))));
+				Common.sendRawMsg(e.getPlayer(), ChatControl.Config.getString("Localization.Time_Message").replace("%time", String.valueOf(ChatControl.Config.getLong("Chat.Message_Delay") - (cas.longValue() - ChatControl.data.get(e.getPlayer()).lastMessageTime))));
 				e.setCancelled(true);
 				return;
 			}
@@ -115,7 +115,7 @@ public class ChatListener implements Listener {
 						if (ChatControl.Config.getBoolean("Anti_Swear.Inform_Admins")) {
 							for (Player pl : Bukkit.getOnlinePlayers()) {
 								if ( pl.isOp() || e.getPlayer().hasPermission(Permissions.Notify.swear) ) {
-									pl.sendMessage(ChatControl.Config.getString("Localization.Swear_Admin_Message").replace("&", "§").replace("%prefix", Common.prefix()).replace("%player", e.getPlayer().getName()).replace("%message", e.getMessage()));
+									Common.sendRawMsg(pl, ChatControl.Config.getString("Localization.Swear_Admin_Message").replace("%message", e.getMessage()));
 								}
 							}
 						}
@@ -128,7 +128,7 @@ public class ChatListener implements Listener {
 							return;
 						}
 						if (ChatControl.Config.getBoolean("Anti_Swear.Replace_Word")) {
-							e.setMessage(ChatControl.Config.getString("Anti_Swear.Replacement").replace("&", "§").replace("%player", e.getPlayer().getName()));
+							e.setMessage(Common.colorize(ChatControl.Config.getString("Anti_Swear.Replacement").replace("%player", e.getPlayer().getName())));
 						}
 					}
 				}

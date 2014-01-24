@@ -11,9 +11,9 @@ public class ConfigUpdater {
 	public static String latestVersion = ChatControl.plugin.getDescription().getVersion();
 
 	public enum Status {
-		SUCCESS("§aConfiguration was updated for version " + ChatControl.plugin.getDescription().getVersion()),
+		SUCCESS("&aConfiguration was updated for version " + ChatControl.plugin.getDescription().getVersion()),
 		ERROR("&c Config was NOT updated! Please regenerate it."),
-		TOO_OLD("§4Your ChatControl version is too old. We cannot update your configuration. Consider regenerating your config.yml."),
+		TOO_OLD("&4Your ChatControl version is too old. We cannot update your configuration. Consider regenerating your config.yml."),
 		INVALID("&4!!Critical Warning!! &cYour configuration seems to be invalid! Consider regenerating it before any damage occur."),
 		//UNKNOWN("&eWarning: Configuration version was not recognized by ChatControl updater! Consider regenerating it!"),
 		DISABLED(),

@@ -45,7 +45,7 @@ public class CommandListener implements Listener{
 						return;
 					}
 				}
-				e.getPlayer().sendMessage(ChatControl.Config.getString("Localization.Command_Message").replace("&", "§").replace("%prefix", Common.prefix()).replace("%time", String.valueOf(ChatControl.Config.getLong("Commands.Command_Delay") - (cas - ChatControl.data.get(e.getPlayer()).lastCommandTime))));  
+				Common.sendRawMsg(e.getPlayer(), ChatControl.Config.getString("Localization.Command_Message").replace("%time", String.valueOf(ChatControl.Config.getLong("Commands.Command_Delay") - (cas - ChatControl.data.get(e.getPlayer()).lastCommandTime))));  
 				e.setCancelled(true);
 				return;
 			} else {
@@ -100,7 +100,7 @@ public class CommandListener implements Listener{
 						if(ChatControl.Config.getBoolean("Anti_Swear.Inform_Admins")){
 							for(Player pl : Bukkit.getOnlinePlayers()){
 								if(pl.hasPermission(Permissions.Notify.swear) || (pl.isOp())){
-									pl.sendMessage(ChatControl.Config.getString("Localization.Swear_Admin_Message").replace("%prefix", Common.prefix()).replace("&", "§").replace("%player", e.getPlayer().getName()).replace("%message", e.getMessage()));
+									Common.sendRawMsg(pl, ChatControl.Config.getString("Localization.Swear_Admin_Message").replace("%message", e.getMessage()));
 								}
 							}
 						}
