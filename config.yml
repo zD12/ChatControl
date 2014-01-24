@@ -86,6 +86,8 @@ Anti_Caps:
   Warn_Player: true
   Whitelist:
     - OMG
+    - LOL
+    - ROFL
 
 Anti_Swear:
   Enabled: true
