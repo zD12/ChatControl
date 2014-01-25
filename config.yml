@@ -184,6 +184,7 @@ Localization:
   Cannot_Chat_While_Muted: "&7You cannot chat while the chat is muted."
   Cannot_Command_While_Muted: "&7You cannot use this command while the chat is muted."
   Cannot_Chat_Until_Moved: "&7You cannot chat until you move."
+  Cannot_Broadcast_Empty_Message: "&cMessage at %event is none, therefore nothing is broadcasted."
   
   Staff_Chat_Clear_Message: "&7^----- [ == &fChat was cleared by %player &7== ] -----^"
   Rejoin_Message: "&6Please wait &7%time second(s)&6 before logging in."
@@ -193,6 +194,8 @@ Localization:
   
   Wrong_Args: "&cWrong arguments. Type &6/chc list&c for command list."
   Wrong_Parameters: "&cWrong parameters, available are: &7%params"
+  
+  Usage_Fake_Cmd: "%prefix Usage: /chatcontrol fake <&bjoin&f/&aleave&f>"
   
   Reason: "&7Reason:&f%reason"
   Prefix: "&8[&3ChatControl&8]&f"

@@ -33,7 +33,7 @@ public class CommandsHandler implements CommandExecutor {
 		String volba = args.length >= 2 ? args[1] : "";
 		String dovod = "";
 
-		if(sender.hasPermission(Permissions.Commands.global_perm) && volba.startsWith("-") && !validParameters.contains(volba)) {
+		if((sender.isOp() || sender.hasPermission(Permissions.Commands.global_perm)) && volba.startsWith("-") && !validParameters.contains(volba)) {
 			Common.sendRawMsg(sender, ChatControl.Config.getString("Localization.Wrong_Parameters").replace("%params", validParameters.toString().replace("[", "").replace("]", "")));
 			return false;
 		}
@@ -120,11 +120,47 @@ public class CommandsHandler implements CommandExecutor {
 			}
 			return false;
 		}
+		
+		/**
+		 * FAKE COMMAND
+		 */
+		if (argument.equalsIgnoreCase("fake") || argument.equalsIgnoreCase("f")) {
+
+			if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.clear)) {
+				Common.sendMsg(sender, "Localization.No_Permission");
+				return false;
+			}
+
+			if(volba.equalsIgnoreCase("join") ||volba.equalsIgnoreCase("j")){
+				if(ChatControl.Config.getString("Messages.Common.Join_Message").equalsIgnoreCase("default")) {
+					Bukkit.broadcastMessage(ChatColor.YELLOW + sender.getName() + " joined the game.");
+				
+				} else if(ChatControl.Config.getString("Messages.Common.Join_Message").equalsIgnoreCase("none")) {
+					Common.sendRawMsg(sender, ChatControl.Config.getString("Localization.Cannot_Broadcast_Empty_Message").replace("%event", "player join"));
+				
+				} else {
+					Bukkit.broadcastMessage(Common.colorize(ChatControl.Config.getString("Messages.Common.Join_Message").replace("%player", sender.getName()).replace("%prefix", Common.prefix())));
+				}
+			} else if(volba.equalsIgnoreCase("quit") ||volba.equalsIgnoreCase("q") || volba.equalsIgnoreCase("leave") || volba.equalsIgnoreCase("l")){
+				if(ChatControl.Config.getString("Messages.Common.Quit_Message").equalsIgnoreCase("default")) {
+					Bukkit.broadcastMessage(ChatColor.YELLOW + sender.getName() + " left the game.");
+					
+				} else if(ChatControl.Config.getString("Messages.Common.Quit_Message").equalsIgnoreCase("none")) {
+					Common.sendRawMsg(sender, ChatControl.Config.getString("Localization.Cannot_Broadcast_Empty_Message").replace("%event", "player quit"));
+				
+				} else {
+					Bukkit.broadcastMessage(Common.colorize(ChatControl.Config.getString("Messages.Common.Quit_Message").replace("%player", sender.getName()).replace("%prefix", Common.prefix())));
+				}
+			} else {
+				Common.sendMsg(sender, "Localization.Usage_Fake_Cmd");
+			}
+
+			return false;
+		}
 
 		/**
 		 * RELOAD COMMAND
 		 */
-
 		if (argument.equalsIgnoreCase("reload") || argument.equalsIgnoreCase("znovunacitat") || argument.equalsIgnoreCase("r")) {
 
 			if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.reload)){
@@ -142,6 +178,10 @@ public class CommandsHandler implements CommandExecutor {
 			return false;
 		}
 
+		/**
+		 * LIST COMMAND
+		 */
+		
 		if (argument.equalsIgnoreCase("commands") || argument.equalsIgnoreCase("?") || argument.equalsIgnoreCase("list")) {
 
 			if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.command_list)){
@@ -152,15 +192,17 @@ public class CommandsHandler implements CommandExecutor {
 					" ",
 					"&3  ChatControl &f(v" + ChatControl.plugin.getDescription().getVersion() + ")",
 					"&2  [] &f= optional arguments (use only 1 at once)",
+					"&6  <> &f= required arguments",
 					" ",
-					"  &7/chc mute &2[&7-silent&2] [&7-anonymous&2] [&7reason&2] &e- Chat clear.",
-					"  &7/chc clear &2[&7-silent&2] [&7-anonymous&2] [&7reason&2] &e- Chat (un)mute.",
-					"  &7/chc reload &e- Reload configuration.",
-					"  &7/chc list &e- Command list."
+					"  &f/chc mute &2[-silent] [-anonymous] [reason] &e- Chat clear.",
+					"  &f/chc clear &2[-silent] [-anonymous] [reason] &e- Chat (un)mute.",
+					"  &f/chc fake &6<join/leave> &e- Send fake join/leave message.",
+					"  &f/chc reload &e- Reload configuration.",
+					"  &f/chc list &e- Command list."
 					);
 			return false;
 		}
-
+		
 		// AK BOL UVEDENY NEPLATNY ARGUMENT
 		if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.global_perm)) {
 			Common.sendMsg(sender, "Localization.No_Permission");

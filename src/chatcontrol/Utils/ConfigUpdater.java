@@ -56,7 +56,8 @@ public class ConfigUpdater {
 					updateConfigTo436();
 					updateConfigTo437();
 					updateConfigTo440();
-				} else if (plVersion.equals("4.1.6")) {
+					updateConfigTo441();
+				} else if (plVersion.equals("4.1.6") || plVersion.equals("4.1.7")) {
 					updateConfigTo418();
 					updateConfigTo419();
 					updateConfigTo422();
@@ -67,17 +68,7 @@ public class ConfigUpdater {
 					updateConfigTo436();
 					updateConfigTo437();
 					updateConfigTo440();
-				} else if (plVersion.equals("4.1.7")) {
-					updateConfigTo418();
-					updateConfigTo419();
-					updateConfigTo422();
-					updateConfigTo423();
-					updateConfigTo424();
-					updateConfigTo430();
-					updateConfigTo432();
-					updateConfigTo436();
-					updateConfigTo437();
-					updateConfigTo440();
+					updateConfigTo441();
 				} else if (plVersion.equals("4.1.8")) {
 					updateConfigTo419();
 					updateConfigTo422();
@@ -88,6 +79,7 @@ public class ConfigUpdater {
 					updateConfigTo436();
 					updateConfigTo437();
 					updateConfigTo440();
+					updateConfigTo441();
 				} else if (plVersion.equalsIgnoreCase("4.1.9") || plVersion.equalsIgnoreCase("4.2.1")) {
 					updateConfigTo422();
 					updateConfigTo423();
@@ -97,6 +89,7 @@ public class ConfigUpdater {
 					updateConfigTo436();
 					updateConfigTo437();
 					updateConfigTo440();
+					updateConfigTo441();
 				} else if (plVersion.equalsIgnoreCase("4.2.2")) {
 					updateConfigTo423();
 					updateConfigTo424();
@@ -105,6 +98,7 @@ public class ConfigUpdater {
 					updateConfigTo436();
 					updateConfigTo437();
 					updateConfigTo440();
+					updateConfigTo441();
 				} else if (plVersion.equalsIgnoreCase("4.2.3")) {
 					updateConfigTo424();
 					updateConfigTo430();
@@ -112,26 +106,34 @@ public class ConfigUpdater {
 					updateConfigTo436();
 					updateConfigTo437();
 					updateConfigTo440();
+					updateConfigTo441();
 				} else if (plVersion.equalsIgnoreCase("4.2.4")) {
 					updateConfigTo430();
 					updateConfigTo432();
 					updateConfigTo436();
 					updateConfigTo437();
 					updateConfigTo440();
+					updateConfigTo441();
 				} else if (plVersion.equalsIgnoreCase("4.3.0") || plVersion.equalsIgnoreCase("4.3.1")) {
 					updateConfigTo432();
 					updateConfigTo436();
 					updateConfigTo437();
 					updateConfigTo440();
+					updateConfigTo441();
 				} else if (plVersion.equalsIgnoreCase("4.3.2") || plVersion.equalsIgnoreCase("4.3.3") || plVersion.equalsIgnoreCase("4.3.4") || plVersion.equalsIgnoreCase("4.3.5")) {
 					updateConfigTo436();
 					updateConfigTo437();
 					updateConfigTo440();
+					updateConfigTo441();
 				} else if (plVersion.equalsIgnoreCase("4.3.6")) {
 					updateConfigTo437();
 					updateConfigTo440();
+					updateConfigTo441();
 				} else if (plVersion.equalsIgnoreCase("4.3.7")) {
 					updateConfigTo440();
+					updateConfigTo441();
+				} else if (plVersion.equalsIgnoreCase("4.4.0")) {
+					updateConfigTo441();
 				} else if (Integer.valueOf(plVersion.replace(".", "")) < 415) {
 					status = Status.TOO_OLD;
 				} else if (Integer.valueOf(plVersion.replace(".", "")) > Integer.valueOf(latestVersion.replace(".", ""))) {
@@ -253,6 +255,12 @@ public class ConfigUpdater {
 		Common.Log("&cNOTICE: Configuration was rearranged & edited in version 4.3.8");
 		Common.Log("&cIt is highly recommended to regenerate it as it might not update properly!");
 		Common.Log("&cAlso please notice that Console Filter and Replacing characters was moved into separate files.");
+	}
+	
+	public static void updateConfigTo441() {
+		ChatControl.ConsoleConfig.getConfig().set("Console.Correct_Color_Codes", true);
+		ChatControl.ConsoleConfig.getConfig().set("Localization.Cannot_Broadcast_Empty_Message", "&cMessage at %event is none, therefore nothing is broadcasted.");
+		ChatControl.ConsoleConfig.getConfig().set("Localization.Usage_Fake_Cmd", "%prefix Usage: /chatcontrol fake <&bjoin&f/&aleave&f>");
 	}
 
 	public static void updateVersionMark() {

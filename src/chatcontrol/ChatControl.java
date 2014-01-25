@@ -52,7 +52,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 
 		ConfigUpdater.configCheck();
 
-		if(ConsoleConfig.getConfig().getBoolean("Console.Filter_Enabled")){
+		if(ConsoleConfig.getConfig().getBoolean("Console.Filter_Enabled") || ConsoleConfig.getConfig().getBoolean("Console.Correct_Color_Codes")) {
 			if(getServer().getBukkitVersion().startsWith("1.7")) {
 				new Log4jFilter().init();
 				Common.Log("Console filtering now using Log4j Filter.");
