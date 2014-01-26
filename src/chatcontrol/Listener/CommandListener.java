@@ -1,7 +1,6 @@
 package chatcontrol.Listener;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -10,8 +9,8 @@ import chatcontrol.ChatControl;
 import chatcontrol.Utils.Common;
 import chatcontrol.Utils.Permissions;
 import chatcontrol.Utils.Writer;
-import chatcontrol.Utils.Checks.ChecksUtils;
 import chatcontrol.Utils.Writer.TypSuboru;
+import chatcontrol.Utils.Checks.ChecksUtils;
 
 public class CommandListener implements Listener{
 
@@ -71,11 +70,8 @@ public class CommandListener implements Listener{
 				ChatControl.data.get(e.getPlayer()).lastCommand = sprava;
 			}
 
-			if(ChatControl.Config.getBoolean("Anti_Ad.Enabled_In_Commands")){
+			if(ChatControl.Config.getBoolean("Anti_Ad.Enabled_In_Commands") && !e.getPlayer().hasPermission(Permissions.Bypasses.ads)){
 				if(ChecksUtils.advertisingCheck(e.getPlayer(), e.getMessage())){
-					if(e.getPlayer().hasPermission(Permissions.Bypasses.ads)){
-						return;
-					}
 					for(String whitelist : ChatControl.Config.getStringList("Anti_Ad.Command_Whitelist")){
 						if(e.getMessage().startsWith(whitelist)){
 							return;
@@ -87,36 +83,26 @@ public class CommandListener implements Listener{
 				}
 			}
 
-			if(ChatControl.Config.getBoolean("Anti_Swear.Enabled_In_Commands")){
-				if(e.getPlayer().hasPermission(Permissions.Bypasses.swear)){
-					return;
-				}
+			if(ChatControl.Config.getBoolean("Anti_Swear.Enabled_In_Commands") && !e.getPlayer().hasPermission(Permissions.Bypasses.swear)){
 				for(String ignoredCmd : ChatControl.Config.getStringList("Anti_Swear.Command_Whitelist")) {
 					if(e.getMessage().startsWith(ignoredCmd)) {
 						return;
 					}
 				}
-				for (String msg : ChatControl.Config.getStringList("Anti_Swear.Word_List")){
-					if(e.getMessage().toLowerCase().matches(".*" + msg + ".*")){
-						if(ChatControl.Config.getBoolean("Anti_Swear.Inform_Admins")){
-							for(Player pl : Bukkit.getOnlinePlayers()){
-								if(pl.hasPermission(Permissions.Notify.swear) || (pl.isOp())){
-									Common.sendColoredMsg(pl, ChatControl.Config.getString("Localization.Swear_Admin_Message").replace("%message", e.getMessage()).replace("%player", e.getPlayer().getName()));
-								}
-							}
-						}
-						Common.customAction(e.getPlayer(), "Anti_Swear.Custom_Command", e.getMessage());
-						if(ChatControl.Config.getBoolean("Anti_Swear.Block_Message")){
-							e.setCancelled(true);
-						}
-						if(ChatControl.Config.getBoolean("Anti_Swear.Warn_Player")){
-							Common.sendMsg(e.getPlayer(), "Localization.Do_Not_Swear");
-						}
+				String finalMessage = ChecksUtils.swearCheck(e.getPlayer(), e.getMessage(), Common.prepareForSwearCheck(e.getMessage()));
+
+				if(finalMessage != e.getMessage()) {
+					if (ChatControl.Config.getBoolean("Anti_Swear.Block_Message")) {
+						e.setCancelled(true);
+						return;
+					}
+					if(ChatControl.Config.getBoolean("Anti_Swear.Replace_Word")) {
+						e.setMessage(finalMessage);
 					}
 				}
 			}
 		}
-
+		
 		if (ChatControl.Config.getBoolean("Chat.Write_To_File") && !ChatControl.Config.getStringList("Chat.Ignore_Players").contains(e.getPlayer().getName())) {
 			for(String cmd : ChatControl.Config.getStringList("Chat.Include_Commands") ) {
 				cmd = cmd.toLowerCase();

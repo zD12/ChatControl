@@ -17,7 +17,7 @@ import chatcontrol.Utils.Checks.ChecksUtils;
 
 public class ChatListener implements Listener {
 
-	@EventHandler
+	@EventHandler(ignoreCancelled=true)
 	public void onPlayerChat(AsyncPlayerChatEvent e) {
 
 		if (Bukkit.getOnlinePlayers().length < ChatControl.Config.getInt("Miscellaneous.Minimum_Players_To_Enable_Plugin")) {

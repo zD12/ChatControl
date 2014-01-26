@@ -20,7 +20,7 @@ import chatcontrol.Utils.Checks.ChecksUtils;
 
 public class PlayerListener implements Listener{
 
-	@EventHandler
+	@EventHandler(ignoreCancelled=true)
 	public void onPreLogin(AsyncPlayerPreLoginEvent e){
 		long cas = System.currentTimeMillis() / 1000L;
 		if(ChatControl.lastLoginTime.containsKey(e.getAddress()) && ChatControl.lastLoginTime.get(e.getAddress()) > ChatControl.Config.getLong("Anti_Bot.Rejoin_Time")){
@@ -93,7 +93,7 @@ public class PlayerListener implements Listener{
 		}
 	}
 
-	@EventHandler
+	@EventHandler(ignoreCancelled=true)
 	public void onKick(PlayerKickEvent e){
 		if(ChatControl.muted){
 			if(ChatControl.Config.getBoolean("Mute.Disable.Kick_Messages")){
