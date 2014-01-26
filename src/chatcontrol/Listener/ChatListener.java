@@ -116,25 +116,29 @@ public class ChatListener implements Listener {
 			}
 
 			if (ChatControl.Config.getBoolean("Anti_Swear.Enabled") && !e.getPlayer().hasPermission(Permissions.Bypasses.swear)) {
-				for (String msg : ChatControl.Config.getStringList("Anti_Swear.Word_List")) {
-					if (e.getMessage().toLowerCase().contains(msg.toLowerCase()) || e.getMessage().toLowerCase().matches(".*" + msg + ".*")) {
-						if (ChatControl.Config.getBoolean("Anti_Swear.Inform_Admins")) {
-							for (Player pl : Bukkit.getOnlinePlayers()) {
-								if ( pl.isOp() || e.getPlayer().hasPermission(Permissions.Notify.swear) ) {
-									Common.sendRawMsg(pl, ChatControl.Config.getString("Localization.Swear_Admin_Message").replace("%message", e.getMessage()));
+				for (String swearings : ChatControl.Config.getStringList("Anti_Swear.Word_List")) {
+					for(String word : e.getMessage().split(" ")) {
+						if (e.getMessage().toLowerCase().contains(swearings.toLowerCase()) || e.getMessage().toLowerCase().matches(".*" + swearings + ".*") || swearings.matches(word)) {
+							if (ChatControl.Config.getBoolean("Anti_Swear.Inform_Admins")) {
+								for (Player pl : Bukkit.getOnlinePlayers()) {
+									if ( pl.isOp() || e.getPlayer().hasPermission(Permissions.Notify.swear) ) {
+										Common.sendColoredMsg(pl, ChatControl.Config.getString("Localization.Swear_Admin_Message").replace("%message", e.getMessage()).replace("%player", e.getPlayer().getName()));
+									}
 								}
 							}
-						}
-						Common.customAction(e.getPlayer(), "Anti_Swear.Custom_Command", e.getMessage());
-						if (ChatControl.Config.getBoolean("Anti_Swear.Warn_Player")) {
-							Common.sendMsg(e.getPlayer(), "Localization.Do_Not_Swear");
-						}
-						if (ChatControl.Config.getBoolean("Anti_Swear.Block_Message")) {
-							e.setCancelled(true);
-							return;
-						}
-						if (ChatControl.Config.getBoolean("Anti_Swear.Replace_Word")) {
-							e.setMessage(Common.colorize(ChatControl.Config.getString("Anti_Swear.Replacement").replace("%player", e.getPlayer().getName())));
+							Common.customAction(e.getPlayer(), "Anti_Swear.Custom_Command", e.getMessage());
+							if (ChatControl.Config.getBoolean("Anti_Swear.Warn_Player")) {
+								Common.sendMsg(e.getPlayer(), "Localization.Do_Not_Swear");
+							}
+							if (ChatControl.Config.getBoolean("Anti_Swear.Block_Message")) {
+								e.setCancelled(true);
+								return;
+							}
+							if (ChatControl.Config.getBoolean("Anti_Swear.Replace_Word")) {
+								//e.setMessage(Common.colorize(ChatControl.Config.getString("Anti_Swear.Replacement").replace("%player", e.getPlayer().getName())));
+								e.setMessage(e.getMessage().replace(word, Common.colorize(ChatControl.Config.getString("Anti_Swear.Replacement").replace("%player", e.getPlayer().getName()))));
+								System.out.println("Replacing " + word + " with " + ChatControl.Config.getString("Anti_Swear.Replacement"));
+							}
 						}
 					}
 				}

@@ -100,7 +100,7 @@ public class CommandListener implements Listener{
 						if(ChatControl.Config.getBoolean("Anti_Swear.Inform_Admins")){
 							for(Player pl : Bukkit.getOnlinePlayers()){
 								if(pl.hasPermission(Permissions.Notify.swear) || (pl.isOp())){
-									Common.sendRawMsg(pl, ChatControl.Config.getString("Localization.Swear_Admin_Message").replace("%message", e.getMessage()));
+									Common.sendColoredMsg(pl, ChatControl.Config.getString("Localization.Swear_Admin_Message").replace("%message", e.getMessage()).replace("%player", e.getPlayer().getName()));
 								}
 							}
 						}

@@ -20,14 +20,29 @@ public class Common {
 		pl.sendMessage( colorize( str.replace("%prefix", prefix()).replace("%player", resolvedSender(pl)) ) );
 	}
 
+	/**
+	 * Colorizes msg. </h>
+	 * Handles %prefix and %player.
+	 */
 	public static void sendRawMsg(Player pl, String str){
 		pl.sendMessage( colorize( str.replace("%prefix", prefix()).replace("%player", pl.getName()) ) );
 	}
 
+	/**
+	 * Colorizes msg. </h>
+	 * Handles %prefix and %player.
+	 */
 	public static void sendRawMsg(CommandSender pl, String... msgs){
 		for (String msg : msgs) {
 			pl.sendMessage( colorize(msg.replace("%prefix", prefix()).replace("%player", resolvedSender(pl)) ) );
 		}
+	}
+	
+	/**
+	 * Colorizes msg and handles %prefix </h>
+	 */
+	public static void sendColoredMsg(Player pl, String str){
+		pl.sendMessage( colorize( str.replace("%prefix", prefix()) ) );
 	}
 
 	public static void sendRawMsg(Player pl, String... msgs){
@@ -125,7 +140,7 @@ public class Common {
 		if(ChatControl.Config.getBoolean("Anti_Ad.Inform_Admins")){
 			for(Player hrac : Bukkit.getOnlinePlayers()){
 				if(hrac.isOp() || hrac.hasPermission(Permissions.Notify.ad)){
-					sendRawMsg(hrac, ChatControl.Config.getString("Localization.Ad_Staff_Message").replace("%message", msg));
+					sendColoredMsg(hrac, ChatControl.Config.getString("Localization.Ad_Staff_Message").replace("%message", msg).replace("%player", pl.getName()));
 				}
 			}
 		}
@@ -133,7 +148,7 @@ public class Common {
 		if(ChatControl.Config.getBoolean("Anti_Ad.Broadcast")){
 			for(Player hrac : Bukkit.getOnlinePlayers()){
 				if(!hrac.isOp() && !hrac.getName().equals(pl.getName())){
-					sendRawMsg(hrac, ChatControl.Config.getString("Localization.Ad_Broadcast_Message").replace("%message", msg));
+					sendColoredMsg(hrac, ChatControl.Config.getString("Localization.Ad_Broadcast_Message").replace("%message", msg).replace("%player", pl.getName()));
 				}
 			}
 		}
