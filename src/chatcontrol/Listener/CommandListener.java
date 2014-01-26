@@ -53,8 +53,14 @@ public class CommandListener implements Listener{
 			}
 
 			if(ChatControl.Config.getBoolean("Commands.Block_Duplicate_Commands")){
-				String sprava = e.getMessage().replaceAll("[.:_,!*÷*><}{&#'$|\\/()]", "").toLowerCase();
-				if(ChatControl.data.get(e.getPlayer()).lastCommand.equalsIgnoreCase(sprava)){
+				String sprava;
+				if(ChatControl.Config.getBoolean("Chat.Strip_Unicode")) {
+					sprava = Common.stripSpecialCharacters(e.getMessage());
+				} else {
+					sprava = e.getMessage().replaceAll("[.:_,!*÷*><}{&#'$|\\/()]", "").toLowerCase();
+				}
+				if(ChatControl.data.get(e.getPlayer()).lastCommand.equalsIgnoreCase(sprava) || (Common.stringsAreSimilar(sprava, ChatControl.data.get(e.getPlayer()).lastMessage.toLowerCase())
+						&& ChatControl.Config.getBoolean("Chat.Block_Similar_Messages"))){
 					if(e.getPlayer().hasPermission(Permissions.Bypasses.dupe)){
 						return;
 					}
