@@ -13,7 +13,6 @@ Chat:
   Strip_Unicode: true
   Message_Delay: 1
   Write_To_File: true
-  # Do not write conversation of these players:
   Ignore_Players:
     - anonymouser1
   # Commands that get writed along with the chat messages.
@@ -41,6 +40,8 @@ Grammar:
 
 Commands:
   Block_Duplicate_Commands: true
+  Block_Similar_Messages: true        # New in 4.4.1
+  Strip_Unicode: true                 # New in 4.4.1
   Command_Delay: 1
   Whitelist_Time:
     - tell
@@ -101,7 +102,7 @@ Anti_Swear:
   Warn_Player: true
   Inform_Admins: true
   Replace_Word: true
-  # Note: This works correctly only on regex.
+  # Note: This fully works only on regex expressions.
   Replacement: "****"
   # Use %player for player and %message for message.
   Custom_Command: none
@@ -154,8 +155,8 @@ Miscellaneous:
 
 Localization:
   # Use %prefix to add the prefix.
-  Dupe_Message: "&cPlease do not repeat the same message."
-  Dupe_Command: "&cPlease do not repeat the same command."
+  Dupe_Message: "&cPlease do not repeat the same (or similar) message."
+  Dupe_Command: "&cPlease do not repeat the same (or similar) command."
   Dupe_Sign: "&cPlease do not repeat the same text on sign."
   Time_Message: "&cPlease wait %time second(s) before next message."
   Command_Message: "&cPlease wait %time second(s) before next command."
@@ -171,13 +172,13 @@ Localization:
   Successful_Unmute: "&7The chat is now unmuted."
   
   Broadcast_Mute: "%prefix &eChat was muted by %player!"
-  Broadcast_Silent_Mute: "&cInitiated global chat mute." # New in 4.3.8
+  Broadcast_Silent_Mute: "&cInitiated global chat mute."
   
   Broadcast_Unmute: "%prefix &eChat was unmuted by %player!"  
-  Broadcast_Silent_Unmute: "&cGlobal chat mute was cancelled." # New in 4.3.8
+  Broadcast_Silent_Unmute: "&cGlobal chat mute was cancelled."
   
   Broadcast_Clear: "%prefix &eChat was cleared by %player!"
-  Broadcast_Silent_Clear: "&cThe game chat was cleared." # New in 4.3.8
+  Broadcast_Silent_Clear: "&cThe game chat was cleared."
   
   Successful_Console_Clear: "%prefix &7Console was successfuly cleared."
   Do_Not_Swear: "&cPlease do not swear!"
@@ -203,4 +204,4 @@ Localization:
   Prefix: "&8[&3ChatControl&8]&f"
   Console: "&4server"
 
-Do_Not_Change_Version_Number: 4.4.1-SNAPSHOT
+Do_Not_Change_Version_Number: 4.4.1

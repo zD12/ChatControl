@@ -253,6 +253,9 @@ public class Common {
 
 	public static String stripSpecialCharacters(String str) {
 		str = str.toLowerCase();
+		str = str.replaceAll("(.)(?=\\1\\1+)", ""); // duplicate strip
+		str = str.replaceAll("(..)(?=\\1\\1+)", ""); // duplicate strip
+		str = str.replaceAll("(...)(?=\\1\\1+)", ""); // duplicate strip
 		str = str.replaceAll("§([0-9a-fk-or])", "").replaceAll("[^a-zA-Z0-9]", ""); // strip spec. characters INCLUDES spaces " "
 		return str;
 	}

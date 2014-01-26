@@ -261,6 +261,8 @@ public class ConfigUpdater {
 		ChatControl.ConsoleConfig.getConfig().set("Console.Correct_Color_Codes", true);
 		ChatControl.ConsoleConfig.getConfig().set("Localization.Cannot_Broadcast_Empty_Message", "&cMessage at %event is none, therefore nothing is broadcasted.");
 		ChatControl.ConsoleConfig.getConfig().set("Localization.Usage_Fake_Cmd", "%prefix Usage: /chatcontrol fake <&bjoin&f/&aleave&f>");
+		ChatControl.Config.set("Commands.Block_Similar_Messages", true);
+		ChatControl.Config.set("Commands.Strip_Unicode", true);
 	}
 
 	public static void updateVersionMark() {
