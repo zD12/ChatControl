@@ -412,7 +412,7 @@ public class Common {
 		str = str.replace("§r", Ansi.ansi().a(Attribute.RESET).toString());
 		return str;
 	}
-	
+
 	public static boolean regExMatch(String regex, String plain_msg) {
 		Pattern pattern_from = null;
 		try {
@@ -424,5 +424,19 @@ public class Common {
 		}
 		Matcher matcher = pattern_from.matcher(plain_msg);
 		return matcher.find();
+	}
+
+	public static void swearActions(String theMessage, Player swearer) {
+		if(ChatControl.Config.getBoolean("Anti_Swear.Inform_Admins")) {
+			for (Player pl : Bukkit.getOnlinePlayers()) {
+				if ( pl.isOp() || swearer.hasPermission(Permissions.Notify.swear) ) {
+					Common.sendColoredMsg(pl, ChatControl.Config.getString("Localization.Swear_Admin_Message").replace("%message", theMessage).replace("%player", swearer.getName()));
+				}
+			}
+		}
+		if (ChatControl.Config.getBoolean("Anti_Swear.Warn_Player")) {
+			Common.sendMsg(swearer, "Localization.Do_Not_Swear");
+		}
+		Common.customAction(swearer, "Anti_Swear.Custom_Command", theMessage);
 	}
 }

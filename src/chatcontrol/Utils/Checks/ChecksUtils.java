@@ -3,6 +3,7 @@ package chatcontrol.Utils.Checks;
 import org.bukkit.entity.Player;
 
 import chatcontrol.ChatControl;
+import chatcontrol.Utils.Common;
 import chatcontrol.Utils.Permissions;
 
 public class ChecksUtils {
@@ -36,4 +37,29 @@ public class ChecksUtils {
 		}
 		return false;
 	}	
+	
+	public static String swearCheck(Player swearer, String finalMessage, String strippedMsg) {
+		boolean isSwear = false;
+		String originalMsg = finalMessage;
+		
+		for(String regex : ChatControl.Config.getStringList("Anti_Swear.Word_List")) {
+			regex = regex.toLowerCase();
+
+			if(Common.regExMatch(regex, strippedMsg)){
+				isSwear = true;
+				finalMessage = finalMessage.replaceAll("(?i)" + regex, Common.colorize(ChatControl.Config.getString("Anti_Swear.Replacement").replace("%player", swearer.getName())));
+			} else if (Common.regExMatch(regex, Common.stripDuplicate(strippedMsg))) {
+				isSwear = true;
+				finalMessage = Common.stripDuplicate(finalMessage);
+				finalMessage = finalMessage.replaceAll("(?i)" + regex, Common.colorize(ChatControl.Config.getString("Anti_Swear.Replacement").replace("%player", swearer.getName())));
+			}
+		}		
+		
+		if(isSwear) {
+			Common.swearActions(originalMsg, swearer);
+			return finalMessage;
+		}
+		
+		return finalMessage;
+	}
 }

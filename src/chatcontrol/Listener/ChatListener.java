@@ -4,7 +4,6 @@ import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -69,11 +68,12 @@ public class ChatListener implements Listener {
 				}
 				ChatControl.data.get(e.getPlayer()).lastMessage = sprava;
 			}
-
-			if (ChecksUtils.advertisingCheck(e.getPlayer(), e.getMessage().toLowerCase()) && !e.getPlayer().hasPermission(Permissions.Bypasses.ads)) {
-				Common.customAction(e.getPlayer(), "Anti_Ad.Custom_Command", e.getMessage());
-				Common.messages(e.getPlayer(), e.getMessage());
-				e.setCancelled(true);
+			if(ChatControl.Config.getBoolean("Anti_Ad.Enabled") && !e.getPlayer().hasPermission(Permissions.Bypasses.ads)) {
+				if (ChecksUtils.advertisingCheck(e.getPlayer(), e.getMessage().toLowerCase())) {
+					Common.customAction(e.getPlayer(), "Anti_Ad.Custom_Command", e.getMessage());
+					Common.messages(e.getPlayer(), e.getMessage());
+					e.setCancelled(true);
+				}
 			}
 
 			if (ChatControl.Config.getBoolean("Anti_Caps.Enabled") && !e.getPlayer().hasPermission(Permissions.Bypasses.caps)) {
@@ -118,32 +118,9 @@ public class ChatListener implements Listener {
 
 			if (ChatControl.Config.getBoolean("Anti_Swear.Enabled") && !e.getPlayer().hasPermission(Permissions.Bypasses.swear)) {
 
-				String strippedMsg = Common.prepareForSwearCheck(e.getMessage());
-				String finalMessage = e.getMessage();
+				String finalMessage = ChecksUtils.swearCheck(e.getPlayer(), e.getMessage(), Common.prepareForSwearCheck(e.getMessage()));
 
-				boolean isSwear = false;
-
-				for(String regex : ChatControl.Config.getStringList("Anti_Swear.Word_List")) {
-					regex = regex.toLowerCase();
-
-					if(Common.regExMatch(regex, strippedMsg) || Common.regExMatch(regex, Common.stripDuplicate(strippedMsg))){
-						isSwear = true;						
-						finalMessage = finalMessage.replaceAll(regex, Common.colorize(ChatControl.Config.getString("Anti_Swear.Replacement").replace("%player", e.getPlayer().getName())));
-					}
-				}
-
-				if(isSwear) {
-					if(ChatControl.Config.getBoolean("Anti_Swear.Inform_Admins")) {
-						for (Player pl : Bukkit.getOnlinePlayers()) {
-							if ( pl.isOp() || e.getPlayer().hasPermission(Permissions.Notify.swear) ) {
-								Common.sendColoredMsg(pl, ChatControl.Config.getString("Localization.Swear_Admin_Message").replace("%message", e.getMessage()).replace("%player", e.getPlayer().getName()));
-							}
-						}
-					}
-					if (ChatControl.Config.getBoolean("Anti_Swear.Warn_Player")) {
-						Common.sendMsg(e.getPlayer(), "Localization.Do_Not_Swear");
-					}
-					Common.customAction(e.getPlayer(), "Anti_Swear.Custom_Command", e.getMessage());
+				if(finalMessage != e.getMessage()) {
 					if (ChatControl.Config.getBoolean("Anti_Swear.Block_Message")) {
 						e.setCancelled(true);
 						return;
