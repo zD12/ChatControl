@@ -124,6 +124,7 @@ Anti_Ad:
     - /login
     - /l
     - /auction
+    - //                   # Ignore WorldEdit.
   Inform_Admins: true
   Console_Message: true
   Broadcast: false
