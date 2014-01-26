@@ -55,7 +55,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 		if(ConsoleConfig.getConfig().getBoolean("Console.Filter_Enabled") || ConsoleConfig.getConfig().getBoolean("Console.Correct_Color_Codes")) {
 			if(getServer().getBukkitVersion().startsWith("1.7")) {
 				new Log4jFilter().init();
-				Common.Log("Console filtering now using Log4j Filter.");
+				Common.debug("Console filtering now using Log4j Filter.");
 			} else {
 				Filter filter = new ConsoleFilter();
 				if(ConsoleConfig.getConfig().getBoolean("Console.Filter_Plugin_Messages")){
@@ -64,7 +64,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 					}
 				}
 				Bukkit.getLogger().setFilter(filter);
-				Common.Log("Console filtering initiated (MC 1.6.4 and lower).");
+				Common.debug("Console filtering initiated (MC 1.6.4 and lower).");
 			}
 		}
 
@@ -80,7 +80,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 			} else {
 				new PacketListener().initOlderPacketListener();
 			}
-			getLogger().info("Successfully hooked with ProtocolLib!");
+			Common.Log("Successfully hooked with ProtocolLib!");
 		}
 
 		for (Player pl : getServer().getOnlinePlayers()){
@@ -90,7 +90,6 @@ public class ChatControl extends JavaPlugin implements Listener {
 		}
 
 		getCommand("chatcontrol").setExecutor(new CommandsHandler());
-		getLogger().info("Was enabled. Remember, this is a BETA release!");
 	}
 
 	public void onDisable() {
