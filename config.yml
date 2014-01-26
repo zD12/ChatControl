@@ -101,19 +101,20 @@ Anti_Swear:
   Warn_Player: true
   Inform_Admins: true
   Replace_Word: true
-  Replacement: "I love this filter!"
+  # Note: This works correctly only on regex.
+  Replacement: "****"
   # Use %player for player and %message for message.
   Custom_Command: none
   # Careful with Regular Expressions. Can broke the plugin!
   Word_List:
-    - ".*f+u+c+k+.*|.*f+u+k+.*|.*f+v+c+k+.*|.*f+u+q+.*|.*\\bf'ing\\b.*|.*\\bfck\\b.*|.*\\bfk\\b.*"
-    - "bitch|b1tch|b!tch"
-    - ".*fuck you.*|.*fuck off.*|.*piss off.*|.*suck my dick.*"
-    - ".*shut up.*|\\bnoob\\b|\\bloser\\b"
+    - \bf(u|v)(c)(k|q)|\bf'ing|\bf(c)k\b
+    - b(i|1|!)tch
+    - \bpiss off
+    - \bsuck
+    - \bass\b
+    - n(o)(o|0|00)b
+    - l(o|0)(o)s(e|3)r
     - ".*p+u+s+s+(y|ies|y+s).*"
-    - "\\bcunt\\b|whore|\\bhore\\b|\\bfag\\b|slut|\\bqueer\\b|bastard|\\bgay\\b|shit|\\bdamn\\b|\\bdouchebag\\b|\\bstripper\\b|\\borgasm\\b|\\bcum\\b|jizz|\\bsex\\b|titties|titty|blowjob|fellatio|Cunnilingus|\\bass\\b|asshole|boobies|\\bporn\\b|\\bpron\\b|\\bpiss|sh1t|shlt|p1ss|dick|d1ck|\\btwat\\b"
-    - "n[^a]gg+(a|er|uh)|\\bchink\\b|\\bchinc\\b|\\bredneck\\b|\\bwhitetrash\\b|\\bwhite trash\\b|\\bgreaser\\b|\\bwop\\b|\\bdago\\b|\\bwetback\\b|\\bspic\\b|\\bpigshit\\b|\\bkike\\b|\\btrailer trash\\b|\\btowel head\\b|\\bbeaner\\b|\\bspick\\b|\\bsand nigger\\b|\\bwap\\b|\\bgook\\b|\\bcurry muncher\\b"
-    
 
 Anti_Ad:
   Enabled: true

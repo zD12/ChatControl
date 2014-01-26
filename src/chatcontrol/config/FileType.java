@@ -1,4 +1,4 @@
-package chatcontrol.config;
+package chatcontrol.Config;
 
 public enum FileType {
 

@@ -256,7 +256,7 @@ public class ConfigUpdater {
 		Common.Log("&cIt is highly recommended to regenerate it as it might not update properly!");
 		Common.Log("&cAlso please notice that Console Filter and Replacing characters was moved into separate files.");
 	}
-	
+
 	public static void updateConfigTo441() {
 		ChatControl.ConsoleConfig.getConfig().set("Console.Correct_Color_Codes", true);
 		ChatControl.ConsoleConfig.getConfig().set("Localization.Cannot_Broadcast_Empty_Message", "&cMessage at %event is none, therefore nothing is broadcasted.");

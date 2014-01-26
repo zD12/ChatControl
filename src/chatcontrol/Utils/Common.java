@@ -1,5 +1,9 @@
 package chatcontrol.Utils;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -37,7 +41,7 @@ public class Common {
 			pl.sendMessage( colorize(msg.replace("%prefix", prefix()).replace("%player", resolvedSender(pl)) ) );
 		}
 	}
-	
+
 	/**
 	 * Colorizes msg and handles %prefix </h>
 	 */
@@ -109,33 +113,6 @@ public class Common {
 		}
 	}
 
-	public static boolean msgIsAd(Player pl, String msg){
-		String finalMsg = msg.replaceAll(ChatControl.Config.getString("Anti_Ad.Filter_Pre_Process"), "");
-		if(!ChatControl.Config.getBoolean("Anti_Ad.Enabled_In_Commands")){
-			return false;
-		}
-		for(String ip : ChatControl.Config.getStringList("Anti_Ad.Whitelisted.IP")){
-			if(msg.matches(".*" + ip + ".*")){
-				return false;
-			}
-		}
-		for(String domeny : ChatControl.Config.getStringList("Anti_Ad.Whitelisted.Domains")){
-			if(msg.toLowerCase().matches(".*" + domeny + ".*")){
-				return false;
-			}
-		}
-		if (pl.hasPermission(Permissions.Bypasses.ads)){
-			return false;
-		} else if (finalMsg.matches((".*" + ChatControl.Config.getString("Anti_Ad.IP_Filter")) + ".*") || (finalMsg.matches(".*" + ChatControl.Config.getString("Anti_Ad.Domain_Filter") + ".*"))){
-			return true;
-		} else if (!ChatControl.Config.getString("Anti_Ad.Custom_Filter").equalsIgnoreCase("none")){
-			if(finalMsg.matches(".*"  + ChatControl.Config.getString("Anti_Ad.Custom_Filter") + ".*")){
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public static void messages(Player pl, String msg){
 		if(ChatControl.Config.getBoolean("Anti_Ad.Inform_Admins")){
 			for(Player hrac : Bukkit.getOnlinePlayers()){
@@ -204,7 +181,7 @@ public class Common {
 		if(!ChatControl.Config.getBoolean("Grammar.Capitalize.Enabled")){
 			return msg;
 		}
-		if(msg.length() < ChatControl.Config.getInt("Grammar.Capitalize.Min_Msg_Length")) {
+		if(msg.length() < ChatControl.Config.getInt("Grammar.Capitalize.Minimum_Msg_Length")) {
 			return msg;
 		}
 		String[] sentences = msg.split("(?<=[!?\\.])\\s");
@@ -276,10 +253,10 @@ public class Common {
 
 	public static String stripSpecialCharacters(String str) {
 		str = str.toLowerCase();
-		str = str.replaceAll("§([0-9a-fk-or])", "").replaceAll("[^a-zA-Z0-9]", "");
+		str = str.replaceAll("§([0-9a-fk-or])", "").replaceAll("[^a-zA-Z0-9]", ""); // strip spec. characters INCLUDES spaces " "
 		return str;
 	}
-	
+
 	public static String prepareForSwearCheck(String str) {
 		str = str.toLowerCase();
 		str = str.replaceAll("[^a-zA-Z\\d\\s:]", ""); //strips special characters expect spaces
@@ -288,7 +265,7 @@ public class Common {
 		str = str.replaceAll("(...)(?=\\1\\1+)", ""); // duplicate strip
 		return str;
 	}
-	
+
 	public static String stripDuplicate(String str) {
 		str = str.replaceAll("(.)\\1+", "$1"); // hardcore duplicate strip
 		return str;
@@ -410,7 +387,7 @@ public class Common {
 		str = str.replace("&n", Ansi.ansi().a(Attribute.UNDERLINE).toString());
 		str = str.replace("&o", Ansi.ansi().a(Attribute.ITALIC).toString());
 		str = str.replace("&r", Ansi.ansi().a(Attribute.RESET).toString());
-		
+
 		str = str.replace("§0", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLACK).boldOff().toString());
 		str = str.replace("§1", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLUE).boldOff().toString());
 		str = str.replace("§2", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.GREEN).boldOff().toString());
@@ -434,5 +411,18 @@ public class Common {
 		str = str.replace("§o", Ansi.ansi().a(Attribute.ITALIC).toString());
 		str = str.replace("§r", Ansi.ansi().a(Attribute.RESET).toString());
 		return str;
+	}
+	
+	public static boolean regExMatch(String regex, String plain_msg) {
+		Pattern pattern_from = null;
+		try {
+			pattern_from = Pattern.compile(regex);
+		} catch (PatternSyntaxException ex){
+			Log("&cInvalid regex: " + regex);
+			Log("&eUse online services (regexpal.com) for fixing errors");
+			return false;
+		}
+		Matcher matcher = pattern_from.matcher(plain_msg);
+		return matcher.find();
 	}
 }

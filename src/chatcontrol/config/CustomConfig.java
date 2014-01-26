@@ -1,4 +1,4 @@
-package chatcontrol.config;
+package chatcontrol.Config;
 
 import java.io.File;
 import java.io.IOException;

@@ -11,6 +11,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import chatcontrol.Config.CustomConfig;
+import chatcontrol.Config.FileType;
 import chatcontrol.ConsoleFilter.ConsoleFilter;
 import chatcontrol.ConsoleFilter.Log4jFilter;
 import chatcontrol.Listener.ChatListener;
@@ -19,8 +21,6 @@ import chatcontrol.Listener.PlayerListener;
 import chatcontrol.PacketListener.PacketListener;
 import chatcontrol.Utils.Common;
 import chatcontrol.Utils.ConfigUpdater;
-import chatcontrol.config.CustomConfig;
-import chatcontrol.config.FileType;
 
 public class ChatControl extends JavaPlugin implements Listener {
 
@@ -39,7 +39,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 	public void onEnable(){
 		plugin = this;
 		Config = getConfig();
-		
+
 		getConfig().options().copyDefaults(true);
 		saveDefaultConfig();
 
@@ -53,9 +53,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 				data.put(pl, new Storage());
 			}
 		}
-		
-		Cache.load();
-		
+
 		getServer().getPluginManager().registerEvents(new ChatListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		getServer().getPluginManager().registerEvents(new CommandListener(), this);
@@ -98,7 +96,6 @@ public class ChatControl extends JavaPlugin implements Listener {
 	public void onDisable() {
 		data.clear();
 		lastLoginTime.clear();
-		Cache.clear();
 	}
 
 }

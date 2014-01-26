@@ -9,12 +9,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import chatcontrol.Cache;
 import chatcontrol.ChatControl;
 import chatcontrol.Utils.Common;
 import chatcontrol.Utils.Permissions;
 import chatcontrol.Utils.Writer;
 import chatcontrol.Utils.Writer.TypSuboru;
+import chatcontrol.Utils.Checks.ChecksUtils;
 
 public class ChatListener implements Listener {
 
@@ -70,7 +70,7 @@ public class ChatListener implements Listener {
 				ChatControl.data.get(e.getPlayer()).lastMessage = sprava;
 			}
 
-			if (Common.msgIsAd(e.getPlayer(), e.getMessage().toLowerCase()) && !e.getPlayer().hasPermission(Permissions.Bypasses.ads)) {
+			if (ChecksUtils.advertisingCheck(e.getPlayer(), e.getMessage().toLowerCase()) && !e.getPlayer().hasPermission(Permissions.Bypasses.ads)) {
 				Common.customAction(e.getPlayer(), "Anti_Ad.Custom_Command", e.getMessage());
 				Common.messages(e.getPlayer(), e.getMessage());
 				e.setCancelled(true);
@@ -117,55 +117,43 @@ public class ChatListener implements Listener {
 			}
 
 			if (ChatControl.Config.getBoolean("Anti_Swear.Enabled") && !e.getPlayer().hasPermission(Permissions.Bypasses.swear)) {
-				String msg = Common.prepareForSwearCheck(e.getMessage());
-				String strippedMsg = e.getMessage();
-				
-				boolean shouldReplace = false;
-				boolean warnPlayer = true;
-				boolean warnAdmins = true;
-				boolean isSwear = true;
-				
-				for(String swear : Cache.swear_db) {
-					swear = swear.toLowerCase();
-					if(swear.matches( ".*" + msg + ".*" ) || swear.matches(msg) || msg.contains(swear) || msg.equalsIgnoreCase(swear)
-						|| (swear.matches( ".*" + Common.stripDuplicate(msg) + ".*" ) || swear.matches(Common.stripDuplicate(msg)) || Common.stripDuplicate(msg).contains(swear) || Common.stripDuplicate(msg).equalsIgnoreCase(swear))) {
-						isSwear = true;
-						if (ChatControl.Config.getBoolean("Anti_Swear.Inform_Admins")) {
-							warnAdmins = true;
-						}
-						if (ChatControl.Config.getBoolean("Anti_Swear.Warn_Player")) {
-							warnPlayer = true;
-						}						
-						if (ChatControl.Config.getBoolean("Anti_Swear.Block_Message")) {
-							e.setCancelled(true);
-							return;
-						}
-						if (ChatControl.Config.getBoolean("Anti_Swear.Replace_Word")) {
-							shouldReplace = true;
-							//e.setMessage(Common.colorize(ChatControl.Config.getString("Anti_Swear.Replacement").replace("%player", e.getPlayer().getName())));
-							strippedMsg = strippedMsg.replaceAll(swear, Common.colorize(ChatControl.Config.getString("Anti_Swear.Replacement").replace("%player", e.getPlayer().getName())));			
-						}
+
+				String strippedMsg = Common.prepareForSwearCheck(e.getMessage());
+				String finalMessage = e.getMessage();
+
+				boolean isSwear = false;
+
+				for(String regex : ChatControl.Config.getStringList("Anti_Swear.Word_List")) {
+					regex = regex.toLowerCase();
+
+					if(Common.regExMatch(regex, strippedMsg) || Common.regExMatch(regex, Common.stripDuplicate(strippedMsg))){
+						isSwear = true;						
+						finalMessage = finalMessage.replaceAll(regex, Common.colorize(ChatControl.Config.getString("Anti_Swear.Replacement").replace("%player", e.getPlayer().getName())));
 					}
 				}
-				if(shouldReplace) {
-					e.setMessage(strippedMsg);
-				}
-				if (warnPlayer) {
-					Common.sendMsg(e.getPlayer(), "Localization.Do_Not_Swear");
-				}
-				if(warnAdmins) {
-					for (Player pl : Bukkit.getOnlinePlayers()) {
-						if ( pl.isOp() || e.getPlayer().hasPermission(Permissions.Notify.swear) ) {
-							Common.sendColoredMsg(pl, ChatControl.Config.getString("Localization.Swear_Admin_Message").replace("%message", e.getMessage()).replace("%player", e.getPlayer().getName()));
-						}
-					}
-				}
+
 				if(isSwear) {
+					if(ChatControl.Config.getBoolean("Anti_Swear.Inform_Admins")) {
+						for (Player pl : Bukkit.getOnlinePlayers()) {
+							if ( pl.isOp() || e.getPlayer().hasPermission(Permissions.Notify.swear) ) {
+								Common.sendColoredMsg(pl, ChatControl.Config.getString("Localization.Swear_Admin_Message").replace("%message", e.getMessage()).replace("%player", e.getPlayer().getName()));
+							}
+						}
+					}
+					if (ChatControl.Config.getBoolean("Anti_Swear.Warn_Player")) {
+						Common.sendMsg(e.getPlayer(), "Localization.Do_Not_Swear");
+					}
 					Common.customAction(e.getPlayer(), "Anti_Swear.Custom_Command", e.getMessage());
-					Common.debug("Detected swear on " + e.getPlayer().getName() + ", light strip: \"" + msg + "\" Hard strip: \"" + Common.stripDuplicate(msg) + "\"");
+					if (ChatControl.Config.getBoolean("Anti_Swear.Block_Message")) {
+						e.setCancelled(true);
+						return;
+					}
+					if(ChatControl.Config.getBoolean("Anti_Swear.Replace_Word")) {
+						e.setMessage(finalMessage);
+					}
 				}
 			}
-			
+
 			String message = e.getMessage();
 			message = Common.replaceCharacters(e.getPlayer(), message);
 			message = Common.capitalize(message);

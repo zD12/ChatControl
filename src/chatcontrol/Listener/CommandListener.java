@@ -10,6 +10,7 @@ import chatcontrol.ChatControl;
 import chatcontrol.Utils.Common;
 import chatcontrol.Utils.Permissions;
 import chatcontrol.Utils.Writer;
+import chatcontrol.Utils.Checks.ChecksUtils;
 import chatcontrol.Utils.Writer.TypSuboru;
 
 public class CommandListener implements Listener{
@@ -71,7 +72,7 @@ public class CommandListener implements Listener{
 			}
 
 			if(ChatControl.Config.getBoolean("Anti_Ad.Enabled_In_Commands")){
-				if(Common.msgIsAd(e.getPlayer(), e.getMessage())){
+				if(ChecksUtils.advertisingCheck(e.getPlayer(), e.getMessage())){
 					if(e.getPlayer().hasPermission(Permissions.Bypasses.ads)){
 						return;
 					}

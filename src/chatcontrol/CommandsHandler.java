@@ -120,7 +120,7 @@ public class CommandsHandler implements CommandExecutor {
 			}
 			return false;
 		}
-		
+
 		/**
 		 * FAKE COMMAND
 		 */
@@ -134,20 +134,20 @@ public class CommandsHandler implements CommandExecutor {
 			if(volba.equalsIgnoreCase("join") ||volba.equalsIgnoreCase("j")){
 				if(ChatControl.Config.getString("Messages.Common.Join_Message").equalsIgnoreCase("default")) {
 					Bukkit.broadcastMessage(ChatColor.YELLOW + sender.getName() + " joined the game.");
-				
+
 				} else if(ChatControl.Config.getString("Messages.Common.Join_Message").equalsIgnoreCase("none")) {
 					Common.sendRawMsg(sender, ChatControl.Config.getString("Localization.Cannot_Broadcast_Empty_Message").replace("%event", "player join"));
-				
+
 				} else {
 					Bukkit.broadcastMessage(Common.colorize(ChatControl.Config.getString("Messages.Common.Join_Message").replace("%player", sender.getName()).replace("%prefix", Common.prefix())));
 				}
 			} else if(volba.equalsIgnoreCase("quit") ||volba.equalsIgnoreCase("q") || volba.equalsIgnoreCase("leave") || volba.equalsIgnoreCase("l")){
 				if(ChatControl.Config.getString("Messages.Common.Quit_Message").equalsIgnoreCase("default")) {
 					Bukkit.broadcastMessage(ChatColor.YELLOW + sender.getName() + " left the game.");
-					
+
 				} else if(ChatControl.Config.getString("Messages.Common.Quit_Message").equalsIgnoreCase("none")) {
 					Common.sendRawMsg(sender, ChatControl.Config.getString("Localization.Cannot_Broadcast_Empty_Message").replace("%event", "player quit"));
-				
+
 				} else {
 					Bukkit.broadcastMessage(Common.colorize(ChatControl.Config.getString("Messages.Common.Quit_Message").replace("%player", sender.getName()).replace("%prefix", Common.prefix())));
 				}
@@ -181,7 +181,7 @@ public class CommandsHandler implements CommandExecutor {
 		/**
 		 * LIST COMMAND
 		 */
-		
+
 		if (argument.equalsIgnoreCase("commands") || argument.equalsIgnoreCase("?") || argument.equalsIgnoreCase("list")) {
 
 			if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.command_list)){
@@ -202,7 +202,7 @@ public class CommandsHandler implements CommandExecutor {
 					);
 			return false;
 		}
-		
+
 		// AK BOL UVEDENY NEPLATNY ARGUMENT
 		if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.global_perm)) {
 			Common.sendMsg(sender, "Localization.No_Permission");
