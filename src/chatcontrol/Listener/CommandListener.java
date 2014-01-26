@@ -57,8 +57,6 @@ public class CommandListener implements Listener{
 				if(ChatControl.Config.getBoolean("Commands.Strip_Unicode")) {
 					sprava = Common.stripSpecialCharacters(e.getMessage());
 				}
-				System.out.println("Sprava: " + sprava);
-				System.out.println("BlockSimilar?: " + ChatControl.Config.getBoolean("Commands.Block_Similar_Messages"));
 				if(ChatControl.data.get(e.getPlayer()).lastCommand.equalsIgnoreCase(sprava) || (Common.stringsAreSimilar(sprava, ChatControl.data.get(e.getPlayer()).lastCommand)
 						&& ChatControl.Config.getBoolean("Commands.Block_Similar_Messages")) ){
 					if(e.getPlayer().hasPermission(Permissions.Bypasses.dupe)){

@@ -53,11 +53,9 @@ public class ChatListener implements Listener {
 			ChatControl.data.get(e.getPlayer()).lastMessageTime = Long.valueOf(cas.longValue());
 
 			if (ChatControl.Config.getBoolean("Chat.Block_Duplicate_Messages")) {
-				String sprava;
+				String sprava = e.getMessage().toLowerCase();
 				if(ChatControl.Config.getBoolean("Chat.Strip_Unicode")) {
 					sprava = Common.stripSpecialCharacters(e.getMessage());
-				} else {
-					sprava = e.getMessage().replaceAll("[.:_,!*÷*><}{&#'$|\\/()]", "").toLowerCase();
 				}
 				if (ChatControl.data.get(e.getPlayer()).lastMessage.equalsIgnoreCase(sprava) || (Common.stringsAreSimilar(sprava, ChatControl.data.get(e.getPlayer()).lastMessage.toLowerCase())
 						&& ChatControl.Config.getBoolean("Chat.Block_Similar_Messages")) ) {
