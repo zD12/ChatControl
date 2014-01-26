@@ -19,11 +19,12 @@ public class ChatListener implements Listener {
 
 	@EventHandler(ignoreCancelled=true)
 	public void onPlayerChat(AsyncPlayerChatEvent e) {
-
 		if (Bukkit.getOnlinePlayers().length < ChatControl.Config.getInt("Miscellaneous.Minimum_Players_To_Enable_Plugin")) {
 			return;
 		}
+		
 		String finalMsg = null;
+		
 		if(!Common.playerIsPrivileged(e.getPlayer())){
 			if (ChatControl.Config.getBoolean("Miscellaneous.Block_Chat_Until_Moved") &&
 					(e.getPlayer().getLocation() == ChatControl.data.get(e.getPlayer()).loginLocation)) {
@@ -137,10 +138,9 @@ public class ChatListener implements Listener {
 			message = Common.insertDot(message);
 			e.setMessage(message);
 			finalMsg = message;
-
-			if (ChatControl.Config.getBoolean("Chat.Write_To_File") && !ChatControl.Config.getStringList("Chat.Ignore_Players").contains(e.getPlayer().getName())) {
-				Writer.writeToFile(TypSuboru.ZAZNAM_CHATU, e.getPlayer().getName(), (finalMsg != null ? finalMsg : e.getMessage()));
-			}
+		}
+		if (ChatControl.Config.getBoolean("Chat.Write_To_File") && !ChatControl.Config.getStringList("Chat.Ignore_Players").contains(e.getPlayer().getName())) {
+			Writer.writeToFile(TypSuboru.ZAZNAM_CHATU, e.getPlayer().getName(), (finalMsg != null ? finalMsg : e.getMessage()));
 		}
 	}
 }
