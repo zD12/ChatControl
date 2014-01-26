@@ -275,7 +275,23 @@ public class Common {
 	}
 
 	public static String stripSpecialCharacters(String str) {
-		return str.toLowerCase().replaceAll("§([0-9a-fk-or])", "").replaceAll("[^a-zA-Z0-9]", "");
+		str = str.toLowerCase();
+		str = str.replaceAll("§([0-9a-fk-or])", "").replaceAll("[^a-zA-Z0-9]", "");
+		return str;
+	}
+	
+	public static String prepareForSwearCheck(String str) {
+		str = str.toLowerCase();
+		str = str.replaceAll("[^a-zA-Z\\d\\s:]", ""); //strips special characters expect spaces
+		str = str.replaceAll("(.)(?=\\1\\1+)", ""); // duplicate strip
+		str = str.replaceAll("(..)(?=\\1\\1+)", ""); // duplicate strip
+		str = str.replaceAll("(...)(?=\\1\\1+)", ""); // duplicate strip
+		return str;
+	}
+	
+	public static String stripDuplicate(String str) {
+		str = str.replaceAll("(.)\\1+", "$1"); // hardcore duplicate strip
+		return str;
 	}
 
 	public static boolean stringsAreSimilar(String string1, String string2) {

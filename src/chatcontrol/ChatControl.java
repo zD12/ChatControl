@@ -39,11 +39,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 	public void onEnable(){
 		plugin = this;
 		Config = getConfig();
-
-		getServer().getPluginManager().registerEvents(new ChatListener(), this);
-		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
-		getServer().getPluginManager().registerEvents(new CommandListener(), this);
-
+		
 		getConfig().options().copyDefaults(true);
 		saveDefaultConfig();
 
@@ -51,6 +47,19 @@ public class ChatControl extends JavaPlugin implements Listener {
 		ConsoleConfig.saveDefaultConfig();
 
 		ConfigUpdater.configCheck();
+
+		for (Player pl : getServer().getOnlinePlayers()){
+			if(!data.containsKey(pl)){
+				data.put(pl, new Storage());
+			}
+		}
+		
+		Cache.load();
+		
+		getServer().getPluginManager().registerEvents(new ChatListener(), this);
+		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+		getServer().getPluginManager().registerEvents(new CommandListener(), this);
+
 
 		if(ConsoleConfig.getConfig().getBoolean("Console.Filter_Enabled") || ConsoleConfig.getConfig().getBoolean("Console.Correct_Color_Codes")) {
 			if(getServer().getBukkitVersion().startsWith("1.7")) {
@@ -83,18 +92,13 @@ public class ChatControl extends JavaPlugin implements Listener {
 			Common.Log("Successfully hooked with ProtocolLib!");
 		}
 
-		for (Player pl : getServer().getOnlinePlayers()){
-			if(!data.containsKey(pl)){
-				data.put(pl, new Storage());
-			}
-		}
-
 		getCommand("chatcontrol").setExecutor(new CommandsHandler());
 	}
 
 	public void onDisable() {
 		data.clear();
 		lastLoginTime.clear();
+		Cache.clear();
 	}
 
 }
