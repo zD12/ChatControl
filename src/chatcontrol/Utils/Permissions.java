@@ -30,4 +30,6 @@ public class Permissions {
 		public static final String plugin_update = "chatcontrol.notify.update";
 	}
 
+	public static final String global_perm = "chatcontrol";
+	
 }

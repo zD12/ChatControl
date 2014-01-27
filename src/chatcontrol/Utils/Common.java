@@ -76,23 +76,17 @@ public class Common {
 	}
 
 	public static String prefix(){
-		String prefix;
-		try {
-			prefix = colorize(ChatControl.Config.getString("Localization.Prefix"));
-		} catch (Exception ex){
-			prefix = ChatColor.RED + "[" + ChatColor.GOLD + "ChatControl" + ChatColor.RED + "] " + ChatColor.WHITE;
+		if (ChatControl.Config.getString("Localization.Prefix") == null) {
+			return colorize(ChatControl.Config.getString("Localization.Prefix"));
 		}
-		return prefix;
+		return ChatColor.DARK_GRAY + "[" + ChatColor.AQUA + "ChatControl" + ChatColor.DARK_GRAY + "]" + ChatColor.WHITE;
 	}
 
 	public static String console(){
-		String prefix;
-		try {
-			prefix = colorize(ChatControl.Config.getString("Localization.Console"));
-		} catch (Exception ex){
-			prefix = ChatColor.RED + "server";
+		if (ChatControl.Config.getString("Localization.Console") == null) {
+			return colorize(ChatControl.Config.getString("Localization.Console"));
 		}
-		return prefix;
+		return ChatColor.RED + "server";
 	}
 
 	public static void broadcastMsg(CommandSender pl, String configPath, String message, String reason){
@@ -138,15 +132,11 @@ public class Common {
 	}
 
 	public static boolean playerIsPrivileged(Player pl){
-		if(pl.hasPermission(Permissions.Bypasses.global_perm)) {
+		if(pl.hasPermission(Permissions.global_perm)) {
 			return true;
 		}
-		if(pl.isOp()){
-			if(ChatControl.Config.getBoolean("Miscellaneous.Op_Has_Permissions", true)){
-				return true;
-			} else {
-				return false;
-			}
+		if(pl.isOp() && ChatControl.Config.getBoolean("Miscellaneous.Op_Has_Permissions", true)){
+			return true;
 		}
 		return false;
 	}
@@ -223,10 +213,6 @@ public class Common {
 
 	public static void Log(String str){
 		console.sendMessage("(ChatControl) " + toAnsiColors(str));
-	}
-
-	public static void LogPlain(String str){
-		System.out.println("(ChatControl) " + toAnsiColors(str));
 	}
 
 	public static void debug(String str){
@@ -355,7 +341,6 @@ public class Common {
 	public static int checkCapsInRow(int[] caps) {
 		int sum = 0;
 		int sumTemp = 0;
-
 		for (int i : caps) {
 			if (i == 1) {
 				sumTemp++;
@@ -418,6 +403,9 @@ public class Common {
 
 	public static boolean regExMatch(String regex, String plain_msg) {
 		Pattern pattern_from = null;
+		regex = regex.toLowerCase();
+		plain_msg = plain_msg.toLowerCase();
+		
 		try {
 			pattern_from = Pattern.compile(regex);
 		} catch (PatternSyntaxException ex){
