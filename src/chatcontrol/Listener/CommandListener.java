@@ -1,6 +1,7 @@
 package chatcontrol.Listener;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -54,10 +55,19 @@ public class CommandListener implements Listener{
 
 			if(ChatControl.Config.getBoolean("Commands.Block_Duplicate_Commands")){
 				String sprava = e.getMessage().toLowerCase();
-				if(ChatControl.Config.getBoolean("Commands.Strip_Unicode")) {
-					sprava = Common.stripSpecialCharacters(e.getMessage());
+				
+				// Strip from messages like /tell <player> <msg> the player, making the check less less annoying.
+				if(e.getMessage().split(" ").length > 2) {
+					Player pl = Bukkit.getPlayer(e.getMessage().split(" ")[1]);
+					if(pl != null && pl.isOnline()) {
+						sprava = sprava.replace(pl.getName() + " ", "");
+					}
 				}
-				if(ChatControl.data.get(e.getPlayer()).lastCommand.equalsIgnoreCase(sprava) || (Common.stringsAreSimilar(sprava, ChatControl.data.get(e.getPlayer()).lastCommand)
+				
+				if(ChatControl.Config.getBoolean("Commands.Strip_Unicode")) {
+					sprava = Common.stripSpecialCharacters(sprava);
+				}
+				if(ChatControl.data.get(e.getPlayer()).lastCommand.equals(sprava) || (Common.stringsAreSimilar(sprava, ChatControl.data.get(e.getPlayer()).lastCommand)
 						&& ChatControl.Config.getBoolean("Commands.Block_Similar_Messages")) ){
 					if(e.getPlayer().hasPermission(Permissions.Bypasses.dupe)){
 						return;
@@ -106,7 +116,7 @@ public class CommandListener implements Listener{
 				}
 			}
 		}
-		
+
 		if (ChatControl.Config.getBoolean("Chat.Write_To_File") && !ChatControl.Config.getStringList("Chat.Ignore_Players").contains(e.getPlayer().getName())) {
 			for(String cmd : ChatControl.Config.getStringList("Chat.Include_Commands") ) {
 				cmd = cmd.toLowerCase();

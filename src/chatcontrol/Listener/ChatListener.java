@@ -54,7 +54,7 @@ public class ChatListener implements Listener {
 				if(ChatControl.Config.getBoolean("Chat.Strip_Unicode")) {
 					sprava = Common.stripSpecialCharacters(e.getMessage());
 				}
-				if (ChatControl.data.get(e.getPlayer()).lastMessage.equalsIgnoreCase(sprava) || (Common.stringsAreSimilar(sprava, ChatControl.data.get(e.getPlayer()).lastMessage.toLowerCase())
+				if (ChatControl.data.get(e.getPlayer()).lastMessage.equals(sprava) || (Common.stringsAreSimilar(sprava, ChatControl.data.get(e.getPlayer()).lastMessage)
 						&& ChatControl.Config.getBoolean("Chat.Block_Similar_Messages")) ) {
 					if (!e.getPlayer().hasPermission(Permissions.Bypasses.dupe)) {
 						Common.sendMsg(e.getPlayer(), "Localization.Dupe_Message");
