@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 
 import chatcontrol.ChatControl;
 
@@ -29,7 +28,7 @@ public class Writer {
 		}
 		try {
 			bw = new BufferedWriter(new FileWriter(file + "/" + typSuboru.typ, true));
-			bw.write("[" + cas() + "] " + (prefix != null ? prefix + ": " : "") + msg);
+			bw.write("[" + getTime() + "] " + (prefix != null ? prefix + ": " : "") + msg);
 			bw.newLine();
 		} catch (Exception ex) {
 		} finally {
@@ -43,10 +42,9 @@ public class Writer {
 		}
 	}
 
-	public static String cas() {
+	public static String getTime() {
 		DateFormat date = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-		Calendar cal = Calendar.getInstance();
-		return date.format(cal.getTime());
+		return date.format(System.currentTimeMillis());
 	}
 
 }

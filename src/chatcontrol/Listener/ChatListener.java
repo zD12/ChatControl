@@ -1,7 +1,5 @@
 package chatcontrol.Listener;
 
-import java.util.Date;
-
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -22,9 +20,9 @@ public class ChatListener implements Listener {
 		if (Bukkit.getOnlinePlayers().length < ChatControl.Config.getInt("Miscellaneous.Minimum_Players_To_Enable_Plugin")) {
 			return;
 		}
-		
+
 		String finalMsg = null;
-		
+
 		if(!Common.playerIsPrivileged(e.getPlayer())){
 			if (ChatControl.Config.getBoolean("Miscellaneous.Block_Chat_Until_Moved") &&
 					(e.getPlayer().getLocation() == ChatControl.data.get(e.getPlayer()).loginLocation)) {
@@ -41,16 +39,15 @@ public class ChatListener implements Listener {
 				return;
 			}
 
-			Long cas = Long.valueOf(new Date().getTime());
-			cas = Long.valueOf(cas.longValue() / 1000L);
-			if ((cas.longValue() - ChatControl.data.get(e.getPlayer()).lastMessageTime) < ChatControl.Config.getLong("Chat.Message_Delay")) {
+			long cas = System.currentTimeMillis() / 1000L;
+			if ((cas - ChatControl.data.get(e.getPlayer()).lastMessageTime) < ChatControl.Config.getLong("Chat.Message_Delay")) {
 				if (!e.getPlayer().hasPermission(Permissions.Bypasses.time)) {
-					Common.sendRawMsg(e.getPlayer(), ChatControl.Config.getString("Localization.Time_Message").replace("%time", String.valueOf(ChatControl.Config.getLong("Chat.Message_Delay") - (cas.longValue() - ChatControl.data.get(e.getPlayer()).lastMessageTime))));
+					Common.sendRawMsg(e.getPlayer(), ChatControl.Config.getString("Localization.Time_Message").replace("%time", String.valueOf(ChatControl.Config.getLong("Chat.Message_Delay") - (cas - ChatControl.data.get(e.getPlayer()).lastMessageTime))));
 					e.setCancelled(true);
 					return;
 				}
 			}
-			ChatControl.data.get(e.getPlayer()).lastMessageTime = Long.valueOf(cas.longValue());
+			ChatControl.data.get(e.getPlayer()).lastMessageTime = cas;
 
 			if (ChatControl.Config.getBoolean("Chat.Block_Duplicate_Messages")) {
 				String sprava = e.getMessage().toLowerCase();

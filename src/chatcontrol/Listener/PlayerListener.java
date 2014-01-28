@@ -134,7 +134,7 @@ public class PlayerListener implements Listener{
 			if (e.getPlayer().hasPermission(Permissions.Bypasses.dupe)) {
 				return;
 			}
-			if(ChatControl.data.get(e.getPlayer()).lastSignText == (e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3))){
+			if(ChatControl.data.get(e.getPlayer()).lastSignText.equals(e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3))){
 				Common.sendMsg(e.getPlayer(), "Localization.Dupe_Sign");
 				e.setCancelled(true);
 				return;
