@@ -82,11 +82,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 				saveConfig();
 				return;
 			}
-			if(getServer().getBukkitVersion().startsWith("1.7")) {
-				new PacketListener().initPacketListener();
-			} else {
-				new PacketListener().initOlderPacketListener();
-			}
+			PacketListener.initPacketListener();
 			Common.Log("Successfully hooked with ProtocolLib!");
 		}
 
