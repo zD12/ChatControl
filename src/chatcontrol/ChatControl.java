@@ -42,7 +42,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 
 		getConfig().options().copyDefaults(true);
 		saveDefaultConfig();
-
+		
 		ChatConfig.saveDefaultConfig();
 		ConsoleConfig.saveDefaultConfig();
 

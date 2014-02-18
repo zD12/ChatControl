@@ -405,7 +405,7 @@ public class Common {
 		Pattern pattern_from = null;
 		regex = regex.toLowerCase();
 		plain_msg = plain_msg.toLowerCase();
-		
+
 		try {
 			pattern_from = Pattern.compile(regex);
 		} catch (PatternSyntaxException ex){
