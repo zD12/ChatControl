@@ -126,7 +126,7 @@ public class CommandsHandler implements CommandExecutor {
 		 */
 		if (argument.equalsIgnoreCase("fake") || argument.equalsIgnoreCase("f")) {
 
-			if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.clear)) {
+			if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.fake)) {
 				Common.sendMsg(sender, "Localization.No_Permission");
 				return false;
 			}

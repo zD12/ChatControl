@@ -8,6 +8,7 @@ public class Permissions {
 		public static final String clear = "chatcontrol.commands.clear";
 		public static final String reload = "chatcontrol.commands.reload";
 		public static final String command_list = "chatcontrol.commands.list";
+		public static final String fake = "chatcontrol.commands.fake";
 	}
 
 	public class Bypasses {
