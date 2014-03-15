@@ -3,15 +3,28 @@ package chatcontrol.Utils;
 public class Permissions {
 
 	public class Commands {
+		// Permission to use all the commands.
 		public static final String global_perm = "chatcontrol.commands";
+		
+		// Permission for "/chatcontrol mute" command.
 		public static final String mute = "chatcontrol.commands.mute";
+		
+		// Permission for "/chatcontrol clear" command.
 		public static final String clear = "chatcontrol.commands.clear";
+		
+		// Permission for "/chatcontrol reload" command.
 		public static final String reload = "chatcontrol.commands.reload";
+		
+		// Permission for "/chatcontrol list" command.
 		public static final String command_list = "chatcontrol.commands.list";
+		
+		// Permission for "/chatcontrol fake" command.
 		public static final String fake = "chatcontrol.commands.fake";
 	}
 
 	public class Bypasses {
+		// Permission to bypass everything, basically equals to OP status.
+		// Permissions below should be easy to understand, if not please ask at ChatControl´s page at Spigot forums 
 		public static final String global_perm = "chatcontrol.bypass";
 		public static final String mute = "chatcontrol.bypass.mute";
 		public static final String time = "chatcontrol.bypass.time";
@@ -26,11 +39,16 @@ public class Permissions {
 	}
 
 	public class Notify {
+		// Permission to recieve warning when a message gets blocked as a swear.
 		public static final String swear = "chatcontrol.notify.swear";
+		
+		// Permission to recieve warning when a message gets blocked as an ad.
 		public static final String ad = "chatcontrol.notify.ad";
+		
+		// Permission to recieve warning when a new version of ChatControl is available.
 		public static final String plugin_update = "chatcontrol.notify.update";
 	}
-
+	
 	public static final String global_perm = "chatcontrol";
 	
 }
