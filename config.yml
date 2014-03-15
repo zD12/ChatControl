@@ -151,6 +151,7 @@ Miscellaneous:
   Op_Has_Permissions: true
   Automatically_Update_Config: true
   Check_For_Updates: true
+  Notify_New_Version: true
   Debug: false
 
 Localization:
@@ -191,7 +192,7 @@ Localization:
   
   Staff_Chat_Clear_Message: "&7^----- [ == &fChat was cleared by %player &7== ] -----^"
   Rejoin_Message: "&6Please wait &7%time second(s)&6 before logging in."
-  Update_Needed: "&6There is a new version of &cChatControl&6 available.\n&6Current version: &7%current&6; New version: &7%new"
+  Update_Needed: "&2A new version of &3ChatControl&2 is available.\n&2Current version: &f%current&2; New version: &f%new\n&2You can disable this notification in its config."
   Reload_Complete: "&7Plugin was reloaded successfully."
   No_Permission: "&cYou do not have permission for this."
   

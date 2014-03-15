@@ -35,7 +35,7 @@ public class ConfigUpdater {
 			return;
 		}
 
-		if(plVersion.contains("SNAPSHOT")) {
+		if(plVersion.contains("SNAPSHOT") || plVersion.contains("DEV")) {
 			status = Status.DISABLED;
 			System.out.println("No config update on snapshot, happy testing!");
 			return;
@@ -57,6 +57,7 @@ public class ConfigUpdater {
 					updateConfigTo437();
 					updateConfigTo440();
 					updateConfigTo441();
+					updateConfigTo444();
 				} else if (plVersion.equals("4.1.6") || plVersion.equals("4.1.7")) {
 					updateConfigTo418();
 					updateConfigTo419();
@@ -69,6 +70,7 @@ public class ConfigUpdater {
 					updateConfigTo437();
 					updateConfigTo440();
 					updateConfigTo441();
+					updateConfigTo444();
 				} else if (plVersion.equals("4.1.8")) {
 					updateConfigTo419();
 					updateConfigTo422();
@@ -80,6 +82,7 @@ public class ConfigUpdater {
 					updateConfigTo437();
 					updateConfigTo440();
 					updateConfigTo441();
+					updateConfigTo444();
 				} else if (plVersion.equalsIgnoreCase("4.1.9") || plVersion.equalsIgnoreCase("4.2.1")) {
 					updateConfigTo422();
 					updateConfigTo423();
@@ -90,6 +93,7 @@ public class ConfigUpdater {
 					updateConfigTo437();
 					updateConfigTo440();
 					updateConfigTo441();
+					updateConfigTo444();
 				} else if (plVersion.equalsIgnoreCase("4.2.2")) {
 					updateConfigTo423();
 					updateConfigTo424();
@@ -99,6 +103,7 @@ public class ConfigUpdater {
 					updateConfigTo437();
 					updateConfigTo440();
 					updateConfigTo441();
+					updateConfigTo444();
 				} else if (plVersion.equalsIgnoreCase("4.2.3")) {
 					updateConfigTo424();
 					updateConfigTo430();
@@ -107,6 +112,7 @@ public class ConfigUpdater {
 					updateConfigTo437();
 					updateConfigTo440();
 					updateConfigTo441();
+					updateConfigTo444();
 				} else if (plVersion.equalsIgnoreCase("4.2.4")) {
 					updateConfigTo430();
 					updateConfigTo432();
@@ -114,26 +120,34 @@ public class ConfigUpdater {
 					updateConfigTo437();
 					updateConfigTo440();
 					updateConfigTo441();
+					updateConfigTo444();
 				} else if (plVersion.equalsIgnoreCase("4.3.0") || plVersion.equalsIgnoreCase("4.3.1")) {
 					updateConfigTo432();
 					updateConfigTo436();
 					updateConfigTo437();
 					updateConfigTo440();
 					updateConfigTo441();
+					updateConfigTo444();
 				} else if (plVersion.equalsIgnoreCase("4.3.2") || plVersion.equalsIgnoreCase("4.3.3") || plVersion.equalsIgnoreCase("4.3.4") || plVersion.equalsIgnoreCase("4.3.5")) {
 					updateConfigTo436();
 					updateConfigTo437();
 					updateConfigTo440();
 					updateConfigTo441();
+					updateConfigTo444();
 				} else if (plVersion.equalsIgnoreCase("4.3.6")) {
 					updateConfigTo437();
 					updateConfigTo440();
 					updateConfigTo441();
+					updateConfigTo444();
 				} else if (plVersion.equalsIgnoreCase("4.3.7")) {
 					updateConfigTo440();
 					updateConfigTo441();
+					updateConfigTo444();
 				} else if (plVersion.equalsIgnoreCase("4.4.0")) {
 					updateConfigTo441();
+					updateConfigTo444();
+				} else if (plVersion.equalsIgnoreCase("4.4.3")) {
+					updateConfigTo444();
 				} else if (Integer.valueOf(plVersion.replace(".", "")) < 415) {
 					status = Status.TOO_OLD;
 				} else if (Integer.valueOf(plVersion.replace(".", "")) > Integer.valueOf(latestVersion.replace(".", ""))) {
@@ -263,6 +277,12 @@ public class ConfigUpdater {
 		ChatControl.Config.set("Localization.Usage_Fake_Cmd", "%prefix Usage: /chatcontrol fake <&bjoin&f/&aleave&f>");
 		ChatControl.Config.set("Commands.Block_Similar_Messages", true);
 		ChatControl.Config.set("Commands.Strip_Unicode", true);
+	}
+
+	public static void updateConfigTo444() {
+		ChatControl.Config.set("Miscellaneous.Notify_New_Version", true);
+		ChatControl.Config.set("Localization.Update_Needed", "&2A new version of &3ChatControl&2 is available.\n&2Current version: &f%current&2; New version: &f%new"
+				+ "\n&2You can disable this notification in its config.");
 	}
 
 	public static void updateVersionMark() {

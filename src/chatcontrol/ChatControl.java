@@ -21,11 +21,14 @@ import chatcontrol.Listener.PlayerListener;
 import chatcontrol.PacketListener.PacketListener;
 import chatcontrol.Utils.Common;
 import chatcontrol.Utils.ConfigUpdater;
+import chatcontrol.Utils.UpdaterThread;
 
 public class ChatControl extends JavaPlugin implements Listener {
 
 	public static ChatControl plugin;
-
+	public static boolean needsUpdate = false;
+	public static String newVersion;
+	
 	public static FileConfiguration Config;
 
 	public static CustomConfig ChatConfig = new CustomConfig(FileType.CHAT);
@@ -87,6 +90,9 @@ public class ChatControl extends JavaPlugin implements Listener {
 		}
 
 		getCommand("chatcontrol").setExecutor(new CommandsHandler());
+		
+		if(getConfig().getBoolean("Miscellaneous.Check_For_Updates"))
+			getServer().getScheduler().runTaskAsynchronously(this, new UpdaterThread("https://raw.github.com/kangarko/ChatControl/master/plugin.yml"));	
 	}
 
 	public void onDisable() {

@@ -10,6 +10,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.Ansi.Attribute;
 
@@ -22,6 +23,15 @@ public class Common {
 
 	public static void sendRawMsg(CommandSender pl, String str){
 		pl.sendMessage( colorize( str.replace("%prefix", prefix()).replace("%player", resolvedSender(pl)) ) );
+	}
+	
+	public static void sendRawTimedMsg(final Player pl, final String str, int delay_in_seconds){
+		Bukkit.getScheduler().runTaskLater(ChatControl.plugin, new BukkitRunnable() {
+			@Override
+			public void run() {
+				pl.sendMessage( colorize( str.replace("%prefix", prefix()).replace("%player", resolvedSender(pl)) ) );
+			}
+		}, delay_in_seconds * 20);
 	}
 
 	/**
@@ -222,8 +232,7 @@ public class Common {
 	}
 
 	public static void error(String str, Throwable ex){
-		console.sendMessage("(ChatControl) " + colorize(str));
-		ex.printStackTrace();
+		throw new Error("(ChatControl) " + colorize(str), ex);
 	}
 
 	public static String colorize(String str) {

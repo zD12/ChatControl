@@ -2,6 +2,7 @@ package chatcontrol.Listener;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
@@ -52,15 +53,15 @@ public class PlayerListener implements Listener{
 			e.setJoinMessage(null);
 			return;
 		}
-		/*if(ChatControl.Config.getBoolean("Miscellaneous.Check_For_Updates") && Updater.isOutdated){
+		if(ChatControl.needsUpdate && ChatControl.Config.getBoolean("Miscellaneous.Notify_New_Version") && ChatControl.Config.getBoolean("Miscellaneous.Check_For_Updates")){
 			for(Player pl : Bukkit.getOnlinePlayers()){
 				if(pl.isOp() || pl.hasPermission(Permissions.Notify.plugin_update)){
-					String sprava = Common.colorize(ChatControl.Config.getString("Localization.Update_Needed")).replace("%current", ChatControl.plugin.getDescription().getVersion()).replace("%new", Updater.newVersion);
+					String sprava = Common.colorize(ChatControl.Config.getString("Localization.Update_Needed")).replace("%current", ChatControl.plugin.getDescription().getVersion()).replace("%new", ChatControl.newVersion);
 					sprava.split("\n");
-					pl.sendMessage(sprava);
+					Common.sendRawTimedMsg(pl, sprava, 5);
 				}
 			}
-		}*/
+		}
 		switch (ChatControl.Config.getString("Messages.Common.Join_Message")) {
 		case "default":
 			break;
