@@ -7,12 +7,12 @@ Replacing_Characters:
   # Replace following characters with built-in smileys:  :) :-) :( :-( ;) ;-) :square: :rectangle: :love: <3
   Supply_With_Smileys: true
   Replace_List:
-    # Supports RegEx!
-    dis: this
-    wanna: want
-    gonna: going
+    # Supports RegEx, in case below the \b match the whole word so f.example disrespect do not get replaced.
+    \bdis\b: this
+    \bwanna\b: want
+    \bgonna\b: going
     (can|may|would you like if) i (have|be|become|get|has) (op|admin|mod|builder): can i has nodus?
     (do|are) you (need|wish|looking for) (any|some|one|good) (op|ops|operators|admins|mods|builders|new people|ateam): u need some pig zaps
     this server (is bad|sucks): i just griefed some crap castle /w nodus u noob kiddos
     ((admin|op|ateam|server|owner) (is|are)) + *(dick|cock|duck|noob|kid): i am a kiddo gimme ban pl0x
-    owner (fucks|sucks) (kids|dicks|birds): piewdiepie sucks
+    owner (fucks|sucks) (kids|dicks|birds): peiwdiepie sucks
