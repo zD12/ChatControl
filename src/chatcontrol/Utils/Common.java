@@ -212,7 +212,7 @@ public class Common {
 
 	public static String osmajlikovat(String msg){
 		msg = msg.replace(":)", "☺").replace(":-)", "☺").replace(":(", "☹").replace(":-(", "☹").replace(";)", "㋡").replace(";-)", "㋡").replace(":love:", "♥")
-				.replace(":square:", "■").replace(":rectangle:", "█").replace("<3", "♥");
+			      .replace(":square:", "■").replace(":rectangle:", "█").replace("<3", "♥");
 		return msg;
 	}
 
