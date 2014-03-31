@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import chatcontrol.Utils.Common;
+import chatcontrol.Utils.InsufficientPermissionEx;
 import chatcontrol.Utils.Permissions;
 
 public class CommandsHandler implements CommandExecutor {
@@ -29,10 +30,8 @@ public class CommandsHandler implements CommandExecutor {
 			return false;
 		}
 
-		if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.global_perm)) {
-			Common.sendMsg(sender, "Localization.No_Permission");
-			return false;
-		}
+		if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.global_perm))
+			throw new InsufficientPermissionEx(sender);
 		
 		String argument = args[0];
 		String volba = args.length >= 2 ? args[1] : "";
@@ -43,32 +42,27 @@ public class CommandsHandler implements CommandExecutor {
 			return false;
 		}
 
-		if(args.length > 1) {
-			for(int i = 1; i < args.length; i++) {
+		if(args.length > 1)
+			for(int i = 1; i < args.length; i++)
 				dovod += " " + args[i];
-			}
-		}
 
 		/**
 		 * MUTE COMMAND
 		 */
 		if (argument.equalsIgnoreCase("mute") || argument.equalsIgnoreCase("m")) {
 
-			if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.mute)) {
-				Common.sendMsg(sender, "Localization.No_Permission");
-				return false;
-			}
+			if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.mute))
+				throw new InsufficientPermissionEx(sender);
 
 			if(ChatControl.muted){
 				ChatControl.muted = false;
 
-				if(sender.hasPermission(Permissions.Commands.muteSilent) && (volba.equalsIgnoreCase("-silent") || volba.equalsIgnoreCase("-s"))) {
+				if (sender.hasPermission(Permissions.Commands.muteSilent) && (volba.equalsIgnoreCase("-silent") || volba.equalsIgnoreCase("-s"))) {
 					// do nothing
-				} else if (sender.hasPermission(Permissions.Commands.muteAnonymous) && (volba.equalsIgnoreCase("-anonymous") || volba.equalsIgnoreCase("-a"))) {
+				} else if (sender.hasPermission(Permissions.Commands.muteAnonymous) && (volba.equalsIgnoreCase("-anonymous") || volba.equalsIgnoreCase("-a")))
 					Common.broadcastMsg(sender, "Mute.Broadcast", "Localization.Broadcast_Silent_Unmute", "");
-				} else {
+				else
 					Common.broadcastMsg(sender, "Mute.Broadcast", "Localization.Broadcast_Unmute", "");
-				}
 
 				Common.sendMsg(sender, "Localization.Successful_Unmute");
 
@@ -77,11 +71,10 @@ public class CommandsHandler implements CommandExecutor {
 
 				if(sender.hasPermission(Permissions.Commands.muteSilent) && (volba.equalsIgnoreCase("-silent") || volba.equalsIgnoreCase("-s"))) {
 					// do nothing
-				} else if (sender.hasPermission(Permissions.Commands.muteAnonymous) && (volba.equalsIgnoreCase("-anonymous") || volba.equalsIgnoreCase("-a"))) {
+				} else if (sender.hasPermission(Permissions.Commands.muteAnonymous) && (volba.equalsIgnoreCase("-anonymous") || volba.equalsIgnoreCase("-a")))
 					Common.broadcastMsg(sender, "Mute.Broadcast", "Localization.Broadcast_Silent_Mute", "");
-				} else {
+				else
 					Common.broadcastMsg(sender, "Mute.Broadcast", "Localization.Broadcast_Mute", dovod);
-				}
 
 				Common.sendMsg(sender, "Localization.Successful_Mute");
 			}
@@ -93,10 +86,8 @@ public class CommandsHandler implements CommandExecutor {
 		 */
 		if (argument.equalsIgnoreCase("clear") || argument.equalsIgnoreCase("c")) {
 
-			if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.clear)) {
-				Common.sendMsg(sender, "Localization.No_Permission");
-				return false;
-			}
+			if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.clear))
+				throw new InsufficientPermissionEx(sender);
 
 			if(volba.equalsIgnoreCase("console") ||volba.equalsIgnoreCase("konzole") || volba.equalsIgnoreCase("konzola")){
 				for(int i = 0; i < ChatControl.Config.getInt("Clear.Amount_Of_Lines_To_Clear_In_Console", 300); i++){
@@ -131,10 +122,8 @@ public class CommandsHandler implements CommandExecutor {
 		 */
 		if (argument.equalsIgnoreCase("fake") || argument.equalsIgnoreCase("f")) {
 
-			if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.fake)) {
-				Common.sendMsg(sender, "Localization.No_Permission");
-				return false;
-			}
+			if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.fake))
+				throw new InsufficientPermissionEx(sender);
 
 			if(volba.equalsIgnoreCase("join") ||volba.equalsIgnoreCase("j")){
 				if(ChatControl.Config.getString("Messages.Common.Join_Message").equalsIgnoreCase("default")) {
@@ -168,10 +157,8 @@ public class CommandsHandler implements CommandExecutor {
 		 */
 		if (argument.equalsIgnoreCase("reload") || argument.equalsIgnoreCase("znovunacitat") || argument.equalsIgnoreCase("r")) {
 
-			if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.reload)){
-				Common.sendMsg(sender, "Localization.No_Permission");
-				return false;
-			}
+			if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.reload))
+				throw new InsufficientPermissionEx(sender);
 
 			ChatControl.plugin.reloadConfig();
 			ChatControl.ChatConfig.reload();
@@ -187,10 +174,9 @@ public class CommandsHandler implements CommandExecutor {
 
 		if (argument.equalsIgnoreCase("commands") || argument.equalsIgnoreCase("?") || argument.equalsIgnoreCase("list")) {
 
-			if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.command_list)){
-				Common.sendMsg(sender, "Localization.No_Permission");
-				return false;
-			}
+			if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.command_list))
+				throw new InsufficientPermissionEx(sender);
+
 			Common.sendRawMsg(sender,
 					" ",
 					"&3  ChatControl &f(v" + ChatControl.plugin.getDescription().getVersion() + ")",
@@ -206,9 +192,9 @@ public class CommandsHandler implements CommandExecutor {
 			return false;
 		}
 
-		// AK BOL UVEDENY NEPLATNY ARGUMENT
+		// AK BOL UVEDENY NEPLATNY ARGUMENT (on wrong argument)
 		if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.global_perm)) {
-			Common.sendMsg(sender, "Localization.No_Permission");
+			throw new InsufficientPermissionEx(sender);
 		} else {
 			Common.sendMsg(sender, "Localization.Wrong_Args");
 		}

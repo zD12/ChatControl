@@ -7,10 +7,10 @@ import chatcontrol.ChatControl;
 
 public class ConfigUpdater {
 
-	public static Status status;
-	public static String latestVersion = ChatControl.plugin.getDescription().getVersion();
+	private static Status status;
+	private static String latestVersion = ChatControl.plugin.getDescription().getVersion();
 
-	public enum Status {
+	private enum Status {
 		SUCCESS("&aConfiguration was updated for version " + ChatControl.plugin.getDescription().getVersion()),
 		ERROR("&c Config was NOT updated! Please regenerate it."),
 		TOO_OLD("&4Your ChatControl version is too old. We cannot update your configuration. Consider regenerating your config.yml."),
@@ -35,7 +35,7 @@ public class ConfigUpdater {
 			return;
 		}
 
-		if(plVersion.contains("SNAPSHOT") || plVersion.contains("DEV")) {
+		if(latestVersion.contains("SNAPSHOT") || latestVersion.contains("DEV") || plVersion.contains("SNAPSHOT") || plVersion.contains("DEV")) {
 			status = Status.DISABLED;
 			System.out.println("No config update on snapshot, happy testing!");
 			return;
@@ -179,37 +179,37 @@ public class ConfigUpdater {
 		}
 	}
 
-	public static void updateConfigTo416() {
+	private static void updateConfigTo416() {
 		ChatControl.Config.set("Anti_Ad.Command_Whitelist", "[]");
 	}
 
-	public static void updateConfigTo418() {
+	private static void updateConfigTo418() {
 		ChatControl.Config.set("Console.Filter_Plugin_Messages", true);
 		ChatControl.Config.set("Console.Filter_Messages", "[]");
 	}
 
-	public static void updateConfigTo419() {
+	private static void updateConfigTo419() {
 		ChatControl.Config.set("Signs.Advertising_Check", true);
 		ChatControl.Config.set("Signs.Rewrite_Lines", true);
 		ChatControl.Config.set("Signs.Rewrite_Text", "Advertising was:&4detected.:Please do not:advertise.");
 	}
 
-	public static void updateConfigTo422() {
+	private static void updateConfigTo422() {
 		ChatControl.Config.set("Protect.Prevent_Tab_Complete", true);
 	}
 
-	public static void updateConfigTo423() {
+	private static void updateConfigTo423() {
 		ChatControl.Config.set("Localization.Cannot_Command_While_Muted", "&7You cannot use this command while the chat is muted.");
 		ChatControl.Config.set("Mute.Disabled_Commands_During_Mute", "[]");
 		ChatControl.Config.set("Localization.Dupe_Sign", "&cPlease do not repeat the same text on sign.");
 		ChatControl.Config.set("Signs.Duplication_Check", false);
 	}
 
-	public static void updateConfigTo424() {
+	private static void updateConfigTo424() {
 		ChatControl.Config.set("Anti_Ad.Filter_Pre_Process", "[(\\[\\])]");
 	}
 
-	public static void updateConfigTo430() {
+	private static void updateConfigTo430() {
 		ChatControl.Config.set("Messages.Common.Join_Message", "default");
 		ChatControl.Config.set("Messages.Common.Quit_Message", "default");
 		ChatControl.Config.set("Messages.Common.Kick_Message", "default");
@@ -219,7 +219,7 @@ public class ConfigUpdater {
 		Common.Log("&cWARNING! You was runnnig an very old version of ChatControl, configuration might not get updated correctly! It is strongly advised to regenerate your config.");
 	}
 
-	public static void updateConfigTo432() {
+	private static void updateConfigTo432() {
 		ChatControl.Config.set("Grammar.Replace_Characters", true);
 		ChatControl.Config.set("Grammar.Replace_With_Smileys", true);
 
@@ -232,17 +232,17 @@ public class ConfigUpdater {
 		ChatControl.Config.set("Grammar.Replace_List.owner (fucks|sucks) (kids|dicks|birds)", "piewdiepie sucks");
 	}
 
-	public static void updateConfigTo436() {
+	private static void updateConfigTo436() {
 		ChatControl.Config.set("Localization.Successful_Console_Clear", "%prefix &7Console was successfuly cleared.");
 		ChatControl.Config.set("Clear.Amount_Of_Lines_To_Clear_In_Console", 300);
 	}
 
-	public static void updateConfigTo437() {
+	private static void updateConfigTo437() {
 		ChatControl.Config.set("Chat.Strip_Unicode", true);
 		ChatControl.Config.set("Anti_Swear.Command_Whitelist", Arrays.asList("/register", "/reg", "/login", "/l"));
 	}
 
-	public static void updateConfigTo440() {
+	private static void updateConfigTo440() {
 		boolean capitalize = ChatControl.Config.getBoolean("Grammar.Capitalise");
 		boolean dot = ChatControl.Config.getBoolean("Grammar.Insert_Dot");
 		ChatControl.Config.set("Broadcast_Silent_Mute", "&cInitiated global chat mute.");
@@ -271,7 +271,7 @@ public class ConfigUpdater {
 		Common.Log("&cAlso please notice that Console Filter and Replacing characters was moved into separate files.");
 	}
 
-	public static void updateConfigTo441() {
+	private static void updateConfigTo441() {
 		ChatControl.ConsoleConfig.getConfig().set("Console.Correct_Color_Codes", true);
 		ChatControl.Config.set("Localization.Cannot_Broadcast_Empty_Message", "&cMessage at %event is none, therefore nothing is broadcasted.");
 		ChatControl.Config.set("Localization.Usage_Fake_Cmd", "%prefix Usage: /chatcontrol fake <&bjoin&f/&aleave&f>");
@@ -279,13 +279,13 @@ public class ConfigUpdater {
 		ChatControl.Config.set("Commands.Strip_Unicode", true);
 	}
 
-	public static void updateConfigTo444() {
+	private static void updateConfigTo444() {
 		ChatControl.Config.set("Miscellaneous.Notify_New_Version", true);
 		ChatControl.Config.set("Localization.Update_Needed", "&2A new version of &3ChatControl&2 is available.\n&2Current version: &f%current&2; New version: &f%new"
 				+ "\n&2You can disable this notification in its config.");
 	}
 
-	public static void updateVersionMark() {
+	private static void updateVersionMark() {
 		try {
 			ChatControl.Config.set("Do_Not_Change_Version_Number", latestVersion);
 			ChatControl.Config.save(new File(ChatControl.plugin.getDataFolder(), "config.yml"));
