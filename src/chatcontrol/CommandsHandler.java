@@ -29,11 +29,16 @@ public class CommandsHandler implements CommandExecutor {
 			return false;
 		}
 
+		if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.global_perm)) {
+			Common.sendMsg(sender, "Localization.No_Permission");
+			return false;
+		}
+		
 		String argument = args[0];
 		String volba = args.length >= 2 ? args[1] : "";
 		String dovod = "";
 
-		if((sender.isOp() || sender.hasPermission(Permissions.Commands.global_perm)) && volba.startsWith("-") && !validParameters.contains(volba)) {
+		if(volba.startsWith("-") && !validParameters.contains(volba)) {
 			Common.sendRawMsg(sender, ChatControl.Config.getString("Localization.Wrong_Parameters").replace("%params", validParameters.toString().replace("[", "").replace("]", "")));
 			return false;
 		}
@@ -57,9 +62,9 @@ public class CommandsHandler implements CommandExecutor {
 			if(ChatControl.muted){
 				ChatControl.muted = false;
 
-				if(volba.equalsIgnoreCase("-silent") || volba.equalsIgnoreCase("-s")) {
+				if(sender.hasPermission(Permissions.Commands.muteSilent) && (volba.equalsIgnoreCase("-silent") || volba.equalsIgnoreCase("-s"))) {
 					// do nothing
-				} else if (volba.equalsIgnoreCase("-anonymous") || volba.equalsIgnoreCase("-a")) {
+				} else if (sender.hasPermission(Permissions.Commands.muteAnonymous) && (volba.equalsIgnoreCase("-anonymous") || volba.equalsIgnoreCase("-a"))) {
 					Common.broadcastMsg(sender, "Mute.Broadcast", "Localization.Broadcast_Silent_Unmute", "");
 				} else {
 					Common.broadcastMsg(sender, "Mute.Broadcast", "Localization.Broadcast_Unmute", "");
@@ -70,9 +75,9 @@ public class CommandsHandler implements CommandExecutor {
 			} else {
 				ChatControl.muted = true;
 
-				if(volba.equalsIgnoreCase("-silent") || volba.equalsIgnoreCase("-s")) {
+				if(sender.hasPermission(Permissions.Commands.muteSilent) && (volba.equalsIgnoreCase("-silent") || volba.equalsIgnoreCase("-s"))) {
 					// do nothing
-				} else if (volba.equalsIgnoreCase("-anonymous") || volba.equalsIgnoreCase("-a")) {
+				} else if (sender.hasPermission(Permissions.Commands.muteAnonymous) && (volba.equalsIgnoreCase("-anonymous") || volba.equalsIgnoreCase("-a"))) {
 					Common.broadcastMsg(sender, "Mute.Broadcast", "Localization.Broadcast_Silent_Mute", "");
 				} else {
 					Common.broadcastMsg(sender, "Mute.Broadcast", "Localization.Broadcast_Mute", dovod);
@@ -111,9 +116,9 @@ public class CommandsHandler implements CommandExecutor {
 				}
 			}
 
-			if(volba.equalsIgnoreCase("-silent") || volba.equalsIgnoreCase("-s")) {
+			if(sender.hasPermission(Permissions.Commands.clearSilent) && (volba.equalsIgnoreCase("-silent") || volba.equalsIgnoreCase("-s"))) {
 				// do nothing
-			} else if (volba.equalsIgnoreCase("-anonymous") || volba.equalsIgnoreCase("-a")) {
+			} else if (sender.hasPermission(Permissions.Commands.clearAnonymous) && (volba.equalsIgnoreCase("-anonymous") || volba.equalsIgnoreCase("-a"))) {
 				Common.broadcastMsg(sender, "Clear.Broadcast", "Localization.Broadcast_Silent_Clear", "");
 			} else {
 				Common.broadcastMsg(sender, "Clear.Broadcast", "Localization.Broadcast_Clear", dovod);

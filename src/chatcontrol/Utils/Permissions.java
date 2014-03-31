@@ -8,9 +8,13 @@ public class Permissions {
 		
 		// Permission for "/chatcontrol mute" command.
 		public static final String mute = "chatcontrol.commands.mute";
+		public static final String muteSilent = "chatcontrol.commands.mute.silent";
+		public static final String muteAnonymous = "chatcontrol.commands.mute.anonymous";
 		
 		// Permission for "/chatcontrol clear" command.
 		public static final String clear = "chatcontrol.commands.clear";
+		public static final String clearSilent = "chatcontrol.commands.clear.silent";
+		public static final String clearAnonymous = "chatcontrol.commands.clear.anonymous";
 		
 		// Permission for "/chatcontrol reload" command.
 		public static final String reload = "chatcontrol.commands.reload";
