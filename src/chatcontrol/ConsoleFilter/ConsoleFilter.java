@@ -7,7 +7,7 @@ import chatcontrol.ChatControl;
 import chatcontrol.Utils.Common;
 
 public class ConsoleFilter implements Filter {
-
+	
 	public boolean isLoggable(LogRecord record){
 		String msg = record.getMessage();
 		String higherMsg = record.getMessage().toLowerCase();

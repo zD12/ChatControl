@@ -15,6 +15,7 @@ public class Permissions {
 		public static final String clear = "chatcontrol.commands.clear";
 		public static final String clearSilent = "chatcontrol.commands.clear.silent";
 		public static final String clearAnonymous = "chatcontrol.commands.clear.anonymous";
+		public static final String clearConsole = "chatcontrol.commands.clear.console";
 		
 		// Permission for "/chatcontrol reload" command.
 		public static final String reload = "chatcontrol.commands.reload";

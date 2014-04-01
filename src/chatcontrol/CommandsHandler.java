@@ -12,12 +12,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import chatcontrol.Utils.Common;
-import chatcontrol.Utils.InsufficientPermissionEx;
 import chatcontrol.Utils.Permissions;
 
 public class CommandsHandler implements CommandExecutor {
 
-	List<String> validParameters = Arrays.asList("-silent", "-s", "-anonymous", "-a"); // TODO Keep updated with the parameters below.
+	List<String> validParameters = Arrays.asList("-silent", "-s", "-anonymous", "-a", "-console", "-c"); // TODO Keep updated with the parameters below.
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -30,9 +29,12 @@ public class CommandsHandler implements CommandExecutor {
 			return false;
 		}
 
-		if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.global_perm))
-			throw new InsufficientPermissionEx(sender);
-		
+		if(!hasPerm(sender, Permissions.Commands.global_perm)) {
+			System.out.println("Sender has no global_perm permission!");
+			Common.sendMsg(sender, "Localization.No_Permission");
+			return false;
+		}
+
 		String argument = args[0];
 		String volba = args.length >= 2 ? args[1] : "";
 		String dovod = "";
@@ -51,15 +53,17 @@ public class CommandsHandler implements CommandExecutor {
 		 */
 		if (argument.equalsIgnoreCase("mute") || argument.equalsIgnoreCase("m")) {
 
-			if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.mute))
-				throw new InsufficientPermissionEx(sender);
+			if(!hasPerm(sender, Permissions.Commands.mute)) {
+				Common.sendMsg(sender, "Localization.No_Permission");
+				return false;
+			}
 
 			if(ChatControl.muted){
 				ChatControl.muted = false;
 
-				if (sender.hasPermission(Permissions.Commands.muteSilent) && (volba.equalsIgnoreCase("-silent") || volba.equalsIgnoreCase("-s"))) {
+				if (hasPerm(sender, Permissions.Commands.muteSilent) && (volba.equalsIgnoreCase("-silent") || volba.equalsIgnoreCase("-s"))) {
 					// do nothing
-				} else if (sender.hasPermission(Permissions.Commands.muteAnonymous) && (volba.equalsIgnoreCase("-anonymous") || volba.equalsIgnoreCase("-a")))
+				} else if (hasPerm(sender, Permissions.Commands.muteAnonymous) && (volba.equalsIgnoreCase("-anonymous") || volba.equalsIgnoreCase("-a")))
 					Common.broadcastMsg(sender, "Mute.Broadcast", "Localization.Broadcast_Silent_Unmute", "");
 				else
 					Common.broadcastMsg(sender, "Mute.Broadcast", "Localization.Broadcast_Unmute", "");
@@ -69,9 +73,9 @@ public class CommandsHandler implements CommandExecutor {
 			} else {
 				ChatControl.muted = true;
 
-				if(sender.hasPermission(Permissions.Commands.muteSilent) && (volba.equalsIgnoreCase("-silent") || volba.equalsIgnoreCase("-s"))) {
+				if(hasPerm(sender, Permissions.Commands.muteSilent) && (volba.equalsIgnoreCase("-silent") || volba.equalsIgnoreCase("-s"))) {
 					// do nothing
-				} else if (sender.hasPermission(Permissions.Commands.muteAnonymous) && (volba.equalsIgnoreCase("-anonymous") || volba.equalsIgnoreCase("-a")))
+				} else if (hasPerm(sender, Permissions.Commands.muteAnonymous) && (volba.equalsIgnoreCase("-anonymous") || volba.equalsIgnoreCase("-a")))
 					Common.broadcastMsg(sender, "Mute.Broadcast", "Localization.Broadcast_Silent_Mute", "");
 				else
 					Common.broadcastMsg(sender, "Mute.Broadcast", "Localization.Broadcast_Mute", dovod);
@@ -86,19 +90,23 @@ public class CommandsHandler implements CommandExecutor {
 		 */
 		if (argument.equalsIgnoreCase("clear") || argument.equalsIgnoreCase("c")) {
 
-			if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.clear))
-				throw new InsufficientPermissionEx(sender);
-
-			if(volba.equalsIgnoreCase("console") ||volba.equalsIgnoreCase("konzole") || volba.equalsIgnoreCase("konzola")){
+			if(!hasPerm(sender, Permissions.Commands.clear)) {
+				Common.sendMsg(sender, "Localization.No_Permission");
+				return false;
+			}
+			
+			if(hasPerm(sender, Permissions.Commands.clearConsole) && (volba.equalsIgnoreCase("-console") || volba.equalsIgnoreCase("-c") || volba.equalsIgnoreCase("-konzola"))) {
 				for(int i = 0; i < ChatControl.Config.getInt("Clear.Amount_Of_Lines_To_Clear_In_Console", 300); i++){
 					System.out.println("           ");
 				}
+				if(sender instanceof Player)
+					Common.Log("Console was cleared by " + sender.getName());
 				Common.sendMsg(sender, "Localization.Successful_Console_Clear");
 				return false;
 			}
 
 			for(Player pl : Bukkit.getOnlinePlayers()){
-				if(ChatControl.Config.getBoolean("Clear.Do_Not_Clear_For_Staff") && (pl.isOp() || pl.hasPermission(Permissions.Bypasses.chat_clear))){
+				if(ChatControl.Config.getBoolean("Clear.Do_Not_Clear_For_Staff") && (hasPerm(sender, Permissions.Bypasses.chat_clear))){
 					Common.sendMsg(pl, "Localization.Staff_Chat_Clear_Message");
 					continue;
 				}
@@ -107,9 +115,9 @@ public class CommandsHandler implements CommandExecutor {
 				}
 			}
 
-			if(sender.hasPermission(Permissions.Commands.clearSilent) && (volba.equalsIgnoreCase("-silent") || volba.equalsIgnoreCase("-s"))) {
+			if(hasPerm(sender, Permissions.Commands.clearSilent) && (volba.equalsIgnoreCase("-silent") || volba.equalsIgnoreCase("-s"))) {
 				// do nothing
-			} else if (sender.hasPermission(Permissions.Commands.clearAnonymous) && (volba.equalsIgnoreCase("-anonymous") || volba.equalsIgnoreCase("-a"))) {
+			} else if (hasPerm(sender, Permissions.Commands.clearAnonymous) && (volba.equalsIgnoreCase("-anonymous") || volba.equalsIgnoreCase("-a"))) {
 				Common.broadcastMsg(sender, "Clear.Broadcast", "Localization.Broadcast_Silent_Clear", "");
 			} else {
 				Common.broadcastMsg(sender, "Clear.Broadcast", "Localization.Broadcast_Clear", dovod);
@@ -122,8 +130,10 @@ public class CommandsHandler implements CommandExecutor {
 		 */
 		if (argument.equalsIgnoreCase("fake") || argument.equalsIgnoreCase("f")) {
 
-			if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.fake))
-				throw new InsufficientPermissionEx(sender);
+			if(!hasPerm(sender, Permissions.Commands.fake)) {
+				Common.sendMsg(sender, "Localization.No_Permission");
+				return false;
+			}
 
 			if(volba.equalsIgnoreCase("join") ||volba.equalsIgnoreCase("j")){
 				if(ChatControl.Config.getString("Messages.Common.Join_Message").equalsIgnoreCase("default")) {
@@ -157,8 +167,10 @@ public class CommandsHandler implements CommandExecutor {
 		 */
 		if (argument.equalsIgnoreCase("reload") || argument.equalsIgnoreCase("znovunacitat") || argument.equalsIgnoreCase("r")) {
 
-			if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.reload))
-				throw new InsufficientPermissionEx(sender);
+			if(!hasPerm(sender, Permissions.Commands.reload)) {
+				Common.sendMsg(sender, "Localization.No_Permission");
+				return false;
+			}
 
 			ChatControl.plugin.reloadConfig();
 			ChatControl.ChatConfig.reload();
@@ -174,8 +186,10 @@ public class CommandsHandler implements CommandExecutor {
 
 		if (argument.equalsIgnoreCase("commands") || argument.equalsIgnoreCase("?") || argument.equalsIgnoreCase("list")) {
 
-			if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.command_list))
-				throw new InsufficientPermissionEx(sender);
+			if(!hasPerm(sender, Permissions.Commands.command_list)) {
+				Common.sendMsg(sender, "Localization.No_Permission");
+				return false;
+			}
 
 			Common.sendRawMsg(sender,
 					" ",
@@ -183,8 +197,8 @@ public class CommandsHandler implements CommandExecutor {
 					"&2  [] &f= optional arguments (use only 1 at once)",
 					"&6  <> &f= required arguments",
 					" ",
-					"  &f/chc mute &2[-silent] [-anonymous] [reason] &e- Chat clear.",
-					"  &f/chc clear &2[-silent] [-anonymous] [reason] &e- Chat (un)mute.",
+					"  &f/chc mute &2[-silent] [-anonymous] [reason] &e- Chat (un)mute.",
+					"  &f/chc clear &2[-silent] [-anonymous] [reason] &e- Chat clearing.",
 					"  &f/chc fake &6<join/leave> &e- Send fake join/leave message.",
 					"  &f/chc reload &e- Reload configuration.",
 					"  &f/chc list &e- Command list."
@@ -193,12 +207,14 @@ public class CommandsHandler implements CommandExecutor {
 		}
 
 		// AK BOL UVEDENY NEPLATNY ARGUMENT (on wrong argument)
-		if(!sender.isOp() && !sender.hasPermission(Permissions.Commands.global_perm)) {
-			throw new InsufficientPermissionEx(sender);
-		} else {
-			Common.sendMsg(sender, "Localization.Wrong_Args");
-		}
+		Common.sendMsg(sender, "Localization.Wrong_Args");
 
+		return false;
+	}
+	
+	private boolean hasPerm(CommandSender sender, String str) {
+		if(sender.isOp() || sender.hasPermission(str))
+			return true;
 		return false;
 	}
 
