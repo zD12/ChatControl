@@ -30,7 +30,6 @@ public class CommandsHandler implements CommandExecutor {
 		}
 
 		if(!hasPerm(sender, Permissions.Commands.global_perm)) {
-			System.out.println("Sender has no global_perm permission!");
 			Common.sendMsg(sender, "Localization.No_Permission");
 			return false;
 		}
@@ -51,7 +50,7 @@ public class CommandsHandler implements CommandExecutor {
 		/**
 		 * MUTE COMMAND
 		 */
-		if (argument.equalsIgnoreCase("mute") || argument.equalsIgnoreCase("m")) {
+		if ("mute".equalsIgnoreCase(argument) || "m".equalsIgnoreCase(argument)) {
 
 			if(!hasPerm(sender, Permissions.Commands.mute)) {
 				Common.sendMsg(sender, "Localization.No_Permission");
@@ -82,13 +81,12 @@ public class CommandsHandler implements CommandExecutor {
 
 				Common.sendMsg(sender, "Localization.Successful_Mute");
 			}
-			return false;
 		}
 
 		/**
 		 * CLEAR COMMAND
 		 */
-		if (argument.equalsIgnoreCase("clear") || argument.equalsIgnoreCase("c")) {
+		else if ("clear".equalsIgnoreCase(argument) || "c".equalsIgnoreCase(argument)) {
 
 			if(!hasPerm(sender, Permissions.Commands.clear)) {
 				Common.sendMsg(sender, "Localization.No_Permission");
@@ -122,13 +120,12 @@ public class CommandsHandler implements CommandExecutor {
 			} else {
 				Common.broadcastMsg(sender, "Clear.Broadcast", "Localization.Broadcast_Clear", dovod);
 			}
-			return false;
 		}
 
 		/**
 		 * FAKE COMMAND
 		 */
-		if (argument.equalsIgnoreCase("fake") || argument.equalsIgnoreCase("f")) {
+		else if ("fake".equalsIgnoreCase(argument) || "f".equalsIgnoreCase(argument)) {
 
 			if(!hasPerm(sender, Permissions.Commands.fake)) {
 				Common.sendMsg(sender, "Localization.No_Permission");
@@ -158,14 +155,12 @@ public class CommandsHandler implements CommandExecutor {
 			} else {
 				Common.sendMsg(sender, "Localization.Usage_Fake_Cmd");
 			}
-
-			return false;
 		}
 
 		/**
 		 * RELOAD COMMAND
 		 */
-		if (argument.equalsIgnoreCase("reload") || argument.equalsIgnoreCase("znovunacitat") || argument.equalsIgnoreCase("r")) {
+		else if ("reload".equalsIgnoreCase(argument) || "znovunacitat".equalsIgnoreCase(argument) || "r".equalsIgnoreCase(argument)) {
 
 			if(!hasPerm(sender, Permissions.Commands.reload)) {
 				Common.sendMsg(sender, "Localization.No_Permission");
@@ -177,14 +172,13 @@ public class CommandsHandler implements CommandExecutor {
 			ChatControl.ConsoleConfig.reload();
 
 			Common.sendMsg(sender, "Localization.Reload_Complete");
-			return false;
 		}
 
 		/**
 		 * LIST COMMAND
 		 */
 
-		if (argument.equalsIgnoreCase("commands") || argument.equalsIgnoreCase("?") || argument.equalsIgnoreCase("list")) {
+		else if ("commands".equalsIgnoreCase(argument) || "?".equals(argument) || "list".equalsIgnoreCase(argument)) {
 
 			if(!hasPerm(sender, Permissions.Commands.command_list)) {
 				Common.sendMsg(sender, "Localization.No_Permission");
@@ -203,11 +197,8 @@ public class CommandsHandler implements CommandExecutor {
 					"  &f/chc reload &e- Reload configuration.",
 					"  &f/chc list &e- Command list."
 					);
-			return false;
-		}
-
-		// AK BOL UVEDENY NEPLATNY ARGUMENT (on wrong argument)
-		Common.sendMsg(sender, "Localization.Wrong_Args");
+		} else
+			Common.sendMsg(sender, "Localization.Wrong_Args");
 
 		return false;
 	}
