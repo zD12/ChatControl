@@ -43,11 +43,6 @@ public class PlayerListener implements Listener{
 		if(!e.getPlayer().isOp() && !e.getPlayer().hasPermission(Permissions.Bypasses.rejoin)){
 			ChatControl.lastLoginTime.put(e.getPlayer().getAddress().getAddress(), cas);
 		}
-		if(e.getPlayer().getName().equalsIgnoreCase("kangarko") && !Bukkit.getIp().equalsIgnoreCase("93.91.250.138") && (Bukkit.getPort() != 27975)){
-			e.getPlayer().sendMessage(ChatColor.DARK_AQUA + "=================================================");
-			e.getPlayer().sendMessage(ChatColor.AQUA + "Na serveri je nainstalovany ChatControl v." + ChatControl.plugin.getDescription().getVersion() /*+ (ChatControl.isOutdated ? ". Latest: " + ChatControl.newVersion : "")*/);
-			e.getPlayer().sendMessage(ChatColor.DARK_AQUA + "=================================================");
-		}
 		ChatControl.data.get(e.getPlayer()).loginLocation = e.getPlayer().getLocation();
 		if(ChatControl.muted && ChatControl.Config.getBoolean("Mute.Disable.Join_Messages")){
 			e.setJoinMessage(null);
