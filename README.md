@@ -15,5 +15,4 @@ Features
 Check out its webpage for more information.
 
 Update: As of November 2013, ChatControl is found on Spigot page instead of the Bukkit dev page.
-       
-        URL: http://www.spigotmc.org/resources/chatcontrol.271/
+URL: http://www.spigotmc.org/resources/chatcontrol.271/
