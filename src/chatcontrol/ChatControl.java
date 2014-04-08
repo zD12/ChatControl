@@ -1,5 +1,7 @@
 package chatcontrol;
 
+import static chatcontrol.PacketListener.PacketListener.initPacketListener;
+
 import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.logging.Filter;
@@ -18,7 +20,6 @@ import chatcontrol.ConsoleFilter.Log4jFilter;
 import chatcontrol.Listener.ChatListener;
 import chatcontrol.Listener.CommandListener;
 import chatcontrol.Listener.PlayerListener;
-import chatcontrol.PacketListener.PacketListener;
 import chatcontrol.Utils.Common;
 import chatcontrol.Utils.ConfigUpdater;
 import chatcontrol.Utils.UpdaterThread;
@@ -28,7 +29,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 	public static ChatControl plugin;
 	public static boolean needsUpdate = false;
 	public static String newVersion;
-	
+
 	public static FileConfiguration Config;
 
 	public static CustomConfig ChatConfig = new CustomConfig(FileType.CHAT);
@@ -45,7 +46,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 
 		getConfig().options().copyDefaults(true);
 		saveDefaultConfig();
-		
+
 		ChatConfig.saveDefaultConfig();
 		ConsoleConfig.saveDefaultConfig();
 
@@ -83,14 +84,14 @@ public class ChatControl extends JavaPlugin implements Listener {
 				getLogger().warning("In order to prevent tab complete you need to have ProtocolLib installed. Disabling fuction ...");
 				getConfig().set("Protect.Prevent_Tab_Complete", false);
 				saveConfig();
-				return;
+			} else {
+				initPacketListener();
+				Common.Log("Successfully hooked with ProtocolLib!");
 			}
-			PacketListener.initPacketListener();
-			Common.Log("Successfully hooked with ProtocolLib!");
 		}
 
 		getCommand("chatcontrol").setExecutor(new CommandsHandler());
-		
+
 		if(getConfig().getBoolean("Miscellaneous.Check_For_Updates"))
 			getServer().getScheduler().runTaskAsynchronously(this, new UpdaterThread("https://raw.github.com/kangarko/ChatControl/master/plugin.yml"));	
 	}

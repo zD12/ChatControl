@@ -118,9 +118,9 @@ public class CommandListener implements Listener{
 		}
 
 		if (ChatControl.Config.getBoolean("Chat.Write_To_File") && !ChatControl.Config.getStringList("Chat.Ignore_Players").contains(e.getPlayer().getName())) {
-			for(String cmd : ChatControl.Config.getStringList("Chat.Include_Commands") ) {
-				cmd = cmd.toLowerCase();
-				if(e.getMessage().toLowerCase().startsWith(cmd)) {
+			for(String prikaz : ChatControl.Config.getStringList("Chat.Include_Commands") ) {
+				prikaz = prikaz.toLowerCase();
+				if(e.getMessage().toLowerCase().startsWith(prikaz)) {
 					Writer.writeToFile(TypSuboru.ZAZNAM_CHATU, "[CMD] " + e.getPlayer().getName(), e.getMessage());
 				}
 			}
