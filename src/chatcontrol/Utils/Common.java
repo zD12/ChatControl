@@ -141,8 +141,8 @@ public class Common {
 		}
 	}
 
-	public static boolean playerIsPrivileged(Player pl){
-		if(pl.hasPermission(Permissions.global_perm)) {
+	public static boolean playerIsPrivileged(Player pl, String permission){
+		if(pl.hasPermission(permission)) {
 			return true;
 		}
 		if(pl.isOp() && ChatControl.Config.getBoolean("Miscellaneous.Op_Has_Permissions", true)){

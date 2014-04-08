@@ -122,12 +122,12 @@ public class PlayerListener implements Listener{
 	@EventHandler(ignoreCancelled=true)
 	public void onSignChange(SignChangeEvent e){
 
-		if(Common.playerIsPrivileged(e.getPlayer())){
+		if(Common.playerIsPrivileged(e.getPlayer(), Permissions.Bypasses.global_perm)){
 			return;
 		}
 
 		if(ChatControl.Config.getBoolean("Signs.Duplication_Check")){
-			if (e.getPlayer().hasPermission(Permissions.Bypasses.dupe)) {
+			if (e.getPlayer().hasPermission(Permissions.Bypasses.dupeSigns)) {
 				return;
 			}
 			if(ChatControl.data.get(e.getPlayer()).lastSignText.equals(e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3))){

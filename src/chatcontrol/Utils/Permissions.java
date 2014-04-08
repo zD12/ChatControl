@@ -28,18 +28,46 @@ public class Permissions {
 	}
 
 	public class Bypasses {
-		// Permission to bypass everything, basically equals to OP status.
-		// Permissions below should be easy to understand, if not please ask at ChatControl´s page at Spigot forums 
+		// Bypass everything, basically equals to OP status.
 		public static final String global_perm = "chatcontrol.bypass";
+		
+		// Allow player chat even when the chat is muted.
 		public static final String mute = "chatcontrol.bypass.mute";
-		public static final String time = "chatcontrol.bypass.time";
-		public static final String dupe = "chatcontrol.bypass.dupe";
+		
+		// Bypass command message delay.
+		public static final String timeCmd = "chatcontrol.bypass.time.commands";
+		
+		// Bypass chat message delay.
+		public static final String timeChat = "chatcontrol.bypass.time.chat";
+		
+		// Allow player to send duplicate commands.
+		public static final String dupeCmd = "chatcontrol.bypass.dupe.commands";
+		
+		// Allow player to send duplicate messages.
+		public static final String dupeChat = "chatcontrol.bypass.dupe.chat";
+		
+		// Allow player to place signs with same text.
+		public static final String dupeSigns = "chatcontrol.bypass.dupe.signs";
+		
+		// Bypass advertising check.
 		public static final String ads = "chatcontrol.bypass.ad";
+		
+		// Bypass swear check.
 		public static final String swear = "chatcontrol.bypass.swear";
+		
+		// Allow player to chat even when not moved on game join. NOT RECOMMENDED due to spam bots.
 		public static final String move = "chatcontrol.bypass.move";
+		
+		// Bypass check for CAPS.
 		public static final String caps = "chatcontrol.bypass.caps";
+		
+		// Allow player to bypass rejoin check.
 		public static final String rejoin = "chatcontrol.bypass.rejoin";
+		
+		// Allow player to tab complete.
 		public static final String tab_complete = "chatcontrol.bypass.tabcomplete";
+		
+		// Players chat don´t get clear, he recieve just one message.
 		public static final String chat_clear = "chatcontrol.bypass.clear";
 	}
 
@@ -53,7 +81,5 @@ public class Permissions {
 		// Permission to recieve warning when a new version of ChatControl is available.
 		public static final String plugin_update = "chatcontrol.notify.update";
 	}
-	
-	public static final String global_perm = "chatcontrol";
 	
 }

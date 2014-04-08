@@ -21,7 +21,7 @@ public class CommandListener implements Listener{
 			return;
 		}
 
-		if(!Common.playerIsPrivileged(e.getPlayer()) ) {
+		if(!Common.playerIsPrivileged(e.getPlayer(), Permissions.Bypasses.global_perm) ) {
 			if(ChatControl.muted){
 				if (e.getPlayer().hasPermission(Permissions.Bypasses.mute)) {
 					return;
@@ -38,7 +38,7 @@ public class CommandListener implements Listener{
 			long cas = System.currentTimeMillis() / 1000L;
 
 			if((cas - ChatControl.data.get(e.getPlayer()).lastCommandTime) < ChatControl.Config.getLong("Commands.Command_Delay")){
-				if(e.getPlayer().hasPermission(Permissions.Bypasses.time)){
+				if(e.getPlayer().hasPermission(Permissions.Bypasses.timeCmd)){
 					return;
 				}
 				for (String sprava : ChatControl.Config.getStringList("Commands.Whitelist_Time")){
@@ -69,7 +69,7 @@ public class CommandListener implements Listener{
 				}
 				if(ChatControl.data.get(e.getPlayer()).lastCommand.equals(sprava) || (Common.stringsAreSimilar(sprava, ChatControl.data.get(e.getPlayer()).lastCommand)
 						&& ChatControl.Config.getBoolean("Commands.Block_Similar_Messages")) ){
-					if(e.getPlayer().hasPermission(Permissions.Bypasses.dupe)){
+					if(e.getPlayer().hasPermission(Permissions.Bypasses.dupeCmd)){
 						return;
 					}
 					for (String whitelistedMsg : ChatControl.Config.getStringList("Commands.Whitelist_Duplication")){

@@ -23,7 +23,7 @@ public class ChatListener implements Listener {
 
 		String finalMsg = null;
 
-		if(!Common.playerIsPrivileged(e.getPlayer())){
+		if(!Common.playerIsPrivileged(e.getPlayer(), Permissions.Bypasses.global_perm)){
 			if (ChatControl.Config.getBoolean("Miscellaneous.Block_Chat_Until_Moved") &&
 					(e.getPlayer().getLocation() == ChatControl.data.get(e.getPlayer()).loginLocation)) {
 				if (!e.getPlayer().hasPermission(Permissions.Bypasses.move)) {
@@ -41,7 +41,7 @@ public class ChatListener implements Listener {
 
 			long cas = System.currentTimeMillis() / 1000L;
 			if ((cas - ChatControl.data.get(e.getPlayer()).lastMessageTime) < ChatControl.Config.getLong("Chat.Message_Delay")) {
-				if (!e.getPlayer().hasPermission(Permissions.Bypasses.time)) {
+				if (!e.getPlayer().hasPermission(Permissions.Bypasses.timeChat)) {
 					Common.sendRawMsg(e.getPlayer(), ChatControl.Config.getString("Localization.Time_Message").replace("%time", String.valueOf(ChatControl.Config.getLong("Chat.Message_Delay") - (cas - ChatControl.data.get(e.getPlayer()).lastMessageTime))));
 					e.setCancelled(true);
 					return;
@@ -56,7 +56,7 @@ public class ChatListener implements Listener {
 				}
 				if (ChatControl.data.get(e.getPlayer()).lastMessage.equals(sprava) || (Common.stringsAreSimilar(sprava, ChatControl.data.get(e.getPlayer()).lastMessage)
 						&& ChatControl.Config.getBoolean("Chat.Block_Similar_Messages")) ) {
-					if (!e.getPlayer().hasPermission(Permissions.Bypasses.dupe)) {
+					if (!e.getPlayer().hasPermission(Permissions.Bypasses.dupeChat)) {
 						Common.sendMsg(e.getPlayer(), "Localization.Dupe_Message");
 						e.setCancelled(true);
 						return;
