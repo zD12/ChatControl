@@ -151,6 +151,7 @@ Miscellaneous:
   Op_Has_Permissions: true
   Automatically_Update_Config: true
   Check_For_Updates: true
+  Download_Automatically: true
   Notify_New_Version: true
   Debug: false
 

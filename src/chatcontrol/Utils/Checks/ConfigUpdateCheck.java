@@ -1,11 +1,12 @@
-package chatcontrol.Utils;
+package chatcontrol.Utils.Checks;
 
 import java.io.File;
 import java.util.Arrays;
 
 import chatcontrol.ChatControl;
+import chatcontrol.Utils.Common;
 
-public class ConfigUpdater {
+public class ConfigUpdateCheck {
 
 	private static Status status;
 	private static String latestVersion = ChatControl.plugin.getDescription().getVersion();
