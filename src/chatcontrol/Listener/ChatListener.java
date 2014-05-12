@@ -17,15 +17,14 @@ public class ChatListener implements Listener {
 
 	@EventHandler(ignoreCancelled=true)
 	public void onPlayerChat(AsyncPlayerChatEvent e) {
-		if (Bukkit.getOnlinePlayers().length < ChatControl.Config.getInt("Miscellaneous.Minimum_Players_To_Enable_Plugin")) {
+
+		if (Bukkit.getOnlinePlayers().length < ChatControl.Config.getInt("Miscellaneous.Minimum_Players_To_Enable_Plugin"))
 			return;
-		}
 
 		String finalMsg = null;
 
-		if(!Common.playerIsPrivileged(e.getPlayer(), Permissions.Bypasses.global_perm)){
-			if (ChatControl.Config.getBoolean("Miscellaneous.Block_Chat_Until_Moved") &&
-					(e.getPlayer().getLocation() == ChatControl.data.get(e.getPlayer()).loginLocation)) {
+		if(!Common.hasPerm(e.getPlayer(), Permissions.Bypasses.global_perm)) {
+			if (ChatControl.Config.getBoolean("Miscellaneous.Block_Chat_Until_Moved") && e.getPlayer().getLocation() == ChatControl.data.get(e.getPlayer()).loginLocation) {
 				if (!e.getPlayer().hasPermission(Permissions.Bypasses.move)) {
 					Common.sendMsg(e.getPlayer(), "Localization.Cannot_Chat_Until_Moved");
 					e.setCancelled(true);
@@ -126,16 +125,21 @@ public class ChatListener implements Listener {
 					}
 				}
 			}
+		}
 
-			String message = e.getMessage();
+		String message = e.getMessage();
+		
+		if(!e.getPlayer().hasPermission(Permissions.Bypasses.replace))
 			message = Common.replaceCharacters(e.getPlayer(), message);
+		if(!e.getPlayer().hasPermission(Permissions.Bypasses.capitalize))
 			message = Common.capitalize(message);
+		if(!e.getPlayer().hasPermission(Permissions.Bypasses.insertDot))
 			message = Common.insertDot(message);
-			e.setMessage(message);
-			finalMsg = message;
-		}
-		if (ChatControl.Config.getBoolean("Chat.Write_To_File") && !ChatControl.Config.getStringList("Chat.Ignore_Players").contains(e.getPlayer().getName())) {
-			Writer.writeToFile(TypSuboru.ZAZNAM_CHATU, e.getPlayer().getName(), (finalMsg != null ? finalMsg : e.getMessage()));
-		}
+		
+		e.setMessage(message);
+		finalMsg = message;
+
+		if (ChatControl.Config.getBoolean("Chat.Write_To_File") && !ChatControl.Config.getStringList("Chat.Ignore_Players").contains(e.getPlayer().getName()))
+			Writer.writeToFile(TypSuboru.ZAZNAM_CHATU, e.getPlayer().getName(), (finalMsg != null ? finalMsg : e.getMessage()));		
 	}
 }

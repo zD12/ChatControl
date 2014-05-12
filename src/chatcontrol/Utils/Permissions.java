@@ -69,6 +69,15 @@ public class Permissions {
 		
 		// Players chat don´t get clear, he recieve just one message.
 		public static final String chat_clear = "chatcontrol.bypass.clear";
+		
+		// Bypass replacing characters (from chat.yml file).
+		public static final String replace = "chatcontrol.bypass.replace";
+		
+		// Bypass Capitalizing the Sentences.
+		public static final String capitalize = "chatcontrol.bypass.capitalize";
+		
+		// Don´t insert dot "." after a sentence.
+		public static final String insertDot = "chatcontrol.bypass.insertdot";
 	}
 
 	public class Notify {
