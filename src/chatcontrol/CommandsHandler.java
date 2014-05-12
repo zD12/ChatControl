@@ -94,23 +94,24 @@ public class CommandsHandler implements CommandExecutor {
 			}
 			
 			if(hasPerm(sender, Permissions.Commands.clearConsole) && (volba.equalsIgnoreCase("-console") || volba.equalsIgnoreCase("-c") || volba.equalsIgnoreCase("-konzola"))) {
-				for(int i = 0; i < ChatControl.Config.getInt("Clear.Amount_Of_Lines_To_Clear_In_Console", 300); i++){
+				
+				for(int i = 0; i < ChatControl.Config.getInt("Clear.Amount_Of_Lines_To_Clear_In_Console", 300); i++)
 					System.out.println("           ");
-				}
+				
 				if(sender instanceof Player)
 					Common.Log("Console was cleared by " + sender.getName());
+				
 				Common.sendMsg(sender, "Localization.Successful_Console_Clear");
 				return false;
 			}
 
-			for(Player pl : Bukkit.getOnlinePlayers()){
-				if(ChatControl.Config.getBoolean("Clear.Do_Not_Clear_For_Staff") && (hasPerm(sender, Permissions.Bypasses.chat_clear))){
+			for(Player pl : Bukkit.getOnlinePlayers()) {				
+				if(ChatControl.Config.getBoolean("Clear.Do_Not_Clear_For_Staff") && (hasPerm(pl, Permissions.Bypasses.chat_clear))){
 					Common.sendMsg(pl, "Localization.Staff_Chat_Clear_Message");
 					continue;
 				}
-				for(int i = 0; i < 120; i++){
-					pl.sendMessage(ChatColor.RESET + "      ");
-				}
+				for(int i = 0; i < 120; i++)
+					pl.sendMessage(ChatColor.RESET + "      ");				
 			}
 
 			if(hasPerm(sender, Permissions.Commands.clearSilent) && (volba.equalsIgnoreCase("-silent") || volba.equalsIgnoreCase("-s"))) {
