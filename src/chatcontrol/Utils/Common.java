@@ -72,12 +72,16 @@ public class Common {
 	}
 
 	public static void sendMsg(Player pl, String str){
+		sendMsg(pl, str, pl.getName());
+	}
+	
+	public static void sendMsg(Player pl, String str, String plReplacement){
 		if(ChatControl.Config.getString(str).isEmpty() || ChatControl.Config.getString(str).equalsIgnoreCase("none")) {
 			Common.debug("Message in config path \"" + str + "\" is none or \"\", so nothing is sent to " + pl.getName());
 			return;
 		}
 		try {
-			pl.sendMessage( colorize(ChatControl.Config.getString(str).replace("%prefix", prefix()).replace("%player", pl.getName()) ) );
+			pl.sendMessage( colorize(ChatControl.Config.getString(str).replace("%prefix", prefix()).replace("%player", plReplacement) ) );
 		} catch (Exception ex){
 			pl.sendMessage( colorize("&e<Missing language key: &6\"" + str + "\"&e>"));
 		}

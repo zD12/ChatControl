@@ -107,7 +107,7 @@ public class CommandsHandler implements CommandExecutor {
 
 			for(Player pl : Bukkit.getOnlinePlayers()) {				
 				if(ChatControl.Config.getBoolean("Clear.Do_Not_Clear_For_Staff") && (hasPerm(pl, Permissions.Bypasses.chat_clear))){
-					Common.sendMsg(pl, "Localization.Staff_Chat_Clear_Message");
+					Common.sendMsg(pl, "Localization.Staff_Chat_Clear_Message", sender.getName());
 					continue;
 				}
 				for(int i = 0; i < 120; i++)
