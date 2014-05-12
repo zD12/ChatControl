@@ -204,7 +204,9 @@ public class CommandsHandler implements CommandExecutor {
 	}
 	
 	private boolean hasPerm(CommandSender sender, String str) {
-		if(sender.isOp() || sender.hasPermission(str))
+		if(sender.isOp() && ChatControl.Config.getBoolean("Miscellaneous.Op_Has_Permissions", true))
+			return true;
+		if(sender.hasPermission(str))
 			return true;
 		return false;
 	}

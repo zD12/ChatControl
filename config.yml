@@ -3,6 +3,8 @@
 # SLOVAK DEVELOPER FTW
 # Supports color codes: & + 0 - F
 
+# For configuration help visit: https://github.com/kangarko/ChatControl/blob/master/config.yml
+
 Chat:
   Block_Duplicate_Messages: true
   # Block 75% similar messages.

@@ -22,7 +22,7 @@ public class CommandListener implements Listener{
 			return;
 		}
 
-		if(!Common.playerIsPrivileged(e.getPlayer(), Permissions.Bypasses.global_perm) ) {
+		if(!Common.hasPerm(e.getPlayer(), Permissions.Bypasses.global_perm) ) {
 			if(ChatControl.muted){
 				if (e.getPlayer().hasPermission(Permissions.Bypasses.mute)) {
 					return;

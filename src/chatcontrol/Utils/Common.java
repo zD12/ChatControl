@@ -47,9 +47,8 @@ public class Common {
 	 * Handles %prefix and %player.
 	 */
 	public static void sendRawMsg(CommandSender pl, String... msgs){
-		for (String msg : msgs) {
+		for (String msg : msgs)
 			pl.sendMessage( colorize(msg.replace("%prefix", prefix()).replace("%player", resolvedSender(pl)) ) );
-		}
 	}
 
 	/**
@@ -60,9 +59,8 @@ public class Common {
 	}
 
 	public static void sendRawMsg(Player pl, String... msgs){
-		for (String msg : msgs) {
+		for (String msg : msgs)
 			pl.sendMessage( colorize( msg.replace("%prefix", prefix()).replace("%player", pl.getName()) ) );
-		}
 	}
 
 	public static void sendMsg(CommandSender pl, String str){
@@ -86,29 +84,27 @@ public class Common {
 	}
 
 	public static String prefix(){
-		if (ChatControl.Config.getString("Localization.Prefix") == null) {
+		if (ChatControl.Config.getString("Localization.Prefix") == null)
 			return colorize(ChatControl.Config.getString("Localization.Prefix"));
-		}
 		return ChatColor.DARK_GRAY + "[" + ChatColor.AQUA + "ChatControl" + ChatColor.DARK_GRAY + "]" + ChatColor.WHITE;
 	}
 
 	public static String console(){
-		if (ChatControl.Config.getString("Localization.Console") == null) {
+		if (ChatControl.Config.getString("Localization.Console") == null)
 			return colorize(ChatControl.Config.getString("Localization.Console"));
-		}
 		return ChatColor.RED + "server";
 	}
 
 	public static void broadcastMsg(CommandSender pl, String configPath, String message, String reason){
 		try {
-			if(!ChatControl.Config.getBoolean(configPath)){
+			if(!ChatControl.Config.getBoolean(configPath))
 				return;
-			}
 		} catch (NullPointerException ex){
 			ChatControl.Config.set(configPath, false);
 			Bukkit.broadcastMessage(colorize("&e<Missing config key: &6\"" + configPath + "\"&e>"));
 			return;
 		}
+		
 		try {
 			String finalMessage = ChatControl.Config.getString(message).replace("%prefix", prefix()).replace("%player", (pl == null ? "" : resolvedSender(pl)) );
 			Bukkit.broadcastMessage(colorize(finalMessage + (reason == "" ? "" : " " + ChatControl.Config.getString("Localization.Reason").replace("%reason", reason))) );
@@ -118,36 +114,30 @@ public class Common {
 	}
 
 	public static void messages(Player pl, String msg){
-		if(ChatControl.Config.getBoolean("Anti_Ad.Inform_Admins")){
-			for(Player hrac : Bukkit.getOnlinePlayers()){
-				if(hrac.isOp() || hrac.hasPermission(Permissions.Notify.ad)){
+		if(ChatControl.Config.getBoolean("Anti_Ad.Inform_Admins"))
+			for(Player hrac : Bukkit.getOnlinePlayers())
+				if(hrac.isOp() || hrac.hasPermission(Permissions.Notify.ad))
 					sendColoredMsg(hrac, ChatControl.Config.getString("Localization.Ad_Staff_Message").replace("%message", msg).replace("%player", pl.getName()));
-				}
-			}
-		}
+		
 		sendMsg(pl, "Localization.Ad_Message");
-		if(ChatControl.Config.getBoolean("Anti_Ad.Broadcast")){
-			for(Player hrac : Bukkit.getOnlinePlayers()){
-				if(!hrac.isOp() && !hrac.getName().equals(pl.getName())){
+		
+		if(ChatControl.Config.getBoolean("Anti_Ad.Broadcast"))
+			for(Player hrac : Bukkit.getOnlinePlayers())
+				if(!hrac.isOp() && !hrac.getName().equals(pl.getName()))
 					sendColoredMsg(hrac, ChatControl.Config.getString("Localization.Ad_Broadcast_Message").replace("%message", msg).replace("%player", pl.getName()));
-				}
-			}
-		}
-		if(ChatControl.Config.getBoolean("Anti_Ad.Console_Message")){
+
+		if(ChatControl.Config.getBoolean("Anti_Ad.Console_Message"))
 			Log(ChatControl.Config.getString("Localization.Ad_Console_Message").replace("%player", pl.getName()).replace("%message", msg));
-		}
-		if(ChatControl.Config.getBoolean("Anti_Ad.Write_To_File")){
-			Writer.writeToFile(TypSuboru.REKLAMY, pl.getName(), msg);
-		}
+		
+		if(ChatControl.Config.getBoolean("Anti_Ad.Write_To_File"))
+			Writer.writeToFile(TypSuboru.REKLAMY, pl.getName(), msg);		
 	}
 
-	public static boolean playerIsPrivileged(Player pl, String permission){
-		if(pl.hasPermission(permission)) {
+	public static boolean hasPerm(Player pl, String perm){
+		if(pl.hasPermission(perm))
 			return true;
-		}
-		if(pl.isOp() && ChatControl.Config.getBoolean("Miscellaneous.Op_Has_Permissions", true)){
+		if(pl.isOp() && ChatControl.Config.getBoolean("Miscellaneous.Op_Has_Permissions", true))
 			return true;
-		}
 		return false;
 	}
 
@@ -162,35 +152,36 @@ public class Common {
 	}
 
 	public static String insertDot(String msg){
-		if(!ChatControl.Config.getBoolean("Grammar.Insert_Dot.Enabled")){
+		if(!ChatControl.Config.getBoolean("Grammar.Insert_Dot.Enabled"))
+			return msg;		
+		if(msg.length() < ChatControl.Config.getInt("Grammar.Insert_Dot.Minimum_Msg_Length")) 
 			return msg;
-		}
-		if(msg.length() < ChatControl.Config.getInt("Grammar.Insert_Dot.Minimum_Msg_Length")) {
-			return msg;
-		}
+		
 		String lastChar = msg.substring(msg.length() - 1);
 		String[] words = msg.split("\\s");
 		String lastWord = words[(words.length - 1)];
-		if ((lastChar.matches("(?i)[a-z]")) && (!jeOdkaz(lastWord))) {
+		
+		if ((lastChar.matches("(?i)[a-z]")) && (!jeOdkaz(lastWord)))
 			msg = msg + ".";
-		}
+		
 		return msg;
 	}
 
 	public static String capitalize(String msg){
-		if(!ChatControl.Config.getBoolean("Grammar.Capitalize.Enabled")){
+		if(!ChatControl.Config.getBoolean("Grammar.Capitalize.Enabled"))
+			return msg;		
+		if(msg.length() < ChatControl.Config.getInt("Grammar.Capitalize.Minimum_Msg_Length"))
 			return msg;
-		}
-		if(msg.length() < ChatControl.Config.getInt("Grammar.Capitalize.Minimum_Msg_Length")) {
-			return msg;
-		}
+		
 		String[] sentences = msg.split("(?<=[!?\\.])\\s");
 		String tempMessage = "";
+		
 		for (String sentence : sentences) {
 			String slovo = msg.split("\\s")[0];
-			if (!jeOdkaz(slovo)) {
+			
+			if (!jeOdkaz(slovo))
 				sentence = sentence.substring(0, 1).toUpperCase() + sentence.substring(1);
-			}
+			
 			tempMessage = tempMessage + sentence + " ";
 		}
 		return tempMessage.trim();
@@ -198,14 +189,12 @@ public class Common {
 
 	public static String replaceCharacters(Player pl, String msg){
 		String finalMsg = msg;
-		if(ChatControl.ChatConfig.getConfig().getBoolean("Replacing_Characters.Supply_With_Smileys")) {
+		if(ChatControl.ChatConfig.getConfig().getBoolean("Replacing_Characters.Supply_With_Smileys"))
 			finalMsg = osmajlikovat(msg);
-		}
-		if(ChatControl.ChatConfig.getConfig().getBoolean("Replacing_Characters.Enabled")){
-			for (String character : ChatControl.ChatConfig.getConfig().getConfigurationSection("Replacing_Characters.Replace_List").getKeys(false)) {
+		
+		if(ChatControl.ChatConfig.getConfig().getBoolean("Replacing_Characters.Enabled"))
+			for (String character : ChatControl.ChatConfig.getConfig().getConfigurationSection("Replacing_Characters.Replace_List").getKeys(false))
 				finalMsg = finalMsg.replaceAll("(?i)" + Common.colorize(character), ChatControl.ChatConfig.getConfig().getString("Replacing_Characters.Replace_List." + character));
-			}
-		}
 
 		return finalMsg;
 	}

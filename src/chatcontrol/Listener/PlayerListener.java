@@ -122,7 +122,7 @@ public class PlayerListener implements Listener{
 	@EventHandler(ignoreCancelled=true)
 	public void onSignChange(SignChangeEvent e){
 
-		if(Common.playerIsPrivileged(e.getPlayer(), Permissions.Bypasses.global_perm)){
+		if(Common.hasPerm(e.getPlayer(), Permissions.Bypasses.global_perm)){
 			return;
 		}
 

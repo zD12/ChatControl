@@ -2,6 +2,10 @@
 # Reason moving the content into separate file was that it can
 # get really big after a while. (Especially the Replace_List)
 
+# ProTIP: You can add custom smileys and other special characters here,
+# but the file must be saved with UTF-8 encoding. Tested on Notepad++
+# WordPad or Notepad on Windows is known to cause issues!
+
 Replacing_Characters: 
   Enabled: true
   # Replace following characters with built-in smileys:  :) :-) :( :-( ;) ;-) :square: :rectangle: :love: <3
