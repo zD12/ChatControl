@@ -1,6 +1,6 @@
 name: ChatControl
 main: chatcontrol.ChatControl
-version: 4.4.6-SNAPSHOT
+version: 4.4.6
 author: kangarko
 soft-depend: [ProtocolLib]
 commands: 
