@@ -15,7 +15,6 @@ import chatcontrol.Utils.Checks.ChecksUtils;
 
 public class CommandListener implements Listener{
 
-	@SuppressWarnings("deprecation")
 	@EventHandler(ignoreCancelled=true)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent e){
 		if(!(Bukkit.getOnlinePlayers().length >= ChatControl.Config.getInt("Miscellaneous.Minimum_Players_To_Enable_Plugin"))){
