@@ -1,5 +1,7 @@
 package chatcontrol.Utils;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -214,8 +216,12 @@ public class Common {
 	}
 
 
-	public static void Log(String str){
+	public static void Log(String str) {
 		console.sendMessage("[ChatControl] " + colorize(str));
+	}
+	
+	public static void Warn(String str) {
+		Logger.getLogger("Minecraft").log(Level.WARNING, colorize(str));
 	}
 
 	public static void debug(String str){

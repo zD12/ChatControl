@@ -1,8 +1,11 @@
 package chatcontrol.Utils.Checks;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.UnknownHostException;
 
 import net.minecraft.util.org.apache.commons.io.FileUtils;
 
@@ -34,8 +37,12 @@ public class UpdateCheck extends BukkitRunnable {
 			InputStream input = new URL(fileUrl).openConnection().getInputStream();
 			YamlConfiguration conf = YamlConfiguration.loadConfiguration(input);
 			novaVerzia = conf.getString("version");
-		} catch (Exception ex) {
-			Common.error("Cannot fetch latest version of ChatControl", ex);
+		} catch (UnknownHostException ex) {
+			Common.Warn("ChatControl failed update check, could not connect to: " + fileUrl);
+		} catch (MalformedURLException ex) {
+			Common.Warn("ChatControl failed update check, could not connect to: " + fileUrl);
+		} catch (IOException ex) {
+			Common.error("Could not fetch latest version of ChatControl from: " + fileUrl, ex);
 		}
 		
 		if (novaVerzia.contains("SNAPSHOT") || novaVerzia.contains("DEV"))
@@ -46,14 +53,14 @@ public class UpdateCheck extends BukkitRunnable {
 				try {
 					Common.Log("&bChatControl is updating! Downloading v" + novaVerzia);
 
-					URL adresa = new URL("http://www.spigotmc.org/resources/chatcontrol.271/download?version=1745"); // FIXME Update after every release
+					URL adresa = new URL("http://www.spigotmc.org/resources/chatcontrol.271/download?version=1989"); // FIXME Update after every release
 
 					Common.Log("Got file of size: " + ((double) adresa.openConnection().getContentLengthLong() / 1000) + " kb");
 
 					FileUtils.copyURLToFile(adresa, new File(Bukkit.getUpdateFolder() + "/ChatControl.jar"));
 
 					Common.Log("Downloaded! File uploaded into the " + Bukkit.getUpdateFolder() + " folder. Please copy it to plugins folder.");
-					
+
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
