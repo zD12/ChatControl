@@ -79,7 +79,7 @@ public class Common {
 	
 	public static void sendMsg(Player pl, String str, String plReplacement){
 		if(ChatControl.Config.getString(str).isEmpty() || ChatControl.Config.getString(str).equalsIgnoreCase("none")) {
-			Common.debug("Message in config path \"" + str + "\" is none or \"\", so nothing is sent to " + pl.getName());
+			debug("Message in config path \"" + str + "\" is none or \"\", so nothing is sent to " + pl.getName());
 			return;
 		}
 		try {
@@ -225,9 +225,12 @@ public class Common {
 	}
 
 	public static void debug(String str){
-		if(ChatControl.Config.getBoolean("Miscellaneous.Debug")){
+		if(ChatControl.Config.getBoolean("Miscellaneous.Debug"))
 			console.sendMessage("[ChatControl Debug] " + colorize(str));
-		}
+	}
+	
+	public static boolean debugEnabled() {
+		return ChatControl.Config.getBoolean("Miscellaneous.Debug");
 	}
 
 	public static void error(String str, Throwable ex){
@@ -388,18 +391,18 @@ public class Common {
 	}
 
 	public static boolean regExMatch(String regex, String plain_msg) {
-		Pattern pattern_from = null;
-		regex = regex.toLowerCase();
+		Pattern pattern = null;
+
 		plain_msg = plain_msg.toLowerCase();
 
 		try {
-			pattern_from = Pattern.compile(regex);
+			pattern = Pattern.compile(regex);
 		} catch (PatternSyntaxException ex){
 			Log("&cInvalid regex: " + regex);
-			Log("&eUse online services (regexpal.com) for fixing errors");
+			Log("&eUse online services (like regex101.com) for fixing errors");
 			return false;
 		}
-		Matcher matcher = pattern_from.matcher(plain_msg);
+		Matcher matcher = pattern.matcher(plain_msg);
 		return matcher.find();
 	}
 
