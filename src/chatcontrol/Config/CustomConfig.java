@@ -20,6 +20,7 @@ public class CustomConfig {
 		fileName = type.string;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void reload() {
 
 		if (configFile == null) {
@@ -28,9 +29,16 @@ public class CustomConfig {
 		config = YamlConfiguration.loadConfiguration(configFile);
 
 		InputStreamReader defConfigStream = new InputStreamReader(ChatControl.plugin.getResource(fileName));
-		
-		if (defConfigStream != null) {
-			YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+
+		if (defConfigStream != null) {			
+			YamlConfiguration defConfig;
+
+			try {
+				defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+			} catch (NoSuchMethodError ex) {
+				defConfig = YamlConfiguration.loadConfiguration(ChatControl.plugin.getResource(fileName));
+			}
+
 			config.setDefaults(defConfig);
 		}
 	}

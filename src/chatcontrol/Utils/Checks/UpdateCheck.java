@@ -24,6 +24,7 @@ public class UpdateCheck extends BukkitRunnable {
 		this.fileUrl = fileUrl;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override 
 	public void run() {
 		String staraVer = ChatControl.plugin.getDescription().getVersion();
@@ -32,10 +33,15 @@ public class UpdateCheck extends BukkitRunnable {
 			return;
 
 		String novaVerzia = staraVer;
-
+		
 		try {
 			InputStreamReader input = new InputStreamReader(new URL(fileUrl).openConnection().getInputStream());
-			YamlConfiguration conf = YamlConfiguration.loadConfiguration(input);
+			YamlConfiguration conf;
+			try {
+				conf = YamlConfiguration.loadConfiguration(input);
+			} catch (NoSuchMethodError ex) {
+				conf = YamlConfiguration.loadConfiguration(new URL(fileUrl).openConnection().getInputStream());
+			}
 			novaVerzia = conf.getString("version");
 		} catch (UnknownHostException ex) {
 			Common.Warn("ChatControl failed update check, could not connect to: " + fileUrl);
@@ -44,7 +50,7 @@ public class UpdateCheck extends BukkitRunnable {
 		} catch (IOException ex) {
 			Common.error("Could not fetch latest version of ChatControl from: " + fileUrl, ex);
 		}
-		
+
 		if (novaVerzia.contains("SNAPSHOT") || novaVerzia.contains("DEV"))
 			return;
 
