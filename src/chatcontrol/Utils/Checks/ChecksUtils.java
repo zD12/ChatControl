@@ -11,30 +11,37 @@ public class ChecksUtils {
 	/**
 	 * Advertising check.
 	 */
-	public static boolean advertisingCheck(Player pl, String msg){
+	public static boolean advertisingCheck(Player pl, String msg, boolean command){
+		if (pl.hasPermission(Permissions.Bypasses.ads))
+			return false;
+		
 		String finalMsg = msg.replaceAll(ChatControl.Config.getString("Anti_Ad.Filter_Pre_Process"), "");
-		if(!ChatControl.Config.getBoolean("Anti_Ad.Enabled_In_Commands")){
+
+		if(command && !ChatControl.Config.getBoolean("Anti_Ad.Enabled_In_Commands"))
 			return false;
-		}
-		for(String ip : ChatControl.Config.getStringList("Anti_Ad.Whitelisted.IP")){
-			if(msg.matches(".*" + ip + ".*")){
+		
+		for(String ip : ChatControl.Config.getStringList("Anti_Ad.Whitelisted.IP"))
+			if(msg.matches(".*" + ip + ".*"))
 				return false;
-			}
-		}
-		for(String domeny : ChatControl.Config.getStringList("Anti_Ad.Whitelisted.Domains")){
-			if(msg.toLowerCase().matches(".*" + domeny + ".*")){
+
+		for(String domeny : ChatControl.Config.getStringList("Anti_Ad.Whitelisted.Domains"))
+			if(msg.toLowerCase().matches(".*" + domeny.toLowerCase() + ".*"))
 				return false;
-			}
+		
+		if (Common.debugEnabled()) {
+			Common.debug("Legacy Matches IP Filter? " + finalMsg.matches((".*" + ChatControl.Config.getString("Anti_Ad.IP_Filter")) + ".*"));
+			Common.debug("Legacy Matches Domain Filter? " + finalMsg.matches(".*" + ChatControl.Config.getString("Anti_Ad.Domain_Filter") + ".*"));
+			Common.debug("Matches IP Filter? " + Common.regExMatch(ChatControl.Config.getString("Anti_Ad.IP_Filter"), finalMsg));
+			Common.debug("Matches Domain Filter? " + Common.regExMatch(ChatControl.Config.getString("Anti_Ad.Domain_Filter"), finalMsg));
 		}
-		if (pl.hasPermission(Permissions.Bypasses.ads)){
-			return false;
-		} else if (finalMsg.matches((".*" + ChatControl.Config.getString("Anti_Ad.IP_Filter")) + ".*") || (finalMsg.matches(".*" + ChatControl.Config.getString("Anti_Ad.Domain_Filter") + ".*"))){
+		
+		if (Common.regExMatch(ChatControl.Config.getString("Anti_Ad.IP_Filter"), finalMsg) || Common.regExMatch(ChatControl.Config.getString("Anti_Ad.Domain_Filter"), finalMsg))
 			return true;
-		} else if (!ChatControl.Config.getString("Anti_Ad.Custom_Filter").equalsIgnoreCase("none")){
-			if(finalMsg.matches(".*"  + ChatControl.Config.getString("Anti_Ad.Custom_Filter") + ".*")){
+		
+		if (!ChatControl.Config.getString("Anti_Ad.Custom_Filter").equalsIgnoreCase("none"))
+			if(Common.regExMatch(ChatControl.Config.getString("Anti_Ad.Custom_Filter"), finalMsg))
 				return true;
-			}
-		}
+		
 		return false;
 	}	
 	

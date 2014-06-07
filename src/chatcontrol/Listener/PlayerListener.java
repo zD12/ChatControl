@@ -143,7 +143,7 @@ public class PlayerListener implements Listener{
 				return;
 			}
 			String msg = e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3);
-			if (ChecksUtils.advertisingCheck(e.getPlayer(), msg.toLowerCase())) {
+			if (ChecksUtils.advertisingCheck(e.getPlayer(), msg.toLowerCase(), false)) {
 				if (e.getPlayer().hasPermission(Permissions.Bypasses.ads)) {
 					return;
 				}

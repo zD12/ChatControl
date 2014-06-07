@@ -64,7 +64,7 @@ public class ChatListener implements Listener {
 				ChatControl.data.get(e.getPlayer()).lastMessage = sprava;
 			}
 			if(ChatControl.Config.getBoolean("Anti_Ad.Enabled") && !e.getPlayer().hasPermission(Permissions.Bypasses.ads)) {
-				if (ChecksUtils.advertisingCheck(e.getPlayer(), e.getMessage().toLowerCase())) {
+				if (ChecksUtils.advertisingCheck(e.getPlayer(), e.getMessage().toLowerCase(), false)) {
 					Common.customAction(e.getPlayer(), "Anti_Ad.Custom_Command", e.getMessage());
 					Common.messages(e.getPlayer(), e.getMessage());
 					e.setCancelled(true);

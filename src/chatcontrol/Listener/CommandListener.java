@@ -86,7 +86,7 @@ public class CommandListener implements Listener{
 			}
 
 			if(ChatControl.Config.getBoolean("Anti_Ad.Enabled_In_Commands") && !e.getPlayer().hasPermission(Permissions.Bypasses.ads)){
-				if(ChecksUtils.advertisingCheck(e.getPlayer(), e.getMessage())){
+				if(ChecksUtils.advertisingCheck(e.getPlayer(), e.getMessage(), true)){
 					for(String whitelist : ChatControl.Config.getStringList("Anti_Ad.Command_Whitelist")){
 						if(e.getMessage().startsWith(whitelist)){
 							return;
