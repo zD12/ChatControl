@@ -53,7 +53,7 @@ public class UpdateCheck extends BukkitRunnable {
 				try {
 					Common.Log("&bChatControl is updating! Downloading v" + novaVerzia);
 
-					URL adresa = new URL("http://www.spigotmc.org/resources/chatcontrol.271/download?version=1989"); // FIXME Update after every release
+					URL adresa = new URL("http://www.spigotmc.org/resources/chatcontrol.271/download?version=1989"); // FIXME Impossible to keep in sync, fix it
 
 					Common.Log("Got file of size: " + ((double) adresa.openConnection().getContentLengthLong() / 1000) + " kb");
 

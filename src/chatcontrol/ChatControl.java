@@ -22,7 +22,6 @@ import chatcontrol.Listener.CommandListener;
 import chatcontrol.Listener.PlayerListener;
 import chatcontrol.Utils.Common;
 import chatcontrol.Utils.Checks.ConfigUpdateCheck;
-import chatcontrol.Utils.Checks.UpdateCheck;
 
 public class ChatControl extends JavaPlugin implements Listener {
 
@@ -92,8 +91,9 @@ public class ChatControl extends JavaPlugin implements Listener {
 
 		getCommand("chatcontrol").setExecutor(new CommandsHandler());
 
-		if(getConfig().getBoolean("Miscellaneous.Check_For_Updates"))
-			getServer().getScheduler().runTaskAsynchronously(this, new UpdateCheck("https://raw.github.com/kangarko/ChatControl/master/plugin.yml"));	
+		// FIXME Will be enabled in the very next release
+		//if(getConfig().getBoolean("Miscellaneous.Check_For_Updates"))
+		//	getServer().getScheduler().runTaskAsynchronously(this, new UpdateCheck("https://raw.github.com/kangarko/ChatControl/master/plugin.yml"));	
 	}
 
 	public void onDisable() {

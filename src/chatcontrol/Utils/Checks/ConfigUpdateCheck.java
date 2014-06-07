@@ -59,6 +59,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo440();
 					updateConfigTo441();
 					updateConfigTo444();
+					updateConfigTo447();
 				} else if (plVersion.equals("4.1.6") || plVersion.equals("4.1.7")) {
 					updateConfigTo418();
 					updateConfigTo419();
@@ -72,6 +73,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo440();
 					updateConfigTo441();
 					updateConfigTo444();
+					updateConfigTo447();
 				} else if (plVersion.equals("4.1.8")) {
 					updateConfigTo419();
 					updateConfigTo422();
@@ -84,6 +86,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo440();
 					updateConfigTo441();
 					updateConfigTo444();
+					updateConfigTo447();
 				} else if (plVersion.equalsIgnoreCase("4.1.9") || plVersion.equalsIgnoreCase("4.2.1")) {
 					updateConfigTo422();
 					updateConfigTo423();
@@ -95,6 +98,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo440();
 					updateConfigTo441();
 					updateConfigTo444();
+					updateConfigTo447();
 				} else if (plVersion.equalsIgnoreCase("4.2.2")) {
 					updateConfigTo423();
 					updateConfigTo424();
@@ -105,6 +109,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo440();
 					updateConfigTo441();
 					updateConfigTo444();
+					updateConfigTo447();
 				} else if (plVersion.equalsIgnoreCase("4.2.3")) {
 					updateConfigTo424();
 					updateConfigTo430();
@@ -114,6 +119,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo440();
 					updateConfigTo441();
 					updateConfigTo444();
+					updateConfigTo447();
 				} else if (plVersion.equalsIgnoreCase("4.2.4")) {
 					updateConfigTo430();
 					updateConfigTo432();
@@ -122,6 +128,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo440();
 					updateConfigTo441();
 					updateConfigTo444();
+					updateConfigTo447();
 				} else if (plVersion.equalsIgnoreCase("4.3.0") || plVersion.equalsIgnoreCase("4.3.1")) {
 					updateConfigTo432();
 					updateConfigTo436();
@@ -129,26 +136,34 @@ public class ConfigUpdateCheck {
 					updateConfigTo440();
 					updateConfigTo441();
 					updateConfigTo444();
+					updateConfigTo447();
 				} else if (plVersion.equalsIgnoreCase("4.3.2") || plVersion.equalsIgnoreCase("4.3.3") || plVersion.equalsIgnoreCase("4.3.4") || plVersion.equalsIgnoreCase("4.3.5")) {
 					updateConfigTo436();
 					updateConfigTo437();
 					updateConfigTo440();
 					updateConfigTo441();
 					updateConfigTo444();
+					updateConfigTo447();
 				} else if (plVersion.equalsIgnoreCase("4.3.6")) {
 					updateConfigTo437();
 					updateConfigTo440();
 					updateConfigTo441();
 					updateConfigTo444();
+					updateConfigTo447();
 				} else if (plVersion.equalsIgnoreCase("4.3.7")) {
 					updateConfigTo440();
 					updateConfigTo441();
 					updateConfigTo444();
+					updateConfigTo447();
 				} else if (plVersion.equalsIgnoreCase("4.4.0")) {
 					updateConfigTo441();
 					updateConfigTo444();
+					updateConfigTo447();
 				} else if (plVersion.equalsIgnoreCase("4.4.3")) {
 					updateConfigTo444();
+					updateConfigTo447();
+				} else if (plVersion.equalsIgnoreCase("4.4.4") || plVersion.equalsIgnoreCase("4.4.5") || plVersion.equalsIgnoreCase("4.4.6")) {
+					updateConfigTo447();
 				} else if (Integer.valueOf(plVersion.replace(".", "")) < 415) {
 					status = Status.TOO_OLD;
 				} else if (Integer.valueOf(plVersion.replace(".", "")) > Integer.valueOf(latestVersion.replace(".", ""))) {
@@ -286,6 +301,17 @@ public class ConfigUpdateCheck {
 				+ "\n&2You can disable this notification in its config.");
 	}
 
+	private static void updateConfigTo447() {
+		if(ChatControl.Config.getString("Anti_Ad.IP_Filter").equals("\\b[0-9]{1,3}(\\.|dot|-|;|:|,|(\\W|\\d|_)*\\s)+[0-9]{1,3}(\\.|dot|-|;|:|,|(\\W|\\d|_)*\\s)+[0-9]{1,3}(\\.|dot|-|;|:|,|(\\W|\\d|_)*\\s)+[0-9]{1,3}\\b"))
+			Common.Warn("Your IP Filter is outdated. Please copy new IP Filter from config.yml located in ChatControl.jar (open with WinRar or similar).");
+		
+		if(ChatControl.Config.getString("Anti_Ad.Domain_Filter").equals("[a-zA-Z0-9\\-\\.]+\\s?(\\.|dot|\\(dot\\)|-|;|:|,)\\s?(com|org|net|mil|cz|co|uk|sk|cc|ws|ca|biz|mobi|xxx|tv|eu)\\b"))
+			Common.Warn("Your Domain Filter is outdated. Please copy new Domain Filter from config.yml located in ChatControl.jar (open with WinRar or similar).");
+		
+		if (Common.debugEnabled())
+			Thread.dumpStack();
+	}
+	
 	private static void updateVersionMark() {
 		try {
 			ChatControl.Config.set("Do_Not_Change_Version_Number", latestVersion);
