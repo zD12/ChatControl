@@ -15,13 +15,13 @@ public class PacketListener {
 			@Override
 			public void onPacketReceiving(PacketEvent e){
 				if (e.getPacketType() == PacketType.Play.Client.TAB_COMPLETE) {
-					if (e.getPlayer().hasPermission(Permissions.Bypasses.tab_complete) || e.getPlayer().isOp()){
+					if (e.getPlayer().hasPermission(Permissions.Bypasses.tab_complete) || e.getPlayer().isOp())
 						return;
-					}
+					
 					String message = e.getPacket().getStrings().read(0);
-					if ((message.startsWith("/")) && (!message.contains(" "))){
+					if ((message.startsWith("/")) && (!message.contains(" ")))
 						e.setCancelled(true);
-					}
+					
 				}
 			}
 
