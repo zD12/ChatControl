@@ -2,7 +2,7 @@ package chatcontrol.Utils.Checks;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -34,7 +34,7 @@ public class UpdateCheck extends BukkitRunnable {
 		String novaVerzia = staraVer;
 
 		try {
-			InputStream input = new URL(fileUrl).openConnection().getInputStream();
+			InputStreamReader input = new InputStreamReader(new URL(fileUrl).openConnection().getInputStream());
 			YamlConfiguration conf = YamlConfiguration.loadConfiguration(input);
 			novaVerzia = conf.getString("version");
 		} catch (UnknownHostException ex) {

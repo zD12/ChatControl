@@ -2,7 +2,7 @@ package chatcontrol.Config;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -27,7 +27,8 @@ public class CustomConfig {
 		}
 		config = YamlConfiguration.loadConfiguration(configFile);
 
-		InputStream defConfigStream = ChatControl.plugin.getResource(fileName);
+		InputStreamReader defConfigStream = new InputStreamReader(ChatControl.plugin.getResource(fileName));
+		
 		if (defConfigStream != null) {
 			YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
 			config.setDefaults(defConfig);
