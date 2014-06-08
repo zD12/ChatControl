@@ -128,7 +128,7 @@ public class CommandListener implements Listener{
 			}
 		}
 		
-		if (ChatControl.Config.getBoolean("Chat.Notify_Player_When_Mentioned.Enabled")) {
+		if (ChatControl.Config.getBoolean("Chat.Notify_Player_When_Mentioned.Enabled_In_Commands")) {
 			String[] args = e.getMessage().split(" ");
 			
 			if (ChatControl.Config.getStringList("Chat.Notify_Player_When_Mentioned.In_Commands").contains(args[0])) {

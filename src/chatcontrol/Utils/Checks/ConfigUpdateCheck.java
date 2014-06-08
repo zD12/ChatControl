@@ -338,7 +338,8 @@ public class ConfigUpdateCheck {
 		ChatControl.Config.set("Chat_Formatter.Ranged_Mode", false);
 		ChatControl.Config.set("Chat_Formatter.Chat_Range", 100.0D);
 		
-		ChatControl.Config.set("Chat.Notify_Player_When_Mentioned.Enabled", true);
+		ChatControl.Config.set("Chat.Notify_Player_When_Mentioned.Enabled", false);
+		ChatControl.Config.set("Chat.Notify_Player_When_Mentioned.Enabled_In_Commands", true);
 		ChatControl.Config.set("Chat.Notify_Player_When_Mentioned.Only_Notify_When_Afk", false);
 		ChatControl.Config.set("Chat.Notify_Player_When_Mentioned.Sound", "CHICKEN_EGG_POP");
 		ChatControl.Config.set("Chat.Notify_Player_When_Mentioned.In_Chat_When_Prefixed_With", "@");

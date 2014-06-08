@@ -24,7 +24,9 @@ Chat:
     - /r
   # You need Essentials to enable it.  
   Notify_Player_When_Mentioned:
-    Enabled: true
+    # When enabled in chat the plugin is iterating over every online player, beware for lag on bigger servers.
+    Enabled: false
+    Enabled_In_Commands: true
     Only_Notify_When_Afk: false
     Sound: CHICKEN_EGG_POP
     # Type none to notify when using just his plain name.
