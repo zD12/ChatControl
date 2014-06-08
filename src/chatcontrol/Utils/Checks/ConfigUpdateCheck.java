@@ -2,6 +2,7 @@ package chatcontrol.Utils.Checks;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 
 import chatcontrol.ChatControl;
 import chatcontrol.Utils.Common;
@@ -337,6 +338,14 @@ public class ConfigUpdateCheck {
 		ChatControl.Config.set("Chat_Formatter.Ranged_Mode", false);
 		ChatControl.Config.set("Chat_Formatter.Chat_Range", 100.0D);
 		
+		ChatControl.Config.set("Chat.Notify_Player_When_Mentioned.Enabled", true);
+		ChatControl.Config.set("Chat.Notify_Player_When_Mentioned.Only_Notify_When_Afk", false);
+		ChatControl.Config.set("Chat.Notify_Player_When_Mentioned.Sound", "CHICKEN_EGG_POP");
+		ChatControl.Config.set("Chat.Notify_Player_When_Mentioned.In_Chat_When_Prefixed_With", "@");
+		
+		List<String> cmds = Arrays.asList("/msg", "/m", "/tell", "/t", "/r", "/reply");
+		
+		ChatControl.Config.set("Chat.Notify_Player_When_Mentioned.In_Commands", cmds);
 	}
 	
 	private static void updateVersionMark() {

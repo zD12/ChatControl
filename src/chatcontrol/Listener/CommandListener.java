@@ -1,6 +1,7 @@
 package chatcontrol.Listener;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -123,6 +124,27 @@ public class CommandListener implements Listener{
 				prikaz = prikaz.toLowerCase();
 				if(e.getMessage().toLowerCase().startsWith(prikaz)) {
 					Writer.writeToFile(TypSuboru.ZAZNAM_CHATU, "[CMD] " + e.getPlayer().getName(), e.getMessage());
+				}
+			}
+		}
+		
+		if (ChatControl.Config.getBoolean("Chat.Notify_Player_When_Mentioned.Enabled")) {
+			String[] args = e.getMessage().split(" ");
+			
+			if (ChatControl.Config.getStringList("Chat.Notify_Player_When_Mentioned.In_Commands").contains(args[0])) {
+				
+				if(args.length > 2) {
+					Player player = Bukkit.getPlayer(args[1]);
+					if (player == null || !player.isOnline())
+						return;
+
+					player.playSound(player.getLocation(), Sound.valueOf(ChatControl.Config.getString("Chat.Notify_Player_When_Mentioned.Sound")), 1.5F, 1.5F);
+					
+				} else if (e.getMessage().startsWith("/r ") || e.getMessage().startsWith("/reply ") && ChatControl.plugin.getReplyTo(e.getPlayer()) != null) {
+					Player reply = ChatControl.plugin.getReplyTo(e.getPlayer());
+					
+					if(reply.hasPermission(Permissions.Notify.whenMentioned))
+						reply.playSound(reply.getLocation(), Sound.valueOf(ChatControl.Config.getString("Chat.Notify_Player_When_Mentioned.Sound")), 1.5F, 1.5F);
 				}
 			}
 		}

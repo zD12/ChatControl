@@ -22,6 +22,21 @@ Chat:
     - /tell
     - /msg
     - /r
+  # You need Essentials to enable it.  
+  Notify_Player_When_Mentioned:
+    Enabled: true
+    Only_Notify_When_Afk: false
+    Sound: CHICKEN_EGG_POP
+    # Type none to notify when using just his plain name.
+    # By default you need to call him like @kangarko to play sound to him.
+    In_Chat_When_Prefixed_With: "@"
+    In_Commands:
+      - /tell
+      - /t
+      - /msg
+      - /m
+      - /reply
+      - /r
     
 # Similar functionality as ChatManager, now a discontinued plugin that was part of the PermissionEx package.
 # Disabled by default. *NOT* compatible with EssentialsChat *OR* other chat formatting plugins.

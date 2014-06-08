@@ -2,6 +2,8 @@ package chatcontrol.Listener;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -140,6 +142,22 @@ public class ChatListener implements Listener {
 		finalMsg = message;
 
 		if (ChatControl.Config.getBoolean("Chat.Write_To_File") && !ChatControl.Config.getStringList("Chat.Ignore_Players").contains(e.getPlayer().getName()))
-			Writer.writeToFile(TypSuboru.ZAZNAM_CHATU, e.getPlayer().getName(), (finalMsg != null ? finalMsg : e.getMessage()));		
+			Writer.writeToFile(TypSuboru.ZAZNAM_CHATU, e.getPlayer().getName(), (finalMsg != null ? finalMsg : e.getMessage()));	
+		
+		if (ChatControl.Config.getBoolean("Chat.Notify_Player_When_Mentioned.Enabled")) {
+			if (ChatControl.Config.getString("Chat.Notify_Player_When_Mentioned.In_Chat_When_Prefixed_With").equalsIgnoreCase("none")) {
+				
+				for (Player online : Bukkit.getOnlinePlayers())				
+					if (message.toLowerCase().contains(online.getName().toLowerCase()) && ChatControl.plugin.checkForAfk(online.getName()) && online.hasPermission(Permissions.Notify.whenMentioned))
+						online.playSound(online.getLocation(), Sound.valueOf(ChatControl.Config.getString("Chat.Notify_Player_When_Mentioned.Sound")), 1.5F, 1.5F);
+				
+			} else {
+				
+				for (Player online : Bukkit.getOnlinePlayers()) 
+					if (message.toLowerCase().contains(ChatControl.Config.getString("Chat.Notify_Player_When_Mentioned.In_Chat_When_Prefixed_With") + online.getName().toLowerCase()) 
+							&& ChatControl.plugin.checkForAfk(online.getName()) && online.hasPermission(Permissions.Notify.whenMentioned))					
+						online.playSound(online.getLocation(), Sound.valueOf(ChatControl.Config.getString("Chat.Notify_Player_When_Mentioned.Sound")), 1.5F, 1.5F);
+			}
+		}
 	}
 }

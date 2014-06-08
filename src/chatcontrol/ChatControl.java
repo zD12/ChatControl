@@ -24,6 +24,9 @@ import chatcontrol.Utils.Common;
 import chatcontrol.Utils.Checks.ConfigUpdateCheck;
 import chatcontrol.Utils.Checks.UpdateCheck;
 
+import com.earth2me.essentials.CommandSource;
+import com.earth2me.essentials.Essentials;
+
 public class ChatControl extends JavaPlugin implements Listener {
 
 	public static ChatControl plugin;
@@ -40,6 +43,8 @@ public class ChatControl extends JavaPlugin implements Listener {
 
 	public static boolean muted = false;
 
+	private Essentials ess;
+	
 	public void onEnable(){
 		plugin = this;
 		Config = getConfig();
@@ -52,11 +57,12 @@ public class ChatControl extends JavaPlugin implements Listener {
 
 		ConfigUpdateCheck.configCheck();
 
-		for (Player pl : getServer().getOnlinePlayers()){
-			if(!data.containsKey(pl)){
+		for (Player pl : getServer().getOnlinePlayers())
+			if(!data.containsKey(pl))
 				data.put(pl, new Storage());
-			}
-		}
+		
+		if (Bukkit.getPluginManager().getPlugin("Essentials") != null)
+			ess = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
 
 		getServer().getPluginManager().registerEvents(new ChatListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
@@ -112,5 +118,29 @@ public class ChatControl extends JavaPlugin implements Listener {
 		data.clear();
 		lastLoginTime.clear();
 	}
+	
+	public boolean checkForAfk(String name) {
+		if(ess == null)
+			return true;
+		
+		if(!getConfig().getBoolean("Chat.Notify_Player_When_Mentioned.Only_Notify_When_Afk"))
+			return true;
+		
+		return ess.getUserMap().getUser(name).isAfk();
+	}
+	
+	public Player getReplyTo(Player pl) {
+		if(ess == null)
+			return null;
+		
+		CommandSource cmdSource = ess.getUserMap().getUser(pl.getName()).getReplyTo();
+		if(!cmdSource.isPlayer())
+			return null;
 
+		Player source = cmdSource.getPlayer();
+		if (source == null || !source.isOnline())
+			return null;
+		
+		return source;
+	}
 }

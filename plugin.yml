@@ -2,8 +2,12 @@ name: ChatControl
 main: chatcontrol.ChatControl
 version: 4.4.8
 author: kangarko
-soft-depend: [PermissionsEx, Multiverse-Core, ProtocolLib]
+soft-depend: [Essentials, PermissionsEx, Multiverse-Core, ProtocolLib]
 commands: 
   chatcontrol:
     aliases: [ccontrol, chatc, chc]
     description: Main ChatControl command. Type /chatcontrol list for commands.
+permissions:
+    chatcontrol.notify.whenmentioned:
+        default: true
+        description: Play sound to player when notified by another player and function is enabled.

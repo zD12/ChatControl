@@ -89,6 +89,8 @@ public class Permissions {
 		
 		// Permission to recieve warning when a new version of ChatControl is available.
 		public static final String plugin_update = "chatcontrol.notify.update";
+		
+		public static final String whenMentioned = "chatcontrol.notify.whenmentioned";
 	}
 	
 	public class Formatter {
