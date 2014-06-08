@@ -91,4 +91,23 @@ public class Permissions {
 		public static final String plugin_update = "chatcontrol.notify.update";
 	}
 	
+	public class Formatter {
+		public static final String color = "chatcontrol.chat.color";
+		
+		public static final String magic = "chatcontrol.chat.magic";
+		
+		public static final String bold = "chatcontrol.chat.bold";
+		
+		public static final String strikethrough = "chatcontrol.chat.strikethrough";
+		
+		public static final String underline = "chatcontrol.chat.underline";
+		
+		public static final String italic = "chatcontrol.chat.italic";
+		
+		// Permission to speak in global chat (begin message with "!") when chat range is enabled.
+		public static final String globalChat = "chatcontrol.chat.global";
+		
+		// Permission to override the chat range (when enabled) and force speak to global chat.
+		public static final String overrideRanged = "chatcontrol.chat.overrideranged";
+	}
 }

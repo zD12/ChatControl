@@ -68,11 +68,10 @@ public class ChatControl extends JavaPlugin implements Listener {
 				Common.debug("Console filtering now using Log4j Filter.");
 			} else {
 				Filter filter = new ConsoleFilter();
-				if(ConsoleConfig.getConfig().getBoolean("Console.Filter_Plugin_Messages")){
-					for (Plugin p : getServer().getPluginManager().getPlugins()) {
+				if(ConsoleConfig.getConfig().getBoolean("Console.Filter_Plugin_Messages"))
+					for (Plugin p : getServer().getPluginManager().getPlugins())
 						p.getLogger().setFilter(filter);
-					}
-				}
+
 				Bukkit.getLogger().setFilter(filter);
 				Common.debug("Console filtering initiated (MC 1.6.4 and lower).");
 			}
@@ -80,12 +79,25 @@ public class ChatControl extends JavaPlugin implements Listener {
 
 		if(getConfig().getBoolean("Protect.Prevent_Tab_Complete")){
 			if (getServer().getPluginManager().getPlugin("ProtocolLib") == null) {
-				getLogger().warning("In order to prevent tab complete you need to have ProtocolLib installed. Disabling fuction ...");
+				getLogger().warning("In order to prevent tab complete you need ProtocolLib.");
 				getConfig().set("Protect.Prevent_Tab_Complete", false);
 				saveConfig();
 			} else {
 				initPacketListener();
-				Common.Log("Successfully hooked with ProtocolLib!");
+				Common.Log("Hooked with ProtocolLib (TAB complete listener)!");
+			}
+		}
+
+		if(getConfig().getBoolean("Chat_Formatter.Enabled")) {
+			if (getServer().getPluginManager().getPlugin("PermissionsEx") == null) {
+				getLogger().warning("You need PermissionEx to enable ChatFormatter.");
+			} else {
+				if (getServer().getPluginManager().getPlugin("ChatManager") != null) {
+					getLogger().severe("Detected ChatManager, please copy settings from it to ChatControl and disable the plugin!");
+				} else {
+					getServer().getPluginManager().registerEvents(new ChatFormatter(), this);
+					Common.Log("Hooked with PermissionsEx (Chat Formatter)!");
+				}
 			}
 		}
 

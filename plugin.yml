@@ -1,8 +1,8 @@
 name: ChatControl
 main: chatcontrol.ChatControl
-version: 4.4.7
+version: 4.4.8
 author: kangarko
-soft-depend: [ProtocolLib]
+soft-depend: [PermissionsEx, Multiverse-Core, ProtocolLib]
 commands: 
   chatcontrol:
     aliases: [ccontrol, chatc, chc]

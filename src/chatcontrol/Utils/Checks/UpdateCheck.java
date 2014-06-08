@@ -43,9 +43,7 @@ public class UpdateCheck extends BukkitRunnable {
 				conf = YamlConfiguration.loadConfiguration(new URL(fileUrl).openConnection().getInputStream());
 			}
 			novaVerzia = conf.getString("version");
-		} catch (UnknownHostException ex) {
-			Common.Warn("ChatControl failed update check, could not connect to: " + fileUrl);
-		} catch (MalformedURLException ex) {
+		} catch (UnknownHostException | MalformedURLException ex) {
 			Common.Warn("ChatControl failed update check, could not connect to: " + fileUrl);
 		} catch (IOException ex) {
 			Common.error("Could not fetch latest version of ChatControl from: " + fileUrl, ex);
@@ -54,7 +52,7 @@ public class UpdateCheck extends BukkitRunnable {
 		if (novaVerzia.contains("SNAPSHOT") || novaVerzia.contains("DEV"))
 			return;
 
-		if (cislo(novaVerzia) > cislo(staraVer)) {
+		if (cislom(novaVerzia) > cislom(staraVer)) {
 			if (ChatControl.Config.getBoolean("Miscellaneous.Download_Automatically")) {
 				try {
 					Common.Log("&bChatControl is updating! Downloading v" + novaVerzia);
@@ -79,7 +77,7 @@ public class UpdateCheck extends BukkitRunnable {
 		}
 	}
 
-	int cislo(String s) {
+	private int cislom(String s) {
 		return Integer.valueOf(s.replace(".", ""));
 	}
 }
