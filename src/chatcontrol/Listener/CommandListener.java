@@ -70,7 +70,7 @@ public class CommandListener implements Listener{
 					sprava = Common.stripSpecialCharacters(sprava);
 				}
 				if(ChatControl.data.get(e.getPlayer()).lastCommand.equals(sprava) || (Common.stringsAreSimilar(sprava, ChatControl.data.get(e.getPlayer()).lastCommand)
-						&& ChatControl.Config.getBoolean("Commands.Block_Similar_Messages")) ){
+						&& ChatControl.Config.getBoolean("Commands.Block_Similar_Commands")) ){
 					if(e.getPlayer().hasPermission(Permissions.Bypasses.dupeCmd)){
 						return;
 					}

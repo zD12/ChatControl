@@ -62,6 +62,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo444();
 					updateConfigTo447();
 					updateConfigTo448();
+					updateConfigTo449();
 				} else if (plVersion.equals("4.1.6") || plVersion.equals("4.1.7")) {
 					updateConfigTo418();
 					updateConfigTo419();
@@ -77,6 +78,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo444();
 					updateConfigTo447();
 					updateConfigTo448();
+					updateConfigTo449();
 				} else if (plVersion.equals("4.1.8")) {
 					updateConfigTo419();
 					updateConfigTo422();
@@ -91,6 +93,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo444();
 					updateConfigTo447();
 					updateConfigTo448();
+					updateConfigTo449();
 				} else if (plVersion.equalsIgnoreCase("4.1.9") || plVersion.equalsIgnoreCase("4.2.1")) {
 					updateConfigTo422();
 					updateConfigTo423();
@@ -104,6 +107,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo444();
 					updateConfigTo447();
 					updateConfigTo448();
+					updateConfigTo449();
 				} else if (plVersion.equalsIgnoreCase("4.2.2")) {
 					updateConfigTo423();
 					updateConfigTo424();
@@ -116,6 +120,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo444();
 					updateConfigTo447();
 					updateConfigTo448();
+					updateConfigTo449();
 				} else if (plVersion.equalsIgnoreCase("4.2.3")) {
 					updateConfigTo424();
 					updateConfigTo430();
@@ -127,6 +132,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo444();
 					updateConfigTo447();
 					updateConfigTo448();
+					updateConfigTo449();
 				} else if (plVersion.equalsIgnoreCase("4.2.4")) {
 					updateConfigTo430();
 					updateConfigTo432();
@@ -137,6 +143,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo444();
 					updateConfigTo447();
 					updateConfigTo448();
+					updateConfigTo449();
 				} else if (plVersion.equalsIgnoreCase("4.3.0") || plVersion.equalsIgnoreCase("4.3.1")) {
 					updateConfigTo432();
 					updateConfigTo436();
@@ -146,6 +153,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo444();
 					updateConfigTo447();
 					updateConfigTo448();
+					updateConfigTo449();
 				} else if (plVersion.equalsIgnoreCase("4.3.2") || plVersion.equalsIgnoreCase("4.3.3") || plVersion.equalsIgnoreCase("4.3.4") || plVersion.equalsIgnoreCase("4.3.5")) {
 					updateConfigTo436();
 					updateConfigTo437();
@@ -154,6 +162,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo444();
 					updateConfigTo447();
 					updateConfigTo448();
+					updateConfigTo449();
 				} else if (plVersion.equalsIgnoreCase("4.3.6")) {
 					updateConfigTo437();
 					updateConfigTo440();
@@ -161,26 +170,34 @@ public class ConfigUpdateCheck {
 					updateConfigTo444();
 					updateConfigTo447();
 					updateConfigTo448();
+					updateConfigTo449();
 				} else if (plVersion.equalsIgnoreCase("4.3.7")) {
 					updateConfigTo440();
 					updateConfigTo441();
 					updateConfigTo444();
 					updateConfigTo447();
 					updateConfigTo448();
+					updateConfigTo449();
 				} else if (plVersion.equalsIgnoreCase("4.4.0")) {
 					updateConfigTo441();
 					updateConfigTo444();
 					updateConfigTo447();
 					updateConfigTo448();
+					updateConfigTo449();
 				} else if (plVersion.equalsIgnoreCase("4.4.3")) {
 					updateConfigTo444();
 					updateConfigTo447();
 					updateConfigTo448();
+					updateConfigTo449();
 				} else if (plVersion.equalsIgnoreCase("4.4.4") || plVersion.equalsIgnoreCase("4.4.5") || plVersion.equalsIgnoreCase("4.4.6")) {
 					updateConfigTo447();
 					updateConfigTo448();
+					updateConfigTo449();
 				} else if (plVersion.equalsIgnoreCase("4.4.7")) {
 					updateConfigTo448();
+					updateConfigTo449();
+				} else if (plVersion.equalsIgnoreCase("4.4.8")) {
+					updateConfigTo449();
 				} else if (Integer.valueOf(plVersion.replace(".", "")) < 415) {
 					status = Status.TOO_OLD;
 				} else if (Integer.valueOf(plVersion.replace(".", "")) > Integer.valueOf(latestVersion.replace(".", ""))) {
@@ -310,7 +327,7 @@ public class ConfigUpdateCheck {
 		ChatControl.ConsoleConfig.getConfig().set("Console.Correct_Color_Codes", true);
 		ChatControl.Config.set("Localization.Cannot_Broadcast_Empty_Message", "&cMessage at %event is none, therefore nothing is broadcasted.");
 		ChatControl.Config.set("Localization.Usage_Fake_Cmd", "%prefix Usage: /chatcontrol fake <&bjoin&f/&aleave&f>");
-		ChatControl.Config.set("Commands.Block_Similar_Messages", true);
+		ChatControl.Config.set("Commands.Block_Similar_Commands", true);
 		ChatControl.Config.set("Commands.Strip_Unicode", true);
 	}
 
@@ -347,6 +364,12 @@ public class ConfigUpdateCheck {
 		List<String> cmds = Arrays.asList("/msg", "/m", "/tell", "/t", "/r", "/reply");
 		
 		ChatControl.Config.set("Chat.Notify_Player_When_Mentioned.In_Commands", cmds);
+	}
+	
+	private static void updateConfigTo449() {
+		ChatControl.Config.set("Commands.Block_Similar_Commands", ChatControl.Config.getString("Commands.Block_Similar_Messages"));
+		ChatControl.Config.set("Commands.Block_Similar_Messages", null);
+
 	}
 	
 	private static void updateVersionMark() {
