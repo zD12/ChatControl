@@ -212,7 +212,7 @@ public class Common {
 	}
 
 	private static boolean jeOdkaz(String str){
-		return str.matches(ChatControl.Config.getString("Anti_Ad.Domain_Filter"));
+		return str.matches("(https?:\\/\\/)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?$");
 	}
 
 
@@ -225,7 +225,7 @@ public class Common {
 	}
 
 	public static void debug(String str){
-		if(ChatControl.Config.getBoolean("Miscellaneous.Debug"))
+		if(debugEnabled())
 			console.sendMessage("[ChatControl Debug] " + colorize(str));
 	}
 	
@@ -400,6 +400,7 @@ public class Common {
 		} catch (PatternSyntaxException ex){
 			Log("&cInvalid regex: " + regex);
 			Log("&eUse online services (like regex101.com) for fixing errors");
+			ex.printStackTrace();
 			return false;
 		}
 		Matcher matcher = pattern.matcher(plain_msg);
