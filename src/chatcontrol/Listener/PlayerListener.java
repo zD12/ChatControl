@@ -64,7 +64,7 @@ public class PlayerListener implements Listener{
 			e.setJoinMessage(null);
 			break;
 		default:
-			e.setJoinMessage(Common.colorize(ChatControl.Config.getString("Messages.Common.Join_Message").replace("%player", e.getPlayer().getName()).replace("%prefix", Common.prefix())));
+			e.setJoinMessage(Common.colorize(ChatControl.Config.getString("Messages.Common.Join_Message").replace("%player", e.getPlayer().getName()).replace("%displayname", e.getPlayer().getDisplayName()).replace("%prefix", Common.prefix())));
 			break;
 		}
 	}
@@ -84,7 +84,7 @@ public class PlayerListener implements Listener{
 			e.setQuitMessage(null);
 			break;
 		default:
-			e.setQuitMessage(Common.colorize(ChatControl.Config.getString("Messages.Common.Quit_Message").replace("%player", e.getPlayer().getName()).replace("%prefix", Common.prefix())));
+			e.setQuitMessage(Common.colorize(ChatControl.Config.getString("Messages.Common.Quit_Message").replace("%player", e.getPlayer().getName()).replace("%displayname", e.getPlayer().getDisplayName()).replace("%prefix", Common.prefix())));
 			break;
 		}
 	}
@@ -104,7 +104,7 @@ public class PlayerListener implements Listener{
 			e.setLeaveMessage(null);
 			break;
 		default:
-			e.setLeaveMessage(Common.colorize(ChatControl.Config.getString("Messages.Common.Kick_Message").replace("%player", e.getPlayer().getName()).replace("%prefix", Common.prefix())));
+			e.setLeaveMessage(Common.colorize(ChatControl.Config.getString("Messages.Common.Kick_Message").replace("%player", e.getPlayer().getName()).replace("%displayname", e.getPlayer().getDisplayName()).replace("%prefix", Common.prefix())));
 			break;
 		}
 	}
