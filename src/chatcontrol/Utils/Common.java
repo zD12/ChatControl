@@ -408,16 +408,14 @@ public class Common {
 	}
 
 	public static void swearActions(String theMessage, Player swearer) {
-		if(ChatControl.Config.getBoolean("Anti_Swear.Inform_Admins")) {
-			for (Player pl : Bukkit.getOnlinePlayers()) {
-				if ( pl.isOp() || swearer.hasPermission(Permissions.Notify.swear) ) {
+		if(ChatControl.Config.getBoolean("Anti_Swear.Inform_Admins")) 
+			for (Player pl : Bukkit.getOnlinePlayers())
+				if (hasPerm(pl, Permissions.Notify.swear)) 
 					Common.sendColoredMsg(pl, ChatControl.Config.getString("Localization.Swear_Admin_Message").replace("%message", theMessage).replace("%player", swearer.getName()));
-				}
-			}
-		}
-		if (ChatControl.Config.getBoolean("Anti_Swear.Warn_Player")) {
+				
+		if (ChatControl.Config.getBoolean("Anti_Swear.Warn_Player"))
 			Common.sendMsg(swearer, "Localization.Do_Not_Swear");
-		}
+		
 		Common.customAction(swearer, "Anti_Swear.Custom_Command", theMessage);
 	}
 }
