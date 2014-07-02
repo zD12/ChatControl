@@ -127,6 +127,9 @@ public class ChatControl extends JavaPlugin implements Listener {
 		if(!getConfig().getBoolean("Chat.Notify_Player_When_Mentioned.Only_Notify_When_Afk"))
 			return true;
 		
+		if(ess.getUserMap().getUser(name) == null)
+			return true;
+		
 		return ess.getUserMap().getUser(name).isAfk();
 	}
 	
