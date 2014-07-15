@@ -3,6 +3,8 @@ ChatControl
 
 A chat management plugin for Bukkit.
 
+Check the wiki for frequently asked questions/issues and for getting help (currently in development).
+
 Features
 -----------
 
