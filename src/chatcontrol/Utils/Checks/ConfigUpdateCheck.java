@@ -63,6 +63,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo447();
 					updateConfigTo448();
 					updateConfigTo449();
+					updateConfigTo450();
 				} else if (plVersion.equals("4.1.6") || plVersion.equals("4.1.7")) {
 					updateConfigTo418();
 					updateConfigTo419();
@@ -79,6 +80,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo447();
 					updateConfigTo448();
 					updateConfigTo449();
+					updateConfigTo450();
 				} else if (plVersion.equals("4.1.8")) {
 					updateConfigTo419();
 					updateConfigTo422();
@@ -94,6 +96,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo447();
 					updateConfigTo448();
 					updateConfigTo449();
+					updateConfigTo450();
 				} else if (plVersion.equalsIgnoreCase("4.1.9") || plVersion.equalsIgnoreCase("4.2.1")) {
 					updateConfigTo422();
 					updateConfigTo423();
@@ -108,6 +111,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo447();
 					updateConfigTo448();
 					updateConfigTo449();
+					updateConfigTo450();
 				} else if (plVersion.equalsIgnoreCase("4.2.2")) {
 					updateConfigTo423();
 					updateConfigTo424();
@@ -121,6 +125,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo447();
 					updateConfigTo448();
 					updateConfigTo449();
+					updateConfigTo450();
 				} else if (plVersion.equalsIgnoreCase("4.2.3")) {
 					updateConfigTo424();
 					updateConfigTo430();
@@ -133,6 +138,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo447();
 					updateConfigTo448();
 					updateConfigTo449();
+					updateConfigTo450();
 				} else if (plVersion.equalsIgnoreCase("4.2.4")) {
 					updateConfigTo430();
 					updateConfigTo432();
@@ -144,6 +150,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo447();
 					updateConfigTo448();
 					updateConfigTo449();
+					updateConfigTo450();
 				} else if (plVersion.equalsIgnoreCase("4.3.0") || plVersion.equalsIgnoreCase("4.3.1")) {
 					updateConfigTo432();
 					updateConfigTo436();
@@ -154,6 +161,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo447();
 					updateConfigTo448();
 					updateConfigTo449();
+					updateConfigTo450();
 				} else if (plVersion.equalsIgnoreCase("4.3.2") || plVersion.equalsIgnoreCase("4.3.3") || plVersion.equalsIgnoreCase("4.3.4") || plVersion.equalsIgnoreCase("4.3.5")) {
 					updateConfigTo436();
 					updateConfigTo437();
@@ -163,6 +171,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo447();
 					updateConfigTo448();
 					updateConfigTo449();
+					updateConfigTo450();
 				} else if (plVersion.equalsIgnoreCase("4.3.6")) {
 					updateConfigTo437();
 					updateConfigTo440();
@@ -171,6 +180,7 @@ public class ConfigUpdateCheck {
 					updateConfigTo447();
 					updateConfigTo448();
 					updateConfigTo449();
+					updateConfigTo450();
 				} else if (plVersion.equalsIgnoreCase("4.3.7")) {
 					updateConfigTo440();
 					updateConfigTo441();
@@ -178,26 +188,34 @@ public class ConfigUpdateCheck {
 					updateConfigTo447();
 					updateConfigTo448();
 					updateConfigTo449();
+					updateConfigTo450();
 				} else if (plVersion.equalsIgnoreCase("4.4.0")) {
 					updateConfigTo441();
 					updateConfigTo444();
 					updateConfigTo447();
 					updateConfigTo448();
 					updateConfigTo449();
+					updateConfigTo450();
 				} else if (plVersion.equalsIgnoreCase("4.4.3")) {
 					updateConfigTo444();
 					updateConfigTo447();
 					updateConfigTo448();
 					updateConfigTo449();
+					updateConfigTo450();
 				} else if (plVersion.equalsIgnoreCase("4.4.4") || plVersion.equalsIgnoreCase("4.4.5") || plVersion.equalsIgnoreCase("4.4.6")) {
 					updateConfigTo447();
 					updateConfigTo448();
 					updateConfigTo449();
+					updateConfigTo450();
 				} else if (plVersion.equalsIgnoreCase("4.4.7")) {
 					updateConfigTo448();
 					updateConfigTo449();
+					updateConfigTo450();
 				} else if (plVersion.equalsIgnoreCase("4.4.8")) {
 					updateConfigTo449();
+					updateConfigTo450();
+				} else if (plVersion.equalsIgnoreCase("4.4.9")) {
+					updateConfigTo450();
 				} else if (Integer.valueOf(plVersion.replace(".", "")) < 415) {
 					status = Status.TOO_OLD;
 				} else if (Integer.valueOf(plVersion.replace(".", "")) > Integer.valueOf(latestVersion.replace(".", ""))) {
@@ -369,7 +387,10 @@ public class ConfigUpdateCheck {
 	private static void updateConfigTo449() {
 		ChatControl.Config.set("Commands.Block_Similar_Commands", ChatControl.Config.getString("Commands.Block_Similar_Messages"));
 		ChatControl.Config.set("Commands.Block_Similar_Messages", null);
-
+	}
+	
+	private static void updateConfigTo450() {
+		ChatControl.Config.set("Miscellaneous.RegEx_Timeout_Milis", 1500);
 	}
 	
 	private static void updateVersionMark() {

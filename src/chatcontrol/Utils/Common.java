@@ -137,7 +137,7 @@ public class Common {
 			Log(ChatControl.Config.getString("Localization.Ad_Console_Message").replace("%player", pl.getName()).replace("%message", msg));
 		
 		if(ChatControl.Config.getBoolean("Anti_Ad.Write_To_File"))
-			Writer.writeToFile(TypSuboru.REKLAMY, pl.getName(), msg);		
+			Writer.zapisatDo(TypSuboru.REKLAMY, pl.getName(), msg);		
 	}
 
 	public static boolean hasPerm(Player pl, String perm){
@@ -393,9 +393,10 @@ public class Common {
 
 	public static boolean regExMatch(String regex, String plain_msg) {
 		Pattern pattern = null;
+        TimedCharSequence timedMsg = new TimedCharSequence(plain_msg, ChatControl.Config.getInt("Miscellaneous.RegEx_Timeout_Milis"));
 
-		plain_msg = plain_msg.toLowerCase();
-
+        debug("Checking " + plain_msg + " against " + regex);
+        
 		try {
 			pattern = Pattern.compile(regex);
 		} catch (PatternSyntaxException ex){
@@ -404,8 +405,16 @@ public class Common {
 			ex.printStackTrace();
 			return false;
 		}
-		Matcher matcher = pattern.matcher(plain_msg);
-		return matcher.find();
+		
+		Matcher matcher = pattern.matcher(timedMsg);
+		
+		try {
+			return matcher.find();
+		} catch (RuntimeException ex) {
+            Writer.zapisatDo(TypSuboru.ZAZNAM_CHYB, null, "Regex check timed out (bad regex?) (plugin ver. " + ChatControl.plugin.getDescription().getVersion() + ")! \nString checked: " + timedMsg + "\nRegex: " + pattern.pattern());
+            Common.error("RegEx \"" + pattern.pattern() + "\" has timed out while checking \"" + timedMsg + "\"! (malformed regex?)", ex);
+            return false;
+		}
 	}
 
 	public static void swearActions(String theMessage, Player swearer) {
