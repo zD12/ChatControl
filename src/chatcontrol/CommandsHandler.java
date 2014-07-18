@@ -134,26 +134,28 @@ public class CommandsHandler implements CommandExecutor {
 				return false;
 			}
 
+			String hrac = args.length == 2 ? sender.getName() : Common.colorize(args[2]);
+			
 			if(volba.equalsIgnoreCase("join") ||volba.equalsIgnoreCase("j")){
-				if(ChatControl.Config.getString("Messages.Common.Join_Message").equalsIgnoreCase("default")) {
-					Bukkit.broadcastMessage(ChatColor.YELLOW + sender.getName() + " joined the game.");
-
-				} else if(ChatControl.Config.getString("Messages.Common.Join_Message").equalsIgnoreCase("none")) {
+				if(ChatControl.Config.getString("Messages.Common.Join_Message").equalsIgnoreCase("default")) 
+					Bukkit.broadcastMessage(ChatColor.YELLOW + hrac + ChatColor.YELLOW + " joined the game.");
+				
+				else if(ChatControl.Config.getString("Messages.Common.Join_Message").equalsIgnoreCase("none"))
 					Common.sendRawMsg(sender, ChatControl.Config.getString("Localization.Cannot_Broadcast_Empty_Message").replace("%event", "player join"));
-
-				} else {
-					Bukkit.broadcastMessage(Common.colorize(ChatControl.Config.getString("Messages.Common.Join_Message").replace("%player", sender.getName()).replace("%prefix", Common.prefix())));
-				}
+				
+				else 
+					Bukkit.broadcastMessage(Common.colorize(ChatControl.Config.getString("Messages.Common.Join_Message").replace("%player", hrac).replace("%prefix", Common.prefix())));
+				
 			} else if(volba.equalsIgnoreCase("quit") ||volba.equalsIgnoreCase("q") || volba.equalsIgnoreCase("leave") || volba.equalsIgnoreCase("l")){
-				if(ChatControl.Config.getString("Messages.Common.Quit_Message").equalsIgnoreCase("default")) {
-					Bukkit.broadcastMessage(ChatColor.YELLOW + sender.getName() + " left the game.");
-
-				} else if(ChatControl.Config.getString("Messages.Common.Quit_Message").equalsIgnoreCase("none")) {
+				if(ChatControl.Config.getString("Messages.Common.Quit_Message").equalsIgnoreCase("default"))
+					Bukkit.broadcastMessage(ChatColor.YELLOW + hrac + ChatColor.YELLOW + " left the game.");
+				
+				else if(ChatControl.Config.getString("Messages.Common.Quit_Message").equalsIgnoreCase("none"))
 					Common.sendRawMsg(sender, ChatControl.Config.getString("Localization.Cannot_Broadcast_Empty_Message").replace("%event", "player quit"));
-
-				} else {
-					Bukkit.broadcastMessage(Common.colorize(ChatControl.Config.getString("Messages.Common.Quit_Message").replace("%player", sender.getName()).replace("%prefix", Common.prefix())));
-				}
+				
+				else 
+					Bukkit.broadcastMessage(Common.colorize(ChatControl.Config.getString("Messages.Common.Quit_Message").replace("%player", hrac).replace("%prefix", Common.prefix())));
+				
 			} else {
 				Common.sendMsg(sender, "Localization.Usage_Fake_Cmd");
 			}
