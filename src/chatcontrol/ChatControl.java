@@ -46,7 +46,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 
 	private Essentials ess;
 	
-	public void onEnable(){
+	public void onEnable(){		
 		plugin = this;
 		Config = getConfig();
 
@@ -55,7 +55,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 
 		ChatConfig.saveDefaultConfig();
 		ConsoleConfig.saveDefaultConfig();
-
+		
 		ConfigUpdateCheck.configCheck();
 
 		for (Player pl : getServer().getOnlinePlayers())

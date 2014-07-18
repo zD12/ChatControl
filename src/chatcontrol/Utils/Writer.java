@@ -14,29 +14,34 @@ public class Writer {
 
 	public static enum TypSuboru {
 		REKLAMY("advertisements.log"),
-		ZAZNAM_CHATU("chat.log");
+		ZAZNAM_CHATU("chat.log"),
+		ZAZNAM_CHYB("errors.log");
 
 		public String typ;
-		TypSuboru (String typ_suboru) {
-			typ = typ_suboru;
+		TypSuboru (String typ) {
+			this.typ = typ;
 		}
 	}
 
-	/**
-	 * @param prefix moze byt aj null
-	 */
-	public static void writeToFile(TypSuboru typSuboru, String prefix, String msg) {
+	/** @param prefix moze byt aj null */
+	public static void zapisatDo(TypSuboru typSuboru, String prefix, String msg) {
 		BufferedWriter bw = null;
-		File file = new File(ChatControl.plugin.getDataFolder() + "/logs");
+		File file;
+		if (typSuboru == TypSuboru.ZAZNAM_CHYB)
+			file = ChatControl.plugin.getDataFolder();
+		else
+			file = new File(ChatControl.plugin.getDataFolder() + "/logs");
 
 		if(!file.exists())
 			file.mkdir();
 
 		try {
 			try {
-				bw = new BufferedWriter(new FileWriter(file + "/" + typSuboru.typ, true));
-				bw.write("[" + getTime() + "] " + (prefix != null ? prefix + ": " : "") + msg);
-				bw.newLine();
+				bw = new BufferedWriter(new FileWriter(file + "/" + typSuboru.typ, true));					
+				for (String line : msg.split("\n")) {
+					bw.write("[" + getTime() + "] " + (prefix != null ? prefix + ": " : "") + line);
+					bw.newLine();
+				}
 			} finally {
 				if (bw != null) {
 					bw.flush();

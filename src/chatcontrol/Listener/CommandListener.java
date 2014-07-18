@@ -123,7 +123,7 @@ public class CommandListener implements Listener{
 			for(String prikaz : ChatControl.Config.getStringList("Chat.Include_Commands") ) {
 				prikaz = prikaz.toLowerCase();
 				if(e.getMessage().toLowerCase().startsWith(prikaz)) {
-					Writer.writeToFile(TypSuboru.ZAZNAM_CHATU, "[CMD] " + e.getPlayer().getName(), e.getMessage());
+					Writer.zapisatDo(TypSuboru.ZAZNAM_CHATU, "[CMD] " + e.getPlayer().getName(), e.getMessage());
 				}
 			}
 		}

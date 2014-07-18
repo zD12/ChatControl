@@ -28,12 +28,12 @@ public class ChecksUtils {
 			if(msg.toLowerCase().matches(".*" + domeny.toLowerCase() + ".*"))
 				return false;
 		
-		if (Common.debugEnabled()) {
+		/*if (Common.debugEnabled()) {
 			Common.debug("Legacy Matches IP Filter? " + finalMsg.matches((".*" + ChatControl.Config.getString("Anti_Ad.IP_Filter")) + ".*"));
 			Common.debug("Legacy Matches Domain Filter? " + finalMsg.matches(".*" + ChatControl.Config.getString("Anti_Ad.Domain_Filter") + ".*"));
 			Common.debug("Matches IP Filter? " + Common.regExMatch(ChatControl.Config.getString("Anti_Ad.IP_Filter"), finalMsg));
 			Common.debug("Matches Domain Filter? " + Common.regExMatch(ChatControl.Config.getString("Anti_Ad.Domain_Filter"), finalMsg));
-		}
+		}*/
 		
 		if (Common.regExMatch(ChatControl.Config.getString("Anti_Ad.IP_Filter"), finalMsg) || Common.regExMatch(ChatControl.Config.getString("Anti_Ad.Domain_Filter"), finalMsg))
 			return true;

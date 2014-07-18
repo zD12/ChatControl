@@ -144,7 +144,7 @@ public class ChatListener implements Listener {
 		finalMsg = message;
 
 		if (ChatControl.Config.getBoolean("Chat.Write_To_File") && !ChatControl.Config.getStringList("Chat.Ignore_Players").contains(e.getPlayer().getName()))
-			Writer.writeToFile(TypSuboru.ZAZNAM_CHATU, e.getPlayer().getName(), (finalMsg != null ? finalMsg : e.getMessage()));	
+			Writer.zapisatDo(TypSuboru.ZAZNAM_CHATU, e.getPlayer().getName(), (finalMsg != null ? finalMsg : e.getMessage()));	
 		
 		if (ChatControl.Config.getBoolean("Chat.Notify_Player_When_Mentioned.Enabled")) {
 			if (ChatControl.Config.getString("Chat.Notify_Player_When_Mentioned.In_Chat_When_Prefixed_With").equalsIgnoreCase("none")) {
