@@ -128,8 +128,10 @@ Anti_Swear:
     - /login
     - /l
   Block_Message: false
+  # Send a message to player that sweared ? (Customizable below)
   Warn_Player: true
   Inform_Admins: true
+  # Replace the word ? Block_Message must be false for this to work.
   Replace_Word: true
   # Note: This fully works only on regex expressions.
   Replacement: "****"
@@ -178,6 +180,8 @@ Miscellaneous:
   Minimum_Players_To_Enable_Plugin: 0
   Block_Chat_Until_Moved: true
   Op_Has_Permissions: true
+  # How long we should tolerate a regex to freeze the server? Can prevent some malformed regex to crash the server.
+  RegEx_Timeout_Milis: 1500
   Automatically_Update_Config: true
   Check_For_Updates: true
   Download_Automatically: true
@@ -235,4 +239,4 @@ Localization:
   Prefix: "&8[&3ChatControl&8]&f"
   Console: "&4server"
 
-Do_Not_Change_Version_Number: 4.4.9
+Do_Not_Change_Version_Number: 4.5.0
