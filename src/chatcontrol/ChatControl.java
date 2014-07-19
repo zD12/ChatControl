@@ -138,7 +138,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 			return null;
 		
 		CommandSource cmdSource = ess.getUserMap().getUser(pl.getName()).getReplyTo();
-		if(!cmdSource.isPlayer())
+		if(cmdSource == null || !cmdSource.isPlayer())
 			return null;
 
 		Player source = cmdSource.getPlayer();

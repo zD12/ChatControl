@@ -140,7 +140,7 @@ public class CommandListener implements Listener{
 
 					player.playSound(player.getLocation(), Sound.valueOf(ChatControl.Config.getString("Chat.Notify_Player_When_Mentioned.Sound")), 1.5F, 1.5F);
 					
-				} else if (e.getMessage().startsWith("/r ") || e.getMessage().startsWith("/reply ") && ChatControl.plugin.getReplyTo(e.getPlayer()) != null) {
+				} else if (e.getMessage().startsWith("/r ") || e.getMessage().startsWith("/reply ")) {
 					Player reply = ChatControl.plugin.getReplyTo(e.getPlayer());
 					
 					if(reply != null && reply.hasPermission(Permissions.Notify.whenMentioned))
