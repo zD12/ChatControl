@@ -133,10 +133,10 @@ public class CommandsHandler implements CommandExecutor {
 				Common.sendMsg(sender, "Localization.No_Permission");
 				return false;
 			}
-
-			String hrac = args.length == 2 ? sender.getName() : Common.colorize(args[2]);
 			
-			if(volba.equalsIgnoreCase("join") ||volba.equalsIgnoreCase("j")){
+			String hrac = args.length != 3 ? sender.getName() : Common.colorize(args[2]);
+			
+			if(volba.equalsIgnoreCase("join") || volba.equalsIgnoreCase("j")){
 				if(ChatControl.Config.getString("Messages.Common.Join_Message").equalsIgnoreCase("default")) 
 					Bukkit.broadcastMessage(ChatColor.YELLOW + hrac + ChatColor.YELLOW + " joined the game.");
 				
@@ -197,7 +197,7 @@ public class CommandsHandler implements CommandExecutor {
 					" ",
 					"  &f/chc mute &2[-silent] [-anonymous] [reason] &e- Chat (un)mute.",
 					"  &f/chc clear &2[-silent] [-anonymous] [reason] &e- Chat clearing.",
-					"  &f/chc fake &6<join/leave> &e- Send fake join/leave message.",
+					"  &f/chc fake &6<join/leave> &2[name] &e- Fake join/quit messages.",
 					"  &f/chc reload &e- Reload configuration.",
 					"  &f/chc list &e- Command list."
 					);
