@@ -40,7 +40,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 	public static CustomConfig ConsoleConfig = new CustomConfig(FileType.CONSOLE);
 
 	public static HashMap<InetAddress, Long> lastLoginTime = new HashMap<InetAddress, Long>();
-	public static HashMap<Player, Storage> data = new HashMap<Player, Storage>();
+	public static HashMap<Player, PlayerCache> data = new HashMap<Player, PlayerCache>();
 
 	public static boolean muted = false;
 
@@ -60,7 +60,7 @@ public class ChatControl extends JavaPlugin implements Listener {
 
 		for (Player pl : getServer().getOnlinePlayers())
 			if(!data.containsKey(pl))
-				data.put(pl, new Storage());
+				data.put(pl, new PlayerCache());
 		
 		if (Bukkit.getPluginManager().getPlugin("Essentials") != null)
 			ess = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");

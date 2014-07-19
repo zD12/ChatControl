@@ -14,7 +14,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import chatcontrol.ChatControl;
-import chatcontrol.Storage;
+import chatcontrol.PlayerCache;
 import chatcontrol.Utils.Common;
 import chatcontrol.Utils.Permissions;
 import chatcontrol.Utils.Checks.ChecksUtils;
@@ -38,7 +38,7 @@ public class PlayerListener implements Listener{
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
 		if(!ChatControl.data.containsKey(e.getPlayer())){
-			ChatControl.data.put(e.getPlayer(), new Storage());
+			ChatControl.data.put(e.getPlayer(), new PlayerCache());
 		}
 		long cas = System.currentTimeMillis() / 1000L;
 		if(!e.getPlayer().isOp() && !e.getPlayer().hasPermission(Permissions.Bypasses.rejoin)){
