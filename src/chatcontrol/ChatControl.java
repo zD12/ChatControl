@@ -9,7 +9,6 @@ import java.util.logging.Filter;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -28,7 +27,7 @@ import com.earth2me.essentials.CommandSource;
 import com.earth2me.essentials.Essentials;
 
 @SuppressWarnings("deprecation")
-public class ChatControl extends JavaPlugin implements Listener {
+public class ChatControl extends JavaPlugin {
 
 	public static ChatControl plugin;
 	public static boolean needsUpdate = false;
@@ -99,13 +98,13 @@ public class ChatControl extends JavaPlugin implements Listener {
 		if(getConfig().getBoolean("Chat_Formatter.Enabled")) {
 			if (getServer().getPluginManager().getPlugin("PermissionsEx") == null) {
 				getLogger().warning("You need PermissionEx to enable ChatFormatter.");
+				Thread.dumpStack();
 			} else {
-				if (getServer().getPluginManager().getPlugin("ChatManager") != null) {
-					getLogger().severe("Detected ChatManager, please copy settings from it to ChatControl and disable the plugin!");
-				} else {
+				if (getServer().getPluginManager().getPlugin("ChatManager") != null) 
+					getLogger().severe("Detected ChatManager, please copy settings from it to ChatControl and remove it then!");
+				else 
 					getServer().getPluginManager().registerEvents(new ChatFormatter(), this);
-					Common.Log("Hooked with PermissionsEx (Chat Formatter)!");
-				}
+					Common.Log("Hooked with PermissionsEx (Chat Formatter)!");				
 			}
 		}
 
@@ -118,6 +117,13 @@ public class ChatControl extends JavaPlugin implements Listener {
 	public void onDisable() {
 		data.clear();
 		lastLoginTime.clear();
+		
+		muted = false;
+		needsUpdate = false;
+		
+		ess = null;
+		plugin = null;
+		Config = null;
 	}
 	
 	public boolean checkForAfk(String name) {

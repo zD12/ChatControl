@@ -3,7 +3,7 @@ package chatcontrol.Utils;
 public class Permissions {
 
 	public class Commands {
-		// Permission to use all the commands.
+		// Permission to use commands. Use chatcontrol.commands.* to allow use of all commands.
 		public static final String global_perm = "chatcontrol.commands";
 		
 		// Permission for "/chatcontrol mute" command.
