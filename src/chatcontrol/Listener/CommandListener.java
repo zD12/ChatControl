@@ -23,14 +23,16 @@ public class CommandListener implements Listener{
 			return;
 		}
 
-		if(!Common.hasPerm(e.getPlayer(), Permissions.Bypasses.global_perm) ) {
+		Player pl = e.getPlayer();
+		
+		if(!Common.hasPerm(pl, Permissions.Bypasses.global_perm) ) {
 			if(ChatControl.muted){
-				if (e.getPlayer().hasPermission(Permissions.Bypasses.mute)) {
+				if (pl.hasPermission(Permissions.Bypasses.mute)) {
 					return;
 				}
 				for (String msg : ChatControl.Config.getStringList("Mute.Disabled_Commands_During_Mute")){
 					if(e.getMessage().startsWith("/" + msg)){
-						Common.sendMsg(e.getPlayer(), "Localization.Cannot_Command_While_Muted");
+						Common.sendMsg(pl, "Localization.Cannot_Command_While_Muted");
 						e.setCancelled(true);
 						return;
 					}
@@ -39,8 +41,8 @@ public class CommandListener implements Listener{
 
 			long cas = System.currentTimeMillis() / 1000L;
 
-			if((cas - ChatControl.data.get(e.getPlayer()).lastCommandTime) < ChatControl.Config.getLong("Commands.Command_Delay")){
-				if(e.getPlayer().hasPermission(Permissions.Bypasses.timeCmd)){
+			if((cas - ChatControl.data.get(pl).lastCommandTime) < ChatControl.Config.getLong("Commands.Command_Delay")){
+				if(pl.hasPermission(Permissions.Bypasses.timeCmd)){
 					return;
 				}
 				for (String sprava : ChatControl.Config.getStringList("Commands.Whitelist_Time")){
@@ -48,11 +50,11 @@ public class CommandListener implements Listener{
 						return;
 					}
 				}
-				Common.sendRawMsg(e.getPlayer(), ChatControl.Config.getString("Localization.Command_Message").replace("%time", String.valueOf(ChatControl.Config.getLong("Commands.Command_Delay") - (cas - ChatControl.data.get(e.getPlayer()).lastCommandTime))));
+				Common.sendRawMsg(pl, ChatControl.Config.getString("Localization.Command_Message").replace("%time", String.valueOf(ChatControl.Config.getLong("Commands.Command_Delay") - (cas - ChatControl.data.get(pl).lastCommandTime))));
 				e.setCancelled(true);
 				return;
 			} else {
-				ChatControl.data.get(e.getPlayer()).lastCommandTime = cas;
+				ChatControl.data.get(pl).lastCommandTime = cas;
 			}
 
 			if(ChatControl.Config.getBoolean("Commands.Block_Duplicate_Commands")){
@@ -60,52 +62,51 @@ public class CommandListener implements Listener{
 				
 				// Strip from messages like /tell <player> <msg> the player, making the check less less annoying.
 				if(e.getMessage().split(" ").length > 2) {
-					Player pl = Bukkit.getPlayer(e.getMessage().split(" ")[1]);
-					if(pl != null && pl.isOnline()) {
-						sprava = sprava.replace(pl.getName() + " ", "");
+					Player reciever = Bukkit.getPlayer(e.getMessage().split(" ")[1]);
+					if(reciever != null && reciever.isOnline()) {
+						sprava = sprava.replace(reciever.getName() + " ", "");
 					}
 				}
 				
 				if(ChatControl.Config.getBoolean("Commands.Strip_Unicode")) {
 					sprava = Common.stripSpecialCharacters(sprava);
 				}
-				if(ChatControl.data.get(e.getPlayer()).lastCommand.equals(sprava) || (Common.stringsAreSimilar(sprava, ChatControl.data.get(e.getPlayer()).lastCommand)
-						&& ChatControl.Config.getBoolean("Commands.Block_Similar_Commands")) ){
-					if(e.getPlayer().hasPermission(Permissions.Bypasses.dupeCmd)){
+				if(ChatControl.data.get(pl).lastCommand.equals(sprava) || (Common.stringsAreSimilar(sprava, ChatControl.data.get(pl).lastCommand) && ChatControl.Config.getBoolean("Commands.Block_Similar_Commands")) ){
+					if(pl.hasPermission(Permissions.Bypasses.dupeCmd))
 						return;
-					}
+					
 					for (String whitelistedMsg : ChatControl.Config.getStringList("Commands.Whitelist_Duplication")){
 						if(e.getMessage().startsWith("/" + whitelistedMsg)){
 							return;
 						}
 					}
-					Common.sendMsg(e.getPlayer(), "Localization.Dupe_Command");
+					Common.sendMsg(pl, "Localization.Dupe_Command");
 					e.setCancelled(true);
 					return;
 				}
-				ChatControl.data.get(e.getPlayer()).lastCommand = sprava;
+				ChatControl.data.get(pl).lastCommand = sprava;
 			}
 
-			if(ChatControl.Config.getBoolean("Anti_Ad.Enabled_In_Commands") && !e.getPlayer().hasPermission(Permissions.Bypasses.ads)){
-				if(ChecksUtils.advertisingCheck(e.getPlayer(), e.getMessage(), true)){
+			if(ChatControl.Config.getBoolean("Anti_Ad.Enabled_In_Commands") && !pl.hasPermission(Permissions.Bypasses.ads)){
+				if(ChecksUtils.advertisingCheck(pl, e.getMessage(), true)){
 					for(String whitelist : ChatControl.Config.getStringList("Anti_Ad.Command_Whitelist")){
 						if(e.getMessage().startsWith(whitelist)){
 							return;
 						}
 					}
-					Common.customAction(e.getPlayer(), "Anti_Ad.Custom_Command", e.getMessage());
-					Common.messages(e.getPlayer(), e.getMessage());
+					Common.customAction(pl, "Anti_Ad.Custom_Command", e.getMessage());
+					Common.messages(pl, e.getMessage());
 					e.setCancelled(true);
 				}
 			}
 
-			if(ChatControl.Config.getBoolean("Anti_Swear.Enabled_In_Commands") && !e.getPlayer().hasPermission(Permissions.Bypasses.swear)){
+			if(ChatControl.Config.getBoolean("Anti_Swear.Enabled_In_Commands") && !pl.hasPermission(Permissions.Bypasses.swear)){
 				for(String ignoredCmd : ChatControl.Config.getStringList("Anti_Swear.Command_Whitelist")) {
 					if(e.getMessage().startsWith(ignoredCmd)) {
 						return;
 					}
 				}
-				String finalMessage = ChecksUtils.swearCheck(e.getPlayer(), e.getMessage(), Common.prepareForSwearCheck(e.getMessage()));
+				String finalMessage = ChecksUtils.swearCheck(pl, e.getMessage(), Common.prepareForSwearCheck(e.getMessage()));
 
 				if(finalMessage != e.getMessage()) {
 					if (ChatControl.Config.getBoolean("Anti_Swear.Block_Message")) {
@@ -119,11 +120,11 @@ public class CommandListener implements Listener{
 			}
 		}
 
-		if (ChatControl.Config.getBoolean("Chat.Write_To_File") && !ChatControl.Config.getStringList("Chat.Ignore_Players").contains(e.getPlayer().getName())) {
+		if (ChatControl.Config.getBoolean("Chat.Write_To_File") && !ChatControl.Config.getStringList("Chat.Ignore_Players").contains(pl.getName())) {
 			for(String prikaz : ChatControl.Config.getStringList("Chat.Include_Commands") ) {
 				prikaz = prikaz.toLowerCase();
 				if(e.getMessage().toLowerCase().startsWith(prikaz)) {
-					Writer.zapisatDo(TypSuboru.ZAZNAM_CHATU, "[CMD] " + e.getPlayer().getName(), e.getMessage());
+					Writer.zapisatDo(TypSuboru.ZAZNAM_CHATU, "[CMD] " + pl.getName(), e.getMessage());
 				}
 			}
 		}
@@ -141,7 +142,7 @@ public class CommandListener implements Listener{
 					player.playSound(player.getLocation(), Sound.valueOf(ChatControl.Config.getString("Chat.Notify_Player_When_Mentioned.Sound")), 1.5F, 1.5F);
 					
 				} else if (e.getMessage().startsWith("/r ") || e.getMessage().startsWith("/reply ")) {
-					Player reply = ChatControl.plugin.getReplyTo(e.getPlayer());
+					Player reply = ChatControl.plugin.getReplyTo(pl);
 					
 					if(reply != null && reply.hasPermission(Permissions.Notify.whenMentioned))
 						reply.playSound(reply.getLocation(), Sound.valueOf(ChatControl.Config.getString("Chat.Notify_Player_When_Mentioned.Sound")), 1.5F, 1.5F);

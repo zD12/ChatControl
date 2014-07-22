@@ -28,18 +28,18 @@ public class CustomConfig {
 		}
 		config = YamlConfiguration.loadConfiguration(configFile);
 
-		InputStreamReader defConfigStream = new InputStreamReader(ChatControl.plugin.getResource(fileName));
-
-		if (defConfigStream != null) {			
-			YamlConfiguration defConfig;
+		InputStreamReader inputReader = new InputStreamReader(ChatControl.plugin.getResource(fileName));
+		
+		if (inputReader != null) {
+			YamlConfiguration yamlCfg;
 
 			try {
-				defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+				yamlCfg = YamlConfiguration.loadConfiguration(inputReader);
 			} catch (NoSuchMethodError ex) {
-				defConfig = YamlConfiguration.loadConfiguration(ChatControl.plugin.getResource(fileName));
+				yamlCfg = YamlConfiguration.loadConfiguration(ChatControl.plugin.getResource(fileName));
 			}
 
-			config.setDefaults(defConfig);
+			config.setDefaults(yamlCfg);
 		}
 	}
 

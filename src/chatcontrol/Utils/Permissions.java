@@ -29,7 +29,7 @@ public class Permissions {
 
 	public class Bypasses {
 		// Bypass everything, basically equals to OP status.
-		public static final String global_perm = "chatcontrol.bypass";
+		public static final String global_perm = "chatcontrol.bypass.*";
 		
 		// Allow player chat even when the chat is muted.
 		public static final String mute = "chatcontrol.bypass.mute";
