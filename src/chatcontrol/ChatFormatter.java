@@ -7,6 +7,8 @@ import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -33,34 +35,30 @@ public class ChatFormatter implements Listener {
 	private Pattern RESET_REGEX = Pattern.compile("(?i)&([R])");
 
 	private MultiverseCore multiVerse;
-	
+
 	public ChatFormatter() {
 		if (Bukkit.getPluginManager().getPlugin("Multiverse-Core") != null) {
 			multiVerse = (MultiverseCore) Bukkit.getPluginManager().getPlugin("Multiverse-Core");
-			
+
 			Common.Log("Hooked with Multiverse 2 (World Alias)!");
 		}
 	}
 
 	@EventHandler(ignoreCancelled = true)
-	public void onPlayerChat(AsyncPlayerChatEvent e) {
+	public void onChatFormat(AsyncPlayerChatEvent e) {
 
 		Player pl = e.getPlayer();
-
 		String world = pl.getWorld().getName();
-
 		PermissionUser user = PermissionsEx.getPermissionManager().getUser(pl);
 
 		if (user == null) 
 			return;
 
 		String messageFormat = user.getOption("message-format", world, ChatControl.Config.getString("Chat_Formatter.Message_Format"));
-
 		boolean localChat = user.getOptionBoolean("force-ranged-mode", world, ChatControl.Config.getBoolean("Chat_Formatter.Ranged_Mode"));
-
 		String theMessage = e.getMessage();
 
-		if ((theMessage.startsWith("!")) && (user.has(Permissions.Formatter.globalChat, world))) {
+		if (theMessage.startsWith("!") && user.has(Permissions.Formatter.globalChat, world)) {
 			localChat = false;
 			theMessage = theMessage.substring(1);
 
@@ -86,12 +84,12 @@ public class ChatFormatter implements Listener {
 		}
 	}
 
-	protected void updateDisplayNames() {
+	/*private void updateDisplayNames() {
 		for (Player pl : Bukkit.getServer().getOnlinePlayers())
 			updateDisplayName(pl);
 	}
 
-	protected void updateDisplayName(Player pl) {
+	private void updateDisplayName(Player pl) {
 		PermissionUser user = PermissionsEx.getPermissionManager().getUser(pl);
 
 		if (user == null)
@@ -99,9 +97,9 @@ public class ChatFormatter implements Listener {
 
 		String world = pl.getWorld().getName();
 		pl.setDisplayName(formatColor(replacePlayerVariables(pl, user.getOption("display-name-format", world, "%prefix%player%suffix"))));
-	}
+	}*/
 
-	protected String replacePlayerVariables(Player pl, String format) {
+	private String replacePlayerVariables(Player pl, String format) {
 
 		PermissionUser user = PermissionsEx.getPermissionManager().getUser(pl);
 		String world = pl.getWorld().getName();
@@ -109,22 +107,40 @@ public class ChatFormatter implements Listener {
 		return format.replace("%prefix", formatColor(user.getPrefix(world))).replace("%suffix", formatColor(user.getSuffix(world))).replace("%world", getWorldAlias(world)).replace("%player", pl.getDisplayName()).replace("%group", user.getGroupsNames()[0]);
 	}
 
-	protected List<Player> getLocalRecipients(Player pl, String message, double range) {
-		Location playerLocation = pl.getLocation();
+	private List<Player> getLocalRecipients(Player pl, String message, double range) {
 		List<Player> recipients = new LinkedList<Player>();
-
-		double squaredDistance = Math.pow(range, 2.0D);
 		PermissionManager manager = PermissionsEx.getPermissionManager();
+		try {
+			Location playerLocation = pl.getLocation();
+			double squaredDistance = Math.pow(range, 2.0D);
 
-		for (Player recipient : Bukkit.getServer().getOnlinePlayers())
-			if (recipient.getWorld().equals(pl.getWorld()))
-				if ((playerLocation.distanceSquared(recipient.getLocation()) <= squaredDistance) || (manager.has(pl, Permissions.Formatter.overrideRanged)))
-					recipients.add(recipient);
+			for (Player recipient : Bukkit.getServer().getOnlinePlayers())
+				if (recipient.getWorld().equals(pl.getWorld()))
+					if ((playerLocation.distanceSquared(recipient.getLocation()) <= squaredDistance) || (manager.has(pl, Permissions.Formatter.overrideRanged)))
+						recipients.add(recipient);
 
-		return recipients;
+			return recipients;
+		} catch (ArrayIndexOutOfBoundsException ex) {
+			Common.debug("(ChatFormat-rangeChat) Got " + ex.getMessage() + ", trying backup.");
+
+			if (manager.has(pl, Permissions.Formatter.overrideRanged)) {
+				for (Player recipient : Bukkit.getServer().getOnlinePlayers()) {
+					if (recipient.getWorld().equals(pl.getWorld()))
+						recipients.add(recipient);
+				}				
+				return recipients;
+			}
+
+			for (Entity en : pl.getNearbyEntities(range, range, range)) {
+				if (en.getType() == EntityType.PLAYER)
+					recipients.add((Player) en);
+			}
+			
+			return recipients;
+		}
 	}
 
-	protected String replaceTime(String msg) {
+	private String replaceTime(String msg) {
 		Calendar c = Calendar.getInstance();
 
 		if (msg.contains("%h"))
@@ -162,7 +178,7 @@ public class ChatFormatter implements Listener {
 		return msg;
 	}
 
-	protected String formatColor(String string) {
+	private String formatColor(String string) {
 		if (string == null)
 			return "";
 
@@ -177,7 +193,7 @@ public class ChatFormatter implements Listener {
 		return str;
 	}
 
-	protected String formatColor(String string, PermissionUser user, String worldName) {
+	public String formatColor(String string, PermissionUser user, String worldName) {
 		if (string == null) 
 			return "";
 
@@ -211,12 +227,12 @@ public class ChatFormatter implements Listener {
 		return world;
 	}
 
-	public String getColoredAlias(String world) {
+	private String getColoredAlias(String world) {
 		MultiverseWorld mvWorld = multiVerse.getMVWorldManager().getMVWorld(world);
-		
+
 		if (mvWorld != null)
 			return mvWorld.getColoredWorldString();
-		
+
 		return world;
 	}
 }
