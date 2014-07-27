@@ -17,11 +17,13 @@ Chat:
   Write_To_File: true
   Ignore_Players:
     - anonymouser1
-  # Commands that get writed along with the chat messages.
+  # Commands that will act as chat messages.  (/{command} will act as a normal chat message)
   Include_Commands:
     - /tell
     - /msg
     - /r
+    - /helpop
+    - /me
   # You need Essentials to enable it.  
   Notify_Player_When_Mentioned:
     # When enabled in chat the plugin is iterating over every online player, beware for lag on bigger servers.
@@ -59,10 +61,12 @@ Messages:
     Quit_Message: default
     Kick_Message: default
 
+# This feature will automaticially automatically capitalize the beginning of a users sentence or statement.
 Grammar:
   Capitalize: 
     Enabled: true
     Minimum_Msg_Length: 5
+# This feature will insert punctuation at the end of a sentence or statement. 
   Insert_Dot: 
     Enabled: true
     Minimum_Msg_Length: 5
@@ -99,6 +103,9 @@ Mute:
     Death_Messages: true
   Disabled_Commands_During_Mute:
     - me
+    - tell
+    - msg
+    - r
     
 Clear:
   Broadcast: true
@@ -111,13 +118,16 @@ Anti_Bot:
 Anti_Caps:
   Enabled: true
   Minimum_Message_Length: 5
-  Total_Caps_Percentage: 50
+  Total_Caps_Percentage: 51
   Caps_In_A_Row: 5
   Warn_Player: true
   Whitelist:
     - OMG
     - LOL
     - ROFL
+    - WOW
+    - LMFO
+
 
 Anti_Swear:
   Enabled: true
@@ -164,17 +174,23 @@ Anti_Ad:
   Write_To_File: true
   # Filter based on RegEx improves the standard filters below. It replaces characters [,],(,) by default.
   Filter_Pre_Process: '[\(\[\]\)]'
-  # Careful with the Regular Expressions. Random changing might blow of your server!
+  # Careful with the Regular Expressions.  Randomly changing might corrupt your server!!  Seriously, be careful!\
+  # All new LTDs (domain extensions) from 2013 and 2014 have been added (besides non-Latin characters)  ..  Reference - https://web.archive.org/web/20140727074850/http://www.newtldlist.com/ (7/27/14)
   IP_Filter: '\b[0-9]{1,3}(\.|dot|\(dot\)|-|;|:|,|(\W|\d|_)*\s)+[0-9]{1,3}(\.|dot|\(dot\)|-|;|:|,|(\W|\d|_)*\s)+[0-9]{1,3}(\.|dot|\(dot\)|-|;|:|,|(\W|\d|_)*\s)+[0-9]{1,3}\b'
-  Domain_Filter: '[a-zA-Z0-9\-\.]+\s?(\.|dot|\(dot\)|-|;|:|,)\s?(com|org|net|mil|cz|co|uk|sk|cc|ws|ca|biz|mobi|xxx|tv|eu)\b'
+  Domain_Filter: '[a-zA-Z0-9\-\.]+\s?(\.|dot|\(dot\)|-|;|:|,)\s?(com|org|net|edu|info|mil|cz|co|uk|sk|cc|ws|ca|biz|mobi|xxx|tv|eu|academy|jp|me|accountant|accountants|actor|ads|adult|agency|airforce|analytics|and|antivirus|apartments|app|archi|architect|are|army|art|associates|attorney|auction|audio|auto|autoinsurance|baby|band|bank|bar|bargains|baseball|basketball|beauty|beer|best|bet|bible|bid|bike|bingo|bio|black|blackfriday|blog|blue|boats|boo|book|boutique|broadway|broker|build|builders|business|buy|buzz|cab|cafe|cam|camera|camp|capital|car|cards|care|career|careers|carinsurance|cars|cash|casino|catering|catholic|center|ceo|channel|charity|charity|cheap|christmas|church|city|claims|cleaning|click|clinic|clothing|cloud|club|coach|codes|coffee|college|community|company|compare|computer|condos|construction|consulting|contact|contractors|cooking|cool|corp|country|coupon|courses|cpa|credit|creditcard|creditunion|cricket|cruise|dad|dance|data|dating|day|dds|dealer|deals|degree|delivery|democrat|dental|dentist|design|dev|diamonds|diet|digital|direct|directory|discount|diy|docs|doctor|dog|doctor|dot|download|drive|drive|earth|eat|eco|ecom|education|email|energy|engineer|engineering|enterprises|equipment|esq|estate|events|exchange|expert|exposed|express|fail|faith|family|fan|farm|fashion|feedback|film|finance|financial|financialaid|fish|fishing|fit|fitness|flights|florist|flowers|fly|foo|food|football|forex|forsale|forum|foundation|free|frontdoor|fun|fund|furniture|futbol|fyi|gallery|game|garden|gay|gift|gifts|gives|giving|glass|glean|global|gmbh|gold|golf|gop|graphics|green|gripe|grocery|group|guide|guitars|guru|hair|halal|hangout|health|healthcare|heart|help|here|hiphop|hiv|hockey|holdings|holiday|home|horse|hospital|host|hosting|hot|hoteis|hotel|hoteles|house|how|immo|inc|industries|ing|ink|institute|insurance|insure|international|investments|ira|islam|jewelry|juegos|kids|kitchen|kosher|land|law|lawyer|lds|lease|legal|lgbt|life|lifeinsurance|lifestyle|lighting|limited|limo|link|live|living|llc|loans|loft|lol|lotto|love|ltd|luxe|luxury|mail|makeup|man|management|map|market|marketing|mba|med|media|medical|meet|meme|memorial|men|menu|mlb|mls|mobile|mom|money|mormon|mortgage|motorcycles|mov|movie|music|mutualfunds|navy|nba|network|new|news|next|nfl|ngo|ninja|now|office|one|ong|online|organic|page|partners|parts|party|patch|pay|pets|pharmacy|phd|photo|photography|physio|physio|pics|pictures|pid|ping|pink|pizza|place|play|plumbing|plus|poker|porn|press|prod|productions|prof|promo|properties|property|protection|pub|qpon|racing|radio|realestate|realtor|realty|recipes|red|rehab|rent|rentals|repair|report|republican|restaurant|retirement|review|rip|rocks|rodeo|room|rsvp|rugby|run|safety|sale|salon|save|scholarships|school|science|search|secure|security|seek|services|sex|sexy|shiksha||shoes|shop|shopping|show|silk|singles|site|ski|skin|smile|soccer|social|software|solar|solutions|spa|space|sport|spot|spreadbetting|star|storage|store|stroke|studio|study|style|sucks|supplies|supply|support|surf|surgery|systems|talk|tattoo|tax|taxi|team|tech|technology|tennis|theater|tickets|tips|tires|today|tools|top|tours|town|toys|trade|trading|training|trust|tube|university|vacations|ventures|vet|video|villas|vin|vip|vision|vodka|vote|voting|voyage|watch|weather|web|webcam|website|wedding|wiki|win|wine|winners|work|works|world|wow|wtf|xyz|yachts|yellowpages|yoga|you|zip|zone|abudhabi|amsterdam|barcelona|bcn|berlin|boston|brussels|budapest|capetown|city|cologne|dubai|durban|hamburg|helsinki|ist|istanbul|joburg|koeln|kyoto|london|madrid|melbourne|miami|moscow|nagoya|nyc|osaka|paris|rio|roma|stockholm|sydney|taipei|tokyo|vegas|yokohama|wien|zuerich|africa|alsace|aquitaine|arab|bayern|bzh|cal|catalonia|corsica|cymru|eus|gal|gent|genting|irish|kiwi|lat|nrw|okinawa|pars|quebec|ryukyu|saarland|scot|swiss|tatar|thai|tirol|vlaanderen|wales|zulu|abogado|anquan|banque|blanco|casa|cyou|dabur|gmbh|gratis|halal|haus|hoteis|hoteles|immo|immobilien|indians|jetzt|jio|juegos|kim|kinder|lacaixa|latino|maison|moda|moto|movistar|mozaic|mutuelle|onl|persiangulf|reise|rest|rich|ruhr|sapo|sarl|schule|shia|shouji|sina|skolkovo|sncf|soy|srl|tienda|translations|uno|versicherung|viajes|villas|viva|vivo|voto|vuelos|weibo|whoswho|xihuan|xin|yun|aaa|deutschepost|komatsu|reisen|aarp|dhl|konami|reliance|abarth|digikey|kone|ren|abb|discover|kpmg|rexroth|abbott|dish|kpn|richardli|abbvie|dnb|krd|ricoh|abc|dnp|kred|rightathome|able|docomo|ksb|ril|accenture|dodge|kuokgroup|rmit|acer|doha|kyknet|rocher|aco|doosan|ladbrokes|rockwool|active|dstv|lamborghini|rogers|adac|dtv|lamer|rwe|aeg|dunlop|lancaster|safe|aetna|duns|lancia|safeway|afamilycompany|dupont|lancome|sakura|afl|dvag|landrover|samsclub|africamagic|dvr|lanxess|sandvik|agakhan|dwg|lasalle|sandvikcoromant|aig|edeka|latrobe|sanofi|aigo|emerck|leclerc|sap|airbus|emerson|lefrak|sapo|airtel|epost|lego|sapphire|akdn|epson|lexus|sas|alcon|ericsson|liaison|saxo|alfaromeo|erni|lidl|sbi|alibaba|est|like|sbs|alipay|esurance|lilly|sca|allfinanz|etisalat|lincoln|scb|allfinanzberater|eurovision|linde|schaeffler|allfinanzberatung|everbank|lipsy|schmidt|allstate|extraspace|livestrong|schwarz|ally|fage|lixil|schwarzgroup|alstom|fairwinds|locker|scjohnson|amazon|farmers|locus|scor|americanexpress|fast|loreal|seat|americanfamily|fedex|lotte|select|amex|ferrari|lpl|sener|amfam|ferrero|lplfinancial|ses|amica|fiat|ltda|seven|amp|fidelity|lundbeck|sew|android|fido|lupin|sfr|ansons|final|macys|shangrila|anthem|finish|maif|sharp|anz|fire|mango|shaw|aol|firestone|marriott|shell|apple|firmdale|marshalls|shopyourway|aquarelle|flickr|maserati|showtime|aramco|flir|matrix|shriram|arte|fls|mattel|sky|asda|flsmidth|maybelline|skydrive|astrium|foodnetwork|mcd|skype|athleta|ford|mcdonalds|sling|audi|fox|mckinsey|smart|audible|fresenius|meo|softbank|auspost|frl|merck|sohu|author|frogans|merckmsd|song|avery|frontier|metlife|sony|avianca|ftr|microsoft|spiegel|aws|fujitsu|mih|stada|axa|fujixerox|mii|staples|axis|gallo|mini|starhub|azure|gallup|mint|statebank|baidu|gap|mit|statefarm|banamex|garnier|mitek|statoil|bananarepublic|gbiz|mitsubishi|stc|barclaycard|gcc|mma|stcgroup|barclays|gdn|mnet|stream|barefoot|gea|moe|supersport|bauhaus|gecompany|moi|suzuki|bbb|ged|monash|svr|bbc|george|monster|swatch|bbt|ggee|montblanc|swiftcover|bbva|glade|mopar|symantec|bcg|gle|mrmuscle|tab|beats|globalx|mrporter|taobao|beknown|globo|msd|target|bentley|gmail|mtn|tata|bestbuy|gmc|mtpc|tatamotors|bharti|gmo|mtr|tci|bing|gmx|multichoice|tdk|blockbuster|godaddy|mutual|telecity|bloomberg|goldpoint|mzansimagic|telefonica|bloomingdales|goo|nab|temasek|bms|goodhands|nadex|terra|bmw|goodyear|naspers|teva|bnl|goog|nationwide|thd|bnpparibas|google|natura|theguardian|boehringer|got|nec|thehartford|bofa|gotv|netaporter|tiaa|bom|grainger|netbank|tiffany|bond|gree|netflix|tjx|booking|guardian|neustar|tjmaxx|boots|guardianlife|newholland|tkmaxx|bosch|guardianmedia|nextdirect|tmall|bostik|gucci|nexus|toray|bot|guge|nhk|toshiba|box|hbo|nico|total|bradesco|hdfc|nike|toyota|bridgestone|hdfcbank|nikon|tradershotels|brother|heinz|nissan|transformers|bugatti|hermes|nissay|transunion|buick|hgtv|nokia|travelchannel|bway|hilton|northlandinsurance|travelers|cadillac|hisamitsu|northwesternmutual|travelersinsurance|call|hitachi|norton|travelguard|calvinklein|hkt|nowruz|trv|canalplus|homedepot|nowtv|tui|cancerresearch|honda|nra|tunes|canon|honeywell|ntt|tushu|capitalone|hotmail|obi|tvs|caravan|hsbc|observer|ubank|caremore|htc|off|ubs|cartier|hughes|olayan|uconnect|caseih|hyatt|olayangroup|ultrabook|cashbackbonus|hyundai|oldnavy|ummah|cba|ibm|ollo|unicom|cbn|icbc|olympus|unicorn|cbre|ice|omega|uol|cbs|icu|onyourside|ups|ceb|idn|ooo|vana|cern|ieee|open|vanguard|cfa|ifm|oracle|vanish|cfd|iinet|orange|verisign|chanel|ikano|orientexpress|vermögensberater|changiairport|imamat|origins|vermögensberatung|chartis|imdb|otsuka|vig|chase|infiniti|ott|viking|chatr|infosys|overheidnl|virgin|chesapeake|infy|ovh|visa|chevrolet|intel|pamperedchef|vista|chevy|intuit|panasonic|vistaprint|chintai|ipiranga|panerai|volkswagen|chk|iselect|passagens|volvo|chloe|ismaili|patagonia|vons|chrome|itau|payu|walmart|chrysler|itv|pccw|walter|cialis|iveco|pfizer|wang|cimb|iwc|philips|wanggou|cipriani|jaguar|piaget|warman|circle|java|pictet|weatherchannel|cisco|jcb|pin|weber|citadel|jcp|pioneer|webjet|citi|jeep|piperlime|weir|citic|jlc|pitney|williamhill|cityeats|jll|playstation|wilmar|clinique|jmp|pnc|windows|clubmed|jnj|pohl|wme|comcast|jpmorgan|politie|wolterskluwer|commbank|jpmorganchase|polo|woodside|comsec|jprs|pramerica|wtc|connectors|juniper|praxi|xbox|cookingchannel|justforu|prime|xerox|crown|kaufen|progressive|xfinity|crs|kddi|pru|xperia|csc|kerastase|prudential|yahoo|cuisinella|kerryhotels|pwc|yamaxun|datsun|kerrylogisitics|qtel|yandex|dclk|kerryproperties|quest|yodobashi|dell|ketchup|qvc|youtube|delmonte|kfh|raid|zappos|deloitte|kia|ram|zara|delta|kiehls|read|zero|desi|kindle|redken|zippo|redstone|redumbrella|joy|homegoods|jot|homesense")\b'
   Custom_Filter: none
   Custom_Command: none
   Whitelisted:
     IP:
+    # IPs that aren't filtered.   Recommended that you add your own server's IP
       - 0.0.0.0
+      - 127.0.0.1
     Domains:
+    # Domains that aren't filtered.  Recommend that you add your own Website's domain name.
       - youtube.com
       - google.com
+      - imgur.com
+      - i.imgur.com
 
 Miscellaneous:
   Minimum_Players_To_Enable_Plugin: 0
@@ -186,49 +202,52 @@ Miscellaneous:
   Check_For_Updates: true
   Download_Automatically: true
   Notify_New_Version: true
+  # Don't enable unless you know what you're doing..
   Debug: false
 
 Localization:
   # Use %prefix to add the prefix.
-  Dupe_Message: "&cPlease do not repeat the same (or similar) message."
-  Dupe_Command: "&cPlease do not repeat the same (or similar) command."
-  Dupe_Sign: "&cPlease do not repeat the same text on sign."
-  Time_Message: "&cPlease wait %time second(s) before next message."
-  Command_Message: "&cPlease wait %time second(s) before next command."
+  &cPlease, don't post similar or exact messages.
+  Dupe_Message: "&cPlease, do not repeat the same and or similar message(s)."
+  Dupe_Command: "&cPlease, do not repeat the same and or similar command(s)."
+  Dupe_Sign: "&cPlease do not repeat the same text on signs."
+  Time_Message: "&cPlease wait %time second(s) before your next message."
+  Command_Message: "&cPlease wait %time second(s) before your next command."
   
-  Ad_Message: "&7Please do not advertise other websites or IP adresses."
-  Ad_Staff_Message: "&c%player possibly advertises: &f%message "
-  Ad_Broadcast_Message: "&c%player possibly advertises!"
-  Ad_Console_Message: "&c%player possibly advertises: &f%message"
+  Ad_Message: "&7Advertising other websites or IP addresses isn't allowed."
+  Ad_Staff_Message: "&c%player might have advertised: &f%message "
+  Ad_Broadcast_Message: "&c%player might have advertised! "
+  Ad_Console_Message: "&c%player might have advertised: &f%message"
   
-  Caps_Message: "&cDo not use so much CAPS LOCK"
+  Caps_Message: "&cPlease, keep the capitalizes limited!"
   
   Successful_Mute: "&7Chat was successfully muted."
-  Successful_Unmute: "&7The chat is now unmuted."
+  Successful_Unmute: "&7The chat is no longer muted."
   
-  Broadcast_Mute: "%prefix &eChat was muted by %player!"
+  Broadcast_Mute: "%prefix &e%player has muted all chat messages!"
   Broadcast_Silent_Mute: "&cInitiated global chat mute."
   
-  Broadcast_Unmute: "%prefix &eChat was unmuted by %player!"  
+  Broadcast_Unmute: "%prefix &eChat isn't muted thanks to %player!"
   Broadcast_Silent_Unmute: "&cGlobal chat mute was cancelled."
   
   Broadcast_Clear: "%prefix &eChat was cleared by %player!"
   Broadcast_Silent_Clear: "&cThe game chat was cleared."
   
-  Successful_Console_Clear: "%prefix &7Console was successfuly cleared."
-  Do_Not_Swear: "&cPlease do not swear!"
-  Swear_Admin_Message: "&c%player swears:&f %message"
+  Successful_Console_Clear: "%prefix &7Console was successfully cleared."
+  Do_Not_Swear: "&cSwearing is not permitted!"
+  Swear_Admin_Message: "&c%player has sworn:&f %message"
   
-  Cannot_Chat_While_Muted: "&7You cannot chat while the chat is muted."
-  Cannot_Command_While_Muted: "&7You cannot use this command while the chat is muted."
-  Cannot_Chat_Until_Moved: "&7You cannot chat until you move."
-  Cannot_Broadcast_Empty_Message: "&cMessage at %event is none, therefore nothing is broadcasted."
+  Cannot_Chat_While_Muted: "&7You cannot chat while the chat is muted!"
+  Cannot_Command_While_Muted: "&7You cannot use this command while the chat is muted!"
+  Cannot_Chat_Until_Moved: "&7You may not chat until you move!"
+  Cannot_Broadcast_Empty_Message: "&cMessage at %event is empty, therefore I cannot broadcast anything.."
   
   Staff_Chat_Clear_Message: "&7^----- [ == &fChat was cleared by %player &7== ] -----^"
   Rejoin_Message: "&6Please wait &7%time second(s)&6 before logging in."
   Update_Needed: "&2A new version of &3ChatControl&2 is available.\n&2Current version: &f%current&2; New version: &f%new\n&2You can disable this notification in its config."
-  Reload_Complete: "&7Plugin was reloaded successfully."
-  No_Permission: "&cYou do not have permission for this."
+  Reload_Complete: "&7ChatControl was successfully reloaded."
+  No_Permission: "&cYou lack the the permissions needed to perform this command!"
+  
   
   Wrong_Args: "&cWrong arguments. Type &6/chc list&c for command list."
   Wrong_Parameters: "&cWrong parameters, available are: &7%params"
