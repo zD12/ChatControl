@@ -18,4 +18,4 @@ Console:
   # Color codes has to be in "" to be functional.
   # Remember this is an EXPERIMENTAL feature! Works on MC 1.6.4 and older only.
   Replace_Messages:
-     "Reload complete<DOT>": "&bSuccessfuly reloaded by magic powers."
+     "Reload complete<DOT>": "&bSuccessfuly reloaded by magical powers."
