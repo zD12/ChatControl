@@ -17,7 +17,7 @@ Chat:
   Write_To_File: true
   Ignore_Players:
     - anonymouser1
-  # Commands that will act as chat messages.  (/{command} will act as a normal chat message)
+  # Commands included in chat log.
   Include_Commands:
     - /tell
     - /msg
