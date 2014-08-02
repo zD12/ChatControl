@@ -1,11 +1,11 @@
 ChatControl
 ===========
 
-A chat management plugin for Bukkit.
+A chat management plugin for CraftBukkit and Spigot!
 
-Check the wiki for frequently asked questions/issues and for getting help (currently in development).
+Check ChatControl's wiki for frequently asked questions/issues [here](https://github.com/kangarko/ChatControl/wiki/Frequently-asked-questions-or-issues) .
 
-Features
+Primary Features
 -----------
 
 * Efficient antispam that works. This include commands (e.g. private messages).
@@ -14,8 +14,13 @@ Features
 * Fully configurable and intuitive interface.
 * Extremely efficient and low RAM/CPU usage.
 
-Check out its webpage for more information.
+--
 
-Update: As of November 2013, ChatControl is found on Spigot page instead of the Bukkit dev page.
+As of November 2013, ChatControl will only be located on the SpigotMC's website, and not BukkitDev. 
 
-Address: http://www.spigotmc.org/resources/chatcontrol.271/
+--
+
+* Plugin Information
+ * Address:  http://www.spigotmc.org/resources/chatcontrol.271/
+ * Releases: https://github.com/kangarko/ChatControl/releases
+ * Author:   [kangarko](https://github.com/kangarko)
