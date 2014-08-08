@@ -3,7 +3,7 @@ ChatControl
 
 A chat management plugin for Bukkit.
 
-Check the wiki for frequently asked questions/issues and for getting help (currently in development).
+Check the ChatControl's wiki for frequently asked questions/issues [here](https://github.com/kangarko/ChatControl/wiki/Frequently-asked-questions-or-issues).
 
 Features
 -----------
@@ -18,4 +18,6 @@ Check out its webpage for more information.
 
 Update: As of November 2013, ChatControl is found on Spigot page instead of the Bukkit dev page.
 
-Address: http://www.spigotmc.org/resources/chatcontrol.271/
+* Plugin Information
+** Homepage: http://www.spigotmc.org/resources/chatcontrol.271/
+** Releases: in folder precompiled or on the homepage
