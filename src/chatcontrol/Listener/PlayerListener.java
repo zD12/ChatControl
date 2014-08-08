@@ -37,9 +37,10 @@ public class PlayerListener implements Listener{
 
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
-		if(!ChatControl.data.containsKey(e.getPlayer())){
+		
+		if(!ChatControl.data.containsKey(e.getPlayer()))
 			ChatControl.data.put(e.getPlayer(), new PlayerCache());
-		}
+		
 		long cas = System.currentTimeMillis() / 1000L;
 		if(!e.getPlayer().isOp() && !e.getPlayer().hasPermission(Permissions.Bypasses.rejoin)){
 			ChatControl.lastLoginTime.put(e.getPlayer().getAddress().getAddress(), cas);

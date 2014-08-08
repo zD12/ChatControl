@@ -44,7 +44,7 @@ public class ChatControl extends JavaPlugin {
 	public static boolean muted = false;
 
 	private Essentials ess;
-	
+
 	public void onEnable(){		
 		plugin = this;
 		Config = getConfig();
@@ -54,13 +54,13 @@ public class ChatControl extends JavaPlugin {
 
 		ChatConfig.saveDefaultConfig();
 		ConsoleConfig.saveDefaultConfig();
-		
+
 		ConfigUpdateCheck.configCheck();
 
 		for (Player pl : getServer().getOnlinePlayers())
 			if(!data.containsKey(pl))
 				data.put(pl, new PlayerCache());
-		
+
 		if (Bukkit.getPluginManager().getPlugin("Essentials") != null)
 			ess = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
 
@@ -104,45 +104,45 @@ public class ChatControl extends JavaPlugin {
 					getLogger().severe("Detected ChatManager, please copy settings from it to ChatControl and remove it then!");
 				else 
 					getServer().getPluginManager().registerEvents(new ChatFormatter(), this);
-					Common.Log("Hooked with PermissionsEx (Chat Formatter)!");				
+				Common.Log("Hooked with PermissionsEx (Chat Formatter)!");				
 			}
 		}
 
 		getCommand("chatcontrol").setExecutor(new CommandsHandler());
 
 		if(getConfig().getBoolean("Miscellaneous.Check_For_Updates"))
-			getServer().getScheduler().runTaskAsynchronously(this, new UpdateCheck("https://raw.github.com/kangarko/ChatControl/master/plugin.yml"));	
+			getServer().getScheduler().runTaskAsynchronously(this, new UpdateCheck("https://raw.github.com/kangarko/ChatControl/master/plugin.yml"));
 	}
 
 	public void onDisable() {
 		data.clear();
 		lastLoginTime.clear();
-		
+
 		muted = false;
 		needsUpdate = false;
-		
+
 		ess = null;
 		plugin = null;
 		Config = null;
 	}
-	
+
 	public boolean checkForAfk(String name) {
 		if(ess == null)
 			return true;
-		
+
 		if(!getConfig().getBoolean("Chat.Notify_Player_When_Mentioned.Only_Notify_When_Afk"))
 			return true;
-		
+
 		if(ess.getUserMap().getUser(name) == null)
 			return true;
-		
+
 		return ess.getUserMap().getUser(name).isAfk();
 	}
-	
+
 	public Player getReplyTo(Player pl) {
 		if(ess == null)
 			return null;
-		
+
 		CommandSource cmdSource = ess.getUserMap().getUser(pl.getName()).getReplyTo();
 		if(cmdSource == null || !cmdSource.isPlayer())
 			return null;
@@ -150,7 +150,7 @@ public class ChatControl extends JavaPlugin {
 		Player source = cmdSource.getPlayer();
 		if (source == null || !source.isOnline())
 			return null;
-		
+
 		return source;
 	}
 }
