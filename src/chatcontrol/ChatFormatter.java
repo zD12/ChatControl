@@ -54,15 +54,15 @@ public class ChatFormatter implements Listener {
 		if (user == null) 
 			return;
 
-		String messageFormat = user.getOption("message-format", world, ChatControl.Config.getString("Chat_Formatter.Message_Format"));
-		boolean localChat = user.getOptionBoolean("force-ranged-mode", world, ChatControl.Config.getBoolean("Chat_Formatter.Ranged_Mode"));
+		String messageFormat = ChatControl.Config.getString("Chat_Formatter.Message_Format");
+		boolean rangedMode = ChatControl.Config.getBoolean("Chat_Formatter.Ranged_Mode");
 		String theMessage = e.getMessage();
 
-		if (theMessage.startsWith("!") && user.has(Permissions.Formatter.globalChat, world)) {
-			localChat = false;
+		if (rangedMode && theMessage.startsWith("!") && pl.hasPermission(Permissions.Formatter.globalChat)) {
+			rangedMode = false;
 			theMessage = theMessage.substring(1);
 
-			messageFormat = user.getOption("global-message-format", world, ChatControl.Config.getString("Chat_Formatter.Global_Message_Format"));
+			messageFormat = ChatControl.Config.getString("Chat_Formatter.Global_Message_Format");
 		}
 
 		messageFormat = formatColor(messageFormat);
@@ -76,8 +76,8 @@ public class ChatFormatter implements Listener {
 		e.setFormat(messageFormat);
 		e.setMessage(theMessage);
 
-		if (localChat) {
-			double range = user.getOptionDouble("chat-range", world, ChatControl.Config.getDouble("Chat_Formatter.Chat_Range"));
+		if (rangedMode) {
+			double range = ChatControl.Config.getDouble("Chat_Formatter.Chat_Range");
 
 			e.getRecipients().clear();
 			e.getRecipients().addAll(getLocalRecipients(pl, messageFormat, range));
