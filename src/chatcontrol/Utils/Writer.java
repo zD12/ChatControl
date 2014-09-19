@@ -17,9 +17,9 @@ public class Writer {
 		ZAZNAM_CHATU("chat.log"),
 		ZAZNAM_CHYB("errors.log");
 
-		public String typ;
-		TypSuboru (String typ) {
-			this.typ = typ;
+		public String nazovSuboru;
+		TypSuboru (String nazovSuboru) {
+			this.nazovSuboru = nazovSuboru;
 		}
 	}
 
@@ -37,7 +37,7 @@ public class Writer {
 
 		try {
 			try {
-				bw = new BufferedWriter(new FileWriter(file + "/" + typSuboru.typ, true));					
+				bw = new BufferedWriter(new FileWriter(file + "/" + typSuboru.nazovSuboru, true));					
 				for (String line : msg.split("\n")) {
 					bw.write("[" + getTime() + "] " + (prefix != null ? prefix + ": " : "") + line);
 					bw.newLine();
@@ -49,7 +49,7 @@ public class Writer {
 				}
 			}
 		} catch (Exception ex) {
-			Logger.getLogger("Minecraft").log(Level.WARNING, "ChatControl was unable to write to " + typSuboru.typ, ex);
+			Logger.getLogger("Minecraft").log(Level.WARNING, "ChatControl was unable to write to " + typSuboru.nazovSuboru, ex);
 		}
 	}
 

@@ -144,16 +144,16 @@ public class ChatListener implements Listener {
 			Writer.zapisatDo(TypSuboru.ZAZNAM_CHATU, pl.getName(), theMessage);	
 		
 		if (ChatControl.Config.getBoolean("Chat.Notify_Player_When_Mentioned.Enabled")) {
-			if (ChatControl.Config.getString("Chat.Notify_Player_When_Mentioned.In_Chat_When_Prefixed_With").equalsIgnoreCase("none")) {				
-				for (Player online : Bukkit.getOnlinePlayers())				
+			if (ChatControl.Config.getString("Chat.Notify_Player_When_Mentioned.In_Chat_When_Prefixed_With").equalsIgnoreCase("none")) {		
+				for (Player online : Bukkit.getOnlinePlayers())	
 					if (theMessage.toLowerCase().contains(online.getName().toLowerCase()) && ChatControl.plugin.checkForAfk(online.getName()) && online.hasPermission(Permissions.Notify.whenMentioned))
-						online.playSound(online.getLocation(), Sound.valueOf(ChatControl.Config.getString("Chat.Notify_Player_When_Mentioned.Sound")), 1.5F, 1.5F);
-				
+						online.playSound(online.getLocation(), Sound.valueOf(ChatControl.Config.getString("Chat.Notify_Player_When_Mentioned.Sound", "CHICKEN_EGG_POP")), 1.5F, 1.2F);
+					
 			} else {				
 				for (Player online : Bukkit.getOnlinePlayers()) 
 					if (theMessage.toLowerCase().contains(ChatControl.Config.getString("Chat.Notify_Player_When_Mentioned.In_Chat_When_Prefixed_With") + online.getName().toLowerCase()) 
 							&& ChatControl.plugin.checkForAfk(online.getName()) && online.hasPermission(Permissions.Notify.whenMentioned))					
-						online.playSound(online.getLocation(), Sound.valueOf(ChatControl.Config.getString("Chat.Notify_Player_When_Mentioned.Sound")), 1.5F, 1.5F);
+						online.playSound(online.getLocation(), Sound.valueOf(ChatControl.Config.getString("Chat.Notify_Player_When_Mentioned.Sound", "CHICKEN_EGG_POP")), 1.5F, 1.2F);
 			}
 		}
 	}

@@ -41,13 +41,13 @@ public class CommandListener implements Listener{
 
 			long cas = System.currentTimeMillis() / 1000L;
 
-			if((cas - ChatControl.data.get(pl).lastCommandTime) < ChatControl.Config.getLong("Commands.Command_Delay")){
+			timeCheck: if((cas - ChatControl.data.get(pl).lastCommandTime) < ChatControl.Config.getLong("Commands.Command_Delay")){
 				if(pl.hasPermission(Permissions.Bypasses.timeCmd)){
-					return;
+					break timeCheck;
 				}
 				for (String sprava : ChatControl.Config.getStringList("Commands.Whitelist_Time")){
 					if(e.getMessage().startsWith("/" + sprava)){
-						return;
+						break timeCheck;
 					}
 				}
 				Common.sendRawMsg(pl, ChatControl.Config.getString("Localization.Command_Message").replace("%time", String.valueOf(ChatControl.Config.getLong("Commands.Command_Delay") - (cas - ChatControl.data.get(pl).lastCommandTime))));
@@ -57,7 +57,7 @@ public class CommandListener implements Listener{
 				ChatControl.data.get(pl).lastCommandTime = cas;
 			}
 
-			if(ChatControl.Config.getBoolean("Commands.Block_Duplicate_Commands")){
+			dupeCheck: if(ChatControl.Config.getBoolean("Commands.Block_Duplicate_Commands")){
 				String sprava = e.getMessage().toLowerCase();
 				
 				// Strip from messages like /tell <player> <msg> the player, making the check less less annoying.
@@ -73,11 +73,11 @@ public class CommandListener implements Listener{
 				}
 				if(ChatControl.data.get(pl).lastCommand.equals(sprava) || (Common.stringsAreSimilar(sprava, ChatControl.data.get(pl).lastCommand) && ChatControl.Config.getBoolean("Commands.Block_Similar_Commands")) ){
 					if(pl.hasPermission(Permissions.Bypasses.dupeCmd))
-						return;
+						break dupeCheck;
 					
 					for (String whitelistedMsg : ChatControl.Config.getStringList("Commands.Whitelist_Duplication")){
 						if(e.getMessage().startsWith("/" + whitelistedMsg)){
-							return;
+							break dupeCheck;
 						}
 					}
 					Common.sendMsg(pl, "Localization.Dupe_Command");
@@ -87,11 +87,11 @@ public class CommandListener implements Listener{
 				ChatControl.data.get(pl).lastCommand = sprava;
 			}
 
-			if(ChatControl.Config.getBoolean("Anti_Ad.Enabled_In_Commands") && !pl.hasPermission(Permissions.Bypasses.ads)){
+			adCheck: if(ChatControl.Config.getBoolean("Anti_Ad.Enabled_In_Commands") && !pl.hasPermission(Permissions.Bypasses.ads)){
 				if(ChecksUtils.advertisingCheck(pl, e.getMessage(), true)){
 					for(String whitelist : ChatControl.Config.getStringList("Anti_Ad.Command_Whitelist")){
 						if(e.getMessage().startsWith(whitelist)){
-							return;
+							break adCheck;
 						}
 					}
 					Common.customAction(pl, "Anti_Ad.Custom_Command", e.getMessage());
@@ -100,10 +100,10 @@ public class CommandListener implements Listener{
 				}
 			}
 
-			if(ChatControl.Config.getBoolean("Anti_Swear.Enabled_In_Commands") && !pl.hasPermission(Permissions.Bypasses.swear)){
+			swearCheck: if(ChatControl.Config.getBoolean("Anti_Swear.Enabled_In_Commands") && !pl.hasPermission(Permissions.Bypasses.swear)){
 				for(String ignoredCmd : ChatControl.Config.getStringList("Anti_Swear.Command_Whitelist")) {
 					if(e.getMessage().startsWith(ignoredCmd)) {
-						return;
+						break swearCheck;
 					}
 				}
 				String finalMessage = ChecksUtils.swearCheck(pl, e.getMessage(), Common.prepareForSwearCheck(e.getMessage()));
