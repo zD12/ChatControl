@@ -15,6 +15,7 @@ import chatcontrol.Utils.Writer;
 import chatcontrol.Utils.Writer.TypSuboru;
 import chatcontrol.Utils.Checks.ChecksUtils;
 
+@SuppressWarnings("deprecation")
 public class ChatListener implements Listener {
 
 	@EventHandler(ignoreCancelled=true)

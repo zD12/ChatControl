@@ -19,6 +19,7 @@ import chatcontrol.Utils.Common;
 import chatcontrol.Utils.Permissions;
 import chatcontrol.Utils.Checks.ChecksUtils;
 
+@SuppressWarnings("deprecation")
 public class PlayerListener implements Listener{
 
 	@EventHandler(ignoreCancelled=true)
