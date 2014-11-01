@@ -21,6 +21,7 @@ import chatcontrol.Utils.Permissions;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
 
+@SuppressWarnings("deprecation")
 public class ChatFormatter implements Listener {
 
 	private Pattern COLOR_REGEX = Pattern.compile("(?i)&([0-9A-F])");
@@ -100,7 +101,6 @@ public class ChatFormatter implements Listener {
 		pl.setDisplayName(formatColor(replacePlayerVariables(pl, user.getOption("display-name-format", world, "%prefix%player%suffix"))));
 	}
 
-	@SuppressWarnings("deprecation")
 	protected String replacePlayerVariables(Player pl, String format) {
 
 		PermissionUser user = PermissionsEx.getPermissionManager().getUser(pl);

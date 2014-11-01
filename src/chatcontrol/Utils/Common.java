@@ -19,6 +19,7 @@ import org.fusesource.jansi.Ansi.Attribute;
 import chatcontrol.ChatControl;
 import chatcontrol.Utils.Writer.TypSuboru;
 
+@SuppressWarnings("deprecation")
 public class Common {
 
 	private static ConsoleCommandSender console = Bukkit.getConsoleSender();

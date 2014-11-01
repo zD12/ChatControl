@@ -27,6 +27,7 @@ import chatcontrol.Utils.Checks.UpdateCheck;
 import com.earth2me.essentials.CommandSource;
 import com.earth2me.essentials.Essentials;
 
+@SuppressWarnings("deprecation")
 public class ChatControl extends JavaPlugin implements Listener {
 
 	public static ChatControl plugin;

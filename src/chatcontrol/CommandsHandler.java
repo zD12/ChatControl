@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import chatcontrol.Utils.Common;
 import chatcontrol.Utils.Permissions;
 
+@SuppressWarnings("deprecation")
 public class CommandsHandler implements CommandExecutor {
 
 	List<String> validParameters = Arrays.asList("-silent", "-s", "-anonymous", "-a", "-console", "-c"); // TODO Keep updated with the parameters below.
