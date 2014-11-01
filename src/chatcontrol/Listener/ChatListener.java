@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
@@ -18,7 +19,7 @@ import chatcontrol.Utils.Checks.ChecksUtils;
 @SuppressWarnings("deprecation")
 public class ChatListener implements Listener {
 
-	@EventHandler(ignoreCancelled=true)
+	@EventHandler(priority=EventPriority.LOW,ignoreCancelled=true)
 	public void onPlayerChat(AsyncPlayerChatEvent e) {
 
 		if (Bukkit.getOnlinePlayers().length < ChatControl.Config.getInt("Miscellaneous.Minimum_Players_To_Enable_Plugin"))
