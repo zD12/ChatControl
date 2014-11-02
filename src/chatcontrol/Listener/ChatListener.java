@@ -29,7 +29,7 @@ public class ChatListener implements Listener {
 		String theMessage = e.getMessage();
 
 		if(!Common.hasPerm(pl, Permissions.Bypasses.global_perm)) {
-			if (ChatControl.Config.getBoolean("Miscellaneous.Block_Chat_Until_Moved") && pl.getLocation().equals(ChatControl.data.get(pl).loginLocation)) {
+			if (ChatControl.Config.getBoolean("Miscellaneous.Block_Chat_Until_Moved") && pl.getLocation().equals(ChatControl.playerData.get(pl).loginLocation)) {
 				if (!pl.hasPermission(Permissions.Bypasses.move)) {
 					Common.sendMsg(pl, "Localization.Cannot_Chat_Until_Moved");
 					e.setCancelled(true);
@@ -44,28 +44,28 @@ public class ChatListener implements Listener {
 			}
 
 			long cas = System.currentTimeMillis() / 1000L;
-			if ((cas - ChatControl.data.get(pl).lastMessageTime) < ChatControl.Config.getLong("Chat.Message_Delay")) {
+			if ((cas - ChatControl.playerData.get(pl).lastMessageTime) < ChatControl.Config.getLong("Chat.Message_Delay")) {
 				if (!pl.hasPermission(Permissions.Bypasses.timeChat)) {
-					Common.sendRawMsg(pl, ChatControl.Config.getString("Localization.Time_Message").replace("%time", String.valueOf(ChatControl.Config.getLong("Chat.Message_Delay") - (cas - ChatControl.data.get(pl).lastMessageTime))));
+					Common.sendRawMsg(pl, ChatControl.Config.getString("Localization.Time_Message").replace("%time", String.valueOf(ChatControl.Config.getLong("Chat.Message_Delay") - (cas - ChatControl.playerData.get(pl).lastMessageTime))));
 					e.setCancelled(true);
 					return;
 				}
 			}
-			ChatControl.data.get(pl).lastMessageTime = cas;
+			ChatControl.playerData.get(pl).lastMessageTime = cas;
 
 			if (ChatControl.Config.getBoolean("Chat.Block_Duplicate_Messages")) {
 				String sprava = theMessage;
 				if(ChatControl.Config.getBoolean("Chat.Strip_Unicode")) {
 					sprava = Common.stripSpecialCharacters(sprava);
 				}
-				if ((ChatControl.data.get(pl).lastMessage.equals(sprava) || Common.stringsAreSimilar(sprava, ChatControl.data.get(pl).lastMessage) && ChatControl.Config.getBoolean("Chat.Block_Similar_Messages")) ) {
+				if ((ChatControl.playerData.get(pl).lastMessage.equals(sprava) || Common.stringsAreSimilar(sprava, ChatControl.playerData.get(pl).lastMessage) && ChatControl.Config.getBoolean("Chat.Block_Similar_Messages")) ) {
 					if (!pl.hasPermission(Permissions.Bypasses.dupeChat)) {
 						Common.sendMsg(pl, "Localization.Dupe_Message");
 						e.setCancelled(true);
 						return;
 					}
 				}
-				ChatControl.data.get(pl).lastMessage = sprava;
+				ChatControl.playerData.get(pl).lastMessage = sprava;
 			}
 			
 			if(!pl.hasPermission(Permissions.Bypasses.replace))

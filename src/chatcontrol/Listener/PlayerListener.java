@@ -25,11 +25,13 @@ public class PlayerListener implements Listener{
 	@EventHandler(ignoreCancelled=true)
 	public void onPreLogin(AsyncPlayerPreLoginEvent e){
 		long cas = System.currentTimeMillis() / 1000L;
-		if(ChatControl.lastLoginTime.containsKey(e.getAddress()) && ChatControl.lastLoginTime.get(e.getAddress()) > ChatControl.Config.getLong("Anti_Bot.Rejoin_Time")){
-			if((ChatControl.Config.getLong("Anti_Bot.Rejoin_Time") - (cas - ChatControl.lastLoginTime.get(e.getAddress()))) <= 0){
+		String ip = e.getAddress().getHostAddress();
+		
+		if(ChatControl.ipLastLogin.containsKey(ip) && ChatControl.ipLastLogin.get(ip) > ChatControl.Config.getLong("Anti_Bot.Rejoin_Time")){
+			if((ChatControl.Config.getLong("Anti_Bot.Rejoin_Time") - (cas - ChatControl.ipLastLogin.get(ip))) <= 0){
 				return;
 			}
-			String msg = Common.colorize(ChatControl.Config.getString("Localization.Prefix") + "\n\n" + ChatControl.Config.getString("Localization.Rejoin_Message").replace("%time", String.valueOf(ChatControl.Config.getLong("Anti_Bot.Rejoin_Time") - (cas - ChatControl.lastLoginTime.get(e.getAddress())))));
+			String msg = Common.colorize(ChatControl.Config.getString("Localization.Prefix") + "\n\n" + ChatControl.Config.getString("Localization.Rejoin_Message").replace("%time", String.valueOf(ChatControl.Config.getLong("Anti_Bot.Rejoin_Time") - (cas - ChatControl.ipLastLogin.get(ip)))));
 			msg.split("\n");
 			e.disallow(Result.KICK_OTHER, msg);
 		}
@@ -38,14 +40,13 @@ public class PlayerListener implements Listener{
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
 		
-		if(!ChatControl.data.containsKey(e.getPlayer()))
-			ChatControl.data.put(e.getPlayer(), new PlayerCache());
+		ChatControl.playerData.putIfAbsent(e.getPlayer().getName(), new PlayerCache());
 		
 		long cas = System.currentTimeMillis() / 1000L;
 		if(!e.getPlayer().isOp() && !e.getPlayer().hasPermission(Permissions.Bypasses.rejoin)){
-			ChatControl.lastLoginTime.put(e.getPlayer().getAddress().getAddress(), cas);
+			ChatControl.ipLastLogin.put(e.getPlayer().getAddress().getAddress().getHostAddress(), cas);
 		}
-		ChatControl.data.get(e.getPlayer()).loginLocation = e.getPlayer().getLocation();
+		ChatControl.playerData.get(e.getPlayer()).loginLocation = e.getPlayer().getLocation();
 		if(ChatControl.muted && ChatControl.Config.getBoolean("Mute.Disable.Join_Messages")){
 			e.setJoinMessage(null);
 			return;
@@ -132,12 +133,12 @@ public class PlayerListener implements Listener{
 			if (e.getPlayer().hasPermission(Permissions.Bypasses.dupeSigns)) {
 				return;
 			}
-			if(ChatControl.data.get(e.getPlayer()).lastSignText.equals(e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3))){
+			if(ChatControl.playerData.get(e.getPlayer()).lastSignText.equals(e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3))){
 				Common.sendMsg(e.getPlayer(), "Localization.Dupe_Sign");
 				e.setCancelled(true);
 				return;
 			}
-			ChatControl.data.get(e.getPlayer()).lastSignText = e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3);
+			ChatControl.playerData.get(e.getPlayer()).lastSignText = e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3);
 		}
 
 		if (ChatControl.Config.getBoolean("Signs.Advertising_Check")) {

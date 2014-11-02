@@ -2,9 +2,9 @@ package chatcontrol;
 
 import static chatcontrol.PacketListener.PacketListener.initPacketListener;
 
-import java.net.InetAddress;
-import java.util.HashMap;
 import java.util.logging.Filter;
+
+import kangarko.api.util.safety.Mapa;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -33,22 +33,32 @@ public class ChatControl extends JavaPlugin {
 	public static boolean needsUpdate = false;
 	public static String newVersion;
 
+	/** @deprecated TODO move to some FancyConfig or related */
 	public static FileConfiguration Config;
-
+	/** @deprecated TODO move to some FancyConfig or related */
 	public static CustomConfig ChatConfig = new CustomConfig(FileType.CHAT);
+	/** @deprecated TODO move to some FancyConfig or related */
 	public static CustomConfig ConsoleConfig = new CustomConfig(FileType.CONSOLE);
 
-	public static HashMap<InetAddress, Long> lastLoginTime = new HashMap<InetAddress, Long>();
-	public static HashMap<Player, PlayerCache> data = new HashMap<Player, PlayerCache>();
+	// Player IP, Time
+	public static Mapa<String, Long> ipLastLogin = new Mapa<>();
+	
+	// Player Name, Player Cache
+	public static Mapa<String, PlayerCache> playerData = new Mapa<>();
 
 	public static boolean muted = false;
 
 	private Essentials ess;
-
+	
 	public void onEnable(){		
 		plugin = this;
 		Config = getConfig();
 
+		if (Common.debugEnabled()) {
+			ipLastLogin.zobrazovavatVarovania();
+			playerData.zobrazovavatVarovania();
+		}
+		
 		getConfig().options().copyDefaults(true);
 		saveDefaultConfig();
 
@@ -58,8 +68,8 @@ public class ChatControl extends JavaPlugin {
 		ConfigUpdateCheck.configCheck();
 
 		for (Player pl : getServer().getOnlinePlayers())
-			if(!data.containsKey(pl))
-				data.put(pl, new PlayerCache());
+			if(!playerData.containsKey(pl.getName()))
+				playerData.put(pl.getName(), new PlayerCache());
 
 		if (Bukkit.getPluginManager().getPlugin("Essentials") != null)
 			ess = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
@@ -115,8 +125,8 @@ public class ChatControl extends JavaPlugin {
 	}
 
 	public void onDisable() {
-		data.clear();
-		lastLoginTime.clear();
+		playerData.clear();
+		ipLastLogin.clear();
 
 		muted = false;
 		needsUpdate = false;

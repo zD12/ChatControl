@@ -24,9 +24,9 @@ public class CommandsHandler implements CommandExecutor {
 		if(args.length == 0) {
 			sender.sendMessage(Common.colorize("&3ChatControl &8// &fRunning &7v" + ChatControl.plugin.getDescription().getVersion()));
 			sender.sendMessage(Common.colorize("&3ChatControl &8// &fBy &7kangarko &f© 2013 - 2014"));
-			if(!Bukkit.getIp().equalsIgnoreCase("93.91.250.138") && Bukkit.getPort() != 27975) {
-				sender.sendMessage(Common.colorize("&3ChatControl &8// &fWebsite: &7http://ultracraft.6f.sk" + (new Random().nextInt(7) == 1 ? " &b< Prid si zahrat!" : "") ));
-			}
+			if(!Bukkit.getIp().equalsIgnoreCase("93.91.250.138") && Bukkit.getPort() != 27975)
+				sender.sendMessage(Common.colorize("&3ChatControl &8// &fWebsite: &7http://rushmine.6f.sk" + (new Random().nextInt(7) == 1 ? " &b< Prid si zahrat!" : "") ));
+			
 			return false;
 		}
 
