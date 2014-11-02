@@ -43,9 +43,10 @@ public class PlayerListener implements Listener{
 		ChatControl.playerData.putIfAbsent(e.getPlayer().getName(), new PlayerCache());
 		
 		long cas = System.currentTimeMillis() / 1000L;
-		if(!e.getPlayer().isOp() && !e.getPlayer().hasPermission(Permissions.Bypasses.rejoin)){
+		
+		if(!e.getPlayer().isOp() && !e.getPlayer().hasPermission(Permissions.Bypasses.rejoin))
 			ChatControl.ipLastLogin.put(e.getPlayer().getAddress().getAddress().getHostAddress(), cas);
-		}
+		
 		ChatControl.playerData.get(e.getPlayer()).loginLocation = e.getPlayer().getLocation();
 		if(ChatControl.muted && ChatControl.Config.getBoolean("Mute.Disable.Join_Messages")){
 			e.setJoinMessage(null);

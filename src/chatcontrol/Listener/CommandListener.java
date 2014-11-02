@@ -59,18 +59,15 @@ public class CommandListener implements Listener{
 
 			dupeCheck: if(ChatControl.Config.getBoolean("Commands.Block_Duplicate_Commands")){
 				String sprava = e.getMessage().toLowerCase();
+				String[] args = sprava.split(" ");
 				
-				// Strip from messages like /tell <player> <msg> the player, making the check less less annoying.
-				if(e.getMessage().split(" ").length > 2) {
-					Player reciever = Bukkit.getPlayer(e.getMessage().split(" ")[1]);
-					if(reciever != null && reciever.isOnline()) {
-						sprava = sprava.replace(reciever.getName() + " ", "");
-					}
-				}
+				// Strip from messages like /tell <player> <msg> the player name, making the check less less annoying.
+				if(args.length > 2 && (args[0].equals("/tell") || args[0].equals("/msg"))) 
+					sprava = sprava.replace(args[1], "");
 				
-				if(ChatControl.Config.getBoolean("Commands.Strip_Unicode")) {
+				if(ChatControl.Config.getBoolean("Commands.Strip_Unicode"))
 					sprava = Common.stripSpecialCharacters(sprava);
-				}
+				
 				if(ChatControl.playerData.get(pl).lastCommand.equals(sprava) || (Common.stringsAreSimilar(sprava, ChatControl.playerData.get(pl).lastCommand) && ChatControl.Config.getBoolean("Commands.Block_Similar_Commands")) ){
 					if(pl.hasPermission(Permissions.Bypasses.dupeCmd))
 						break dupeCheck;
