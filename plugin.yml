@@ -1,6 +1,6 @@
 name: ChatControl
 main: chatcontrol.ChatControl
-version: 4.5.3
+version: 4.5.4
 author: kangarko
 soft-depend: [Essentials, PermissionsEx, Multiverse-Core, ProtocolLib, Towny]
 commands: 
