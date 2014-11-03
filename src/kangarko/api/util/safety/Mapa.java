@@ -12,7 +12,7 @@ public class Mapa<Kluc, Hodnota> extends BezpecnostneVarovania {
 
 	public Hodnota put(Kluc key, Hodnota value) {
 		if (containsKey(key))
-			varovat("Uz obsahuje kluc: " + key + " s hodnotou: " + value);
+			varovat("Map already contains key: " + key + " \\w value: " + value);
 		
 		return mapa.put(key, value);
 	}
@@ -40,7 +40,7 @@ public class Mapa<Kluc, Hodnota> extends BezpecnostneVarovania {
 	// Object -> String
 	public Hodnota remove(Kluc key) {
 		if (!containsKey(key))
-			varovat("Nemozno vymazat " + key + " z mapy!");
+			varovat("Cannot remove key: " + key + " since it isnt in the map!");
 		
 		return mapa.remove(key);
 	}
@@ -51,7 +51,7 @@ public class Mapa<Kluc, Hodnota> extends BezpecnostneVarovania {
 
 	public Hodnota get(Kluc key) {
 		if(mapa.get(key) == null)
-			varovat("Neobsahuje kluc: " + key);
+			varovat("Trying to get key: " + key + " but map doesnt contains him!");
 			
 		return mapa.get(key);
 	}
