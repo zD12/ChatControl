@@ -22,6 +22,10 @@ import chatcontrol.Utils.Permissions;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.onarandombox.MultiverseCore.api.MultiverseWorld;
+import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
+import com.palmergames.bukkit.towny.object.Resident;
+import com.palmergames.bukkit.towny.object.Town;
+import com.palmergames.bukkit.towny.object.TownyUniverse;
 
 @SuppressWarnings("deprecation")
 public class ChatFormatter implements Listener {
@@ -35,12 +39,19 @@ public class ChatFormatter implements Listener {
 	private Pattern RESET_REGEX = Pattern.compile("(?i)&([R])");
 
 	private MultiverseCore multiVerse;
+	private boolean useTowny = false;
 
 	public ChatFormatter() {
 		if (Bukkit.getPluginManager().getPlugin("Multiverse-Core") != null) {
 			multiVerse = (MultiverseCore) Bukkit.getPluginManager().getPlugin("Multiverse-Core");
 
 			Common.Log("Hooked with Multiverse 2 (World Alias)!");
+		}
+
+		if (Bukkit.getPluginManager().getPlugin("Towny") != null) {
+			useTowny = true;
+
+			Common.Log("Towny 0.88x integration enabled.");
 		}
 	}
 
@@ -104,7 +115,42 @@ public class ChatFormatter implements Listener {
 		PermissionUser user = PermissionsEx.getPermissionManager().getUser(pl);
 		String world = pl.getWorld().getName();
 
-		return format.replace("%prefix", formatColor(user.getPrefix(world))).replace("%suffix", formatColor(user.getSuffix(world))).replace("%world", getWorldAlias(world)).replace("%player", pl.getDisplayName()).replace("%group", user.getGroupsNames()[0]);
+		return format.replace("%prefix", formatColor(user.getPrefix(world))).replace("%suffix", formatColor(user.getSuffix(world))).replace("%world", getWorldAlias(world)).replace("%player", pl.getDisplayName()).replace("%group", user.getGroupsNames()[0])
+				.replace("%town", getTown(pl)).replace("%nation", getNation(pl));
+	}
+
+	private Town getTownyTown(Player pl) {
+		try {
+			Resident res = TownyUniverse.getDataSource().getResident(pl.getName());
+
+			if (res != null)
+				return res.getTown();
+		} catch (NotRegisteredException e) {
+		}
+
+		return null;
+	}
+
+	private String getNation(Player pl) {
+		if (!useTowny)
+			return "";
+
+		try {
+			Town t = getTownyTown(pl);
+			
+			return t != null ? t.getNation().getName() : "";
+		} catch (Exception e) {
+			return "";
+		}
+	}
+
+	private String getTown(Player pl) {
+		if (!useTowny)
+			return "";
+
+		Town t = getTownyTown(pl);
+		
+		return t != null ? t.getName() : "";
 	}
 
 	private List<Player> getLocalRecipients(Player pl, String message, double range) {
@@ -135,7 +181,7 @@ public class ChatFormatter implements Listener {
 				if (en.getType() == EntityType.PLAYER)
 					recipients.add((Player) en);
 			}
-			
+
 			return recipients;
 		}
 	}

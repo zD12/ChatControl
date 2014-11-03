@@ -2,7 +2,7 @@ name: ChatControl
 main: chatcontrol.ChatControl
 version: 4.5.3
 author: kangarko
-soft-depend: [Essentials, PermissionsEx, Multiverse-Core, ProtocolLib]
+soft-depend: [Essentials, PermissionsEx, Multiverse-Core, ProtocolLib, Towny]
 commands: 
   chatcontrol:
     aliases: [ccontrol, chatc, chc]

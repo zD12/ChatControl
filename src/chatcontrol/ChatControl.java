@@ -33,11 +33,8 @@ public class ChatControl extends JavaPlugin {
 	public static boolean needsUpdate = false;
 	public static String newVersion;
 
-	/** @deprecated TODO move to some FancyConfig or related */
 	public static FileConfiguration Config;
-	/** @deprecated TODO move to some FancyConfig or related */
 	public static CustomConfig ChatConfig = new CustomConfig(FileType.CHAT);
-	/** @deprecated TODO move to some FancyConfig or related */
 	public static CustomConfig ConsoleConfig = new CustomConfig(FileType.CONSOLE);
 
 	// Player IP, Time
