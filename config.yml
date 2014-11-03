@@ -176,7 +176,7 @@ Anti_Ad:
   Filter_Pre_Process: '[\(\[\]\)]'
   # Careful with the Regular Expressions. Random changing might blow of your server! 
   IP_Filter: '\b[0-9]{1,3}(\.|dot|\(dot\)|-|;|:|,|(\W|\d|_)*\s)+[0-9]{1,3}(\.|dot|\(dot\)|-|;|:|,|(\W|\d|_)*\s)+[0-9]{1,3}(\.|dot|\(dot\)|-|;|:|,|(\W|\d|_)*\s)+[0-9]{1,3}\b'
-  # To add new command
+  # To add new domain (for example you want to "se" domain blocked) add the domain at the end like:  |eu|yourDomain
   Domain_Filter: '[a-zA-Z0-9\-\.]+\s?(\.|dot|\(dot\)|-|;|:|,)\s?(com|org|net|cz|co|uk|sk|biz|mobi|xxx|eu)\b'
   Custom_Filter: none
   Custom_Command: none
