@@ -228,7 +228,7 @@ Localization:
   Broadcast_Silent_Clear: "&cThe game chat was cleared."
   
   Successful_Console_Clear: "%prefix &7Console was successfully cleared."
-  Do_Not_Swear: "&cPlease do not swear on this server!"
+  Do_Not_Swear: "&cPlease do not swear, otherwise an action will be taken!"
   Swear_Admin_Message: "&c%player has sworn:&f %message"
   
   Cannot_Chat_While_Muted: "&7You cannot chat while the chat is muted!"
