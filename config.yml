@@ -22,7 +22,9 @@ Chat:
     - /tell
     - /msg
     - /r
-    - /helpop
+    - /t
+    - /w
+    - /mail
     - /me
   # You need Essentials to enable it.  
   Notify_Player_When_Mentioned:
@@ -61,12 +63,10 @@ Messages:
     Quit_Message: default
     Kick_Message: default
 
-# This feature will automaticially automatically capitalize the beginning of a users sentence or statement.
 Grammar:
   Capitalize: 
     Enabled: true
     Minimum_Msg_Length: 5
-# This feature will insert punctuation at the end of a sentence or statement. 
   Insert_Dot: 
     Enabled: true
     Minimum_Msg_Length: 5
@@ -118,7 +118,7 @@ Anti_Bot:
 Anti_Caps:
   Enabled: true
   Minimum_Message_Length: 5
-  Total_Caps_Percentage: 51
+  Total_Caps_Percentage: 50
   Caps_In_A_Row: 5
   Warn_Player: true
   Whitelist:
@@ -127,7 +127,6 @@ Anti_Caps:
     - ROFL
     - WOW
     - LMFO
-
 
 Anti_Swear:
   Enabled: true
@@ -199,7 +198,6 @@ Miscellaneous:
   Check_For_Updates: true
   Download_Automatically: true
   Notify_New_Version: true
-  # Enable when you are encouraging errors. Will print more information to the console. 
   Debug: false
 
 Localization:
@@ -230,12 +228,12 @@ Localization:
   Broadcast_Silent_Clear: "&cThe game chat was cleared."
   
   Successful_Console_Clear: "%prefix &7Console was successfully cleared."
-  Do_Not_Swear: "&cSwearing is not permitted!"
+  Do_Not_Swear: "&cPlease do not swear on this server!"
   Swear_Admin_Message: "&c%player has sworn:&f %message"
   
   Cannot_Chat_While_Muted: "&7You cannot chat while the chat is muted!"
   Cannot_Command_While_Muted: "&7You cannot use this command while the chat is muted!"
-  Cannot_Chat_Until_Moved: "&7You may not chat until you move!"
+  Cannot_Chat_Until_Moved: "&7You cannot chat until you move!"
   Cannot_Broadcast_Empty_Message: "&cMessage at %event is empty. No broadcast."
   
   Staff_Chat_Clear_Message: "&7^----- [ == &fChat was cleared by %player &7== ] -----^"
