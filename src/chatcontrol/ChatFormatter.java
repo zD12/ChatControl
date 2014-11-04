@@ -19,13 +19,8 @@ import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import chatcontrol.Utils.Common;
 import chatcontrol.Utils.Permissions;
-
-import com.onarandombox.MultiverseCore.MultiverseCore;
-import com.onarandombox.MultiverseCore.api.MultiverseWorld;
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
-import com.palmergames.bukkit.towny.object.Resident;
-import com.palmergames.bukkit.towny.object.Town;
-import com.palmergames.bukkit.towny.object.TownyUniverse;
+import chatcontrol.hooks.MultiverseHook;
+import chatcontrol.hooks.TownyHook;
 
 @SuppressWarnings("deprecation")
 public class ChatFormatter implements Listener {
@@ -38,21 +33,18 @@ public class ChatFormatter implements Listener {
 	private Pattern ITALIC_REGEX = Pattern.compile("(?i)&([O])");
 	private Pattern RESET_REGEX = Pattern.compile("(?i)&([R])");
 
-	private MultiverseCore multiVerse;
-	private boolean useTowny = false;
+	private MultiverseHook mvHook;
+	private TownyHook townyHook;
+	
+	//private MultiverseCore multiVerse;
+	//private boolean useTowny = false;
 
 	public ChatFormatter() {
-		if (Bukkit.getPluginManager().getPlugin("Multiverse-Core") != null) {
-			multiVerse = (MultiverseCore) Bukkit.getPluginManager().getPlugin("Multiverse-Core");
+		if (Bukkit.getPluginManager().getPlugin("Multiverse-Core") != null)
+			mvHook = new MultiverseHook();
 
-			Common.Log("Hooked with Multiverse 2 (World Alias)!");
-		}
-
-		if (Bukkit.getPluginManager().getPlugin("Towny") != null) {
-			useTowny = true;
-
-			Common.Log("Towny 0.88x integration enabled.");
-		}
+		if (Bukkit.getPluginManager().getPlugin("Towny") != null)
+			townyHook = new TownyHook();
 	}
 
 	@EventHandler(ignoreCancelled = true)
@@ -119,38 +111,18 @@ public class ChatFormatter implements Listener {
 				.replace("%town", getTown(pl)).replace("%nation", getNation(pl));
 	}
 
-	private Town getTownyTown(Player pl) {
-		try {
-			Resident res = TownyUniverse.getDataSource().getResident(pl.getName());
-
-			if (res != null)
-				return res.getTown();
-		} catch (NotRegisteredException e) {
-		}
-
-		return null;
-	}
-
 	private String getNation(Player pl) {
-		if (!useTowny)
+		if (townyHook == null)
 			return "";
 
-		try {
-			Town t = getTownyTown(pl);
-			
-			return t != null ? t.getNation().getName() : "";
-		} catch (Exception e) {
-			return "";
-		}
+		return townyHook.getNation(pl);
 	}
 
 	private String getTown(Player pl) {
-		if (!useTowny)
+		if (townyHook == null)
 			return "";
 
-		Town t = getTownyTown(pl);
-		
-		return t != null ? t.getName() : "";
+		return townyHook.getTownName(pl);
 	}
 
 	private List<Player> getLocalRecipients(Player pl, String message, double range) {
@@ -267,18 +239,9 @@ public class ChatFormatter implements Listener {
 	}
 
 	private String getWorldAlias(String world) {
-		if (multiVerse != null)
-			return getColoredAlias(world);
+		if (mvHook == null)
+			return world;
 
-		return world;
-	}
-
-	private String getColoredAlias(String world) {
-		MultiverseWorld mvWorld = multiVerse.getMVWorldManager().getMVWorld(world);
-
-		if (mvWorld != null)
-			return mvWorld.getColoredWorldString();
-
-		return world;
+		return mvHook.getColoredAlias(world);
 	}
 }

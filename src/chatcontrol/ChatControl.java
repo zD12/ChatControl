@@ -110,7 +110,7 @@ public class ChatControl extends JavaPlugin {
 					getLogger().severe("Detected ChatManager, please copy settings from it to ChatControl and remove it then!");
 				else 
 					getServer().getPluginManager().registerEvents(new ChatFormatter(), this);
-				Common.Log("Hooked with PermissionsEx (Chat Formatter)!");				
+				Common.Log("Hooked with PermissionsEx (Chat Formatter)!");
 			}
 		}
 
