@@ -41,7 +41,7 @@ public class ChatControl extends JavaPlugin {
 	public static Mapa<String, Long> ipLastLogin = new Mapa<>();
 	
 	// Player Name, Player Cache
-	public static Mapa<String, PlayerCache> playerData = new Mapa<>();
+	private static Mapa<String, PlayerCache> playerData = new Mapa<>();
 
 	public static boolean muted = false;
 
@@ -65,8 +65,7 @@ public class ChatControl extends JavaPlugin {
 		ConfigUpdateCheck.configCheck();
 
 		for (Player pl : getServer().getOnlinePlayers())
-			if(!playerData.containsKey(pl.getName()))
-				playerData.put(pl.getName(), new PlayerCache());
+			createDataIfNotExistFor(pl.getName());
 
 		if (Bukkit.getPluginManager().getPlugin("Essentials") != null)
 			ess = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
@@ -159,5 +158,19 @@ public class ChatControl extends JavaPlugin {
 			return null;
 
 		return source;
+	}
+	
+	public static void createDataIfNotExistFor(String pl) {
+		playerData.putIfAbsent(pl, new PlayerCache());
+	}
+	
+	public static PlayerCache getDataFor(Player pl) {
+		return getDataFor(pl.getName());
+	}
+	
+	public static PlayerCache getDataFor(String pl) {
+		createDataIfNotExistFor(pl);
+		
+		return playerData.get(pl);
 	}
 }

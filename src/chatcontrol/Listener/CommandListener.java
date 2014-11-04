@@ -41,7 +41,7 @@ public class CommandListener implements Listener{
 
 			long cas = System.currentTimeMillis() / 1000L;
 
-			timeCheck: if((cas - ChatControl.playerData.get(pl).lastCommandTime) < ChatControl.Config.getLong("Commands.Command_Delay")){
+			timeCheck: if((cas - ChatControl.getDataFor(pl).lastCommandTime) < ChatControl.Config.getLong("Commands.Command_Delay")){
 				if(pl.hasPermission(Permissions.Bypasses.timeCmd)){
 					break timeCheck;
 				}
@@ -50,11 +50,11 @@ public class CommandListener implements Listener{
 						break timeCheck;
 					}
 				}
-				Common.sendRawMsg(pl, ChatControl.Config.getString("Localization.Command_Message").replace("%time", String.valueOf(ChatControl.Config.getLong("Commands.Command_Delay") - (cas - ChatControl.playerData.get(pl).lastCommandTime))));
+				Common.sendRawMsg(pl, ChatControl.Config.getString("Localization.Command_Message").replace("%time", String.valueOf(ChatControl.Config.getLong("Commands.Command_Delay") - (cas - ChatControl.getDataFor(pl).lastCommandTime))));
 				e.setCancelled(true);
 				return;
 			} else {
-				ChatControl.playerData.get(pl).lastCommandTime = cas;
+				ChatControl.getDataFor(pl).lastCommandTime = cas;
 			}
 
 			dupeCheck: if(ChatControl.Config.getBoolean("Commands.Block_Duplicate_Commands")){
@@ -68,7 +68,7 @@ public class CommandListener implements Listener{
 				if(ChatControl.Config.getBoolean("Commands.Strip_Unicode"))
 					sprava = Common.stripSpecialCharacters(sprava);
 				
-				if(ChatControl.playerData.get(pl).lastCommand.equals(sprava) || (Common.stringsAreSimilar(sprava, ChatControl.playerData.get(pl).lastCommand) && ChatControl.Config.getBoolean("Commands.Block_Similar_Commands")) ){
+				if(ChatControl.getDataFor(pl).lastCommand.equals(sprava) || (Common.stringsAreSimilar(sprava, ChatControl.getDataFor(pl).lastCommand) && ChatControl.Config.getBoolean("Commands.Block_Similar_Commands")) ){
 					if(pl.hasPermission(Permissions.Bypasses.dupeCmd))
 						break dupeCheck;
 					
@@ -81,7 +81,7 @@ public class CommandListener implements Listener{
 					e.setCancelled(true);
 					return;
 				}
-				ChatControl.playerData.get(pl).lastCommand = sprava;
+				ChatControl.getDataFor(pl).lastCommand = sprava;
 			}
 
 			adCheck: if(ChatControl.Config.getBoolean("Anti_Ad.Enabled_In_Commands") && !pl.hasPermission(Permissions.Bypasses.ads)){

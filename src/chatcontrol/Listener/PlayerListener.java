@@ -14,7 +14,6 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import chatcontrol.ChatControl;
-import chatcontrol.PlayerCache;
 import chatcontrol.Utils.Common;
 import chatcontrol.Utils.Permissions;
 import chatcontrol.Utils.Checks.ChecksUtils;
@@ -40,14 +39,14 @@ public class PlayerListener implements Listener{
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e){
 		
-		ChatControl.playerData.putIfAbsent(e.getPlayer().getName(), new PlayerCache());
+		ChatControl.createDataIfNotExistFor(e.getPlayer().getName());
 		
 		long cas = System.currentTimeMillis() / 1000L;
 		
 		if(!e.getPlayer().isOp() && !e.getPlayer().hasPermission(Permissions.Bypasses.rejoin))
 			ChatControl.ipLastLogin.put(e.getPlayer().getAddress().getAddress().getHostAddress(), cas);
 		
-		ChatControl.playerData.get(e.getPlayer()).loginLocation = e.getPlayer().getLocation();
+		ChatControl.getDataFor(e.getPlayer()).loginLocation = e.getPlayer().getLocation();
 		if(ChatControl.muted && ChatControl.Config.getBoolean("Mute.Disable.Join_Messages")){
 			e.setJoinMessage(null);
 			return;
@@ -134,12 +133,12 @@ public class PlayerListener implements Listener{
 			if (e.getPlayer().hasPermission(Permissions.Bypasses.dupeSigns)) {
 				return;
 			}
-			if(ChatControl.playerData.get(e.getPlayer()).lastSignText.equals(e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3))){
+			if(ChatControl.getDataFor(e.getPlayer()).lastSignText.equals(e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3))){
 				Common.sendMsg(e.getPlayer(), "Localization.Dupe_Sign");
 				e.setCancelled(true);
 				return;
 			}
-			ChatControl.playerData.get(e.getPlayer()).lastSignText = e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3);
+			ChatControl.getDataFor(e.getPlayer()).lastSignText = e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3);
 		}
 
 		if (ChatControl.Config.getBoolean("Signs.Advertising_Check")) {
