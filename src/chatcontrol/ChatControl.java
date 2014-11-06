@@ -4,8 +4,6 @@ import static chatcontrol.PacketListener.PacketListener.initPacketListener;
 
 import java.util.logging.Filter;
 
-import kangarko.api.util.safety.Mapa;
-
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -22,6 +20,7 @@ import chatcontrol.Listener.PlayerListener;
 import chatcontrol.Utils.Common;
 import chatcontrol.Utils.Checks.ConfigUpdateCheck;
 import chatcontrol.Utils.Checks.UpdateCheck;
+import chatcontrol.Utils.Safety.Mapa;
 
 import com.earth2me.essentials.CommandSource;
 import com.earth2me.essentials.Essentials;
