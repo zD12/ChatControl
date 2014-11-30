@@ -24,7 +24,7 @@ public class CommandListener implements Listener{
 		}
 
 		Player pl = e.getPlayer();
-		
+
 		if(!Common.hasPerm(pl, Permissions.Bypasses.global_perm) ) {
 			if(ChatControl.muted){
 				if (pl.hasPermission(Permissions.Bypasses.mute)) {
@@ -60,18 +60,18 @@ public class CommandListener implements Listener{
 			dupeCheck: if(ChatControl.Config.getBoolean("Commands.Block_Duplicate_Commands")){
 				String sprava = e.getMessage().toLowerCase();
 				String[] args = sprava.split(" ");
-				
+
 				// Strip from messages like /tell <player> <msg> the player name, making the check less less annoying.
 				if(args.length > 2 && (args[0].equals("/tell") || args[0].equals("/msg"))) 
 					sprava = sprava.replace(args[1], "");
-				
+
 				if(ChatControl.Config.getBoolean("Commands.Strip_Unicode"))
 					sprava = Common.stripSpecialCharacters(sprava);
-				
+
 				if(ChatControl.getDataFor(pl).lastCommand.equals(sprava) || (Common.stringsAreSimilar(sprava, ChatControl.getDataFor(pl).lastCommand) && ChatControl.Config.getBoolean("Commands.Block_Similar_Commands")) ){
 					if(pl.hasPermission(Permissions.Bypasses.dupeCmd))
 						break dupeCheck;
-					
+
 					for (String whitelistedMsg : ChatControl.Config.getStringList("Commands.Whitelist_Duplication")){
 						if(e.getMessage().startsWith("/" + whitelistedMsg)){
 							break dupeCheck;
@@ -125,22 +125,21 @@ public class CommandListener implements Listener{
 				}
 			}
 		}
-		
+
 		if (ChatControl.Config.getBoolean("Chat.Notify_Player_When_Mentioned.Enabled_In_Commands")) {
 			String[] args = e.getMessage().split(" ");
-			
+
 			if (ChatControl.Config.getStringList("Chat.Notify_Player_When_Mentioned.In_Commands").contains(args[0])) {
-				
+
 				if(args.length > 2) {
 					Player player = Bukkit.getPlayer(args[1]);
 					if (player == null || !player.isOnline())
 						return;
-
-					player.playSound(player.getLocation(), Sound.valueOf(ChatControl.Config.getString("Chat.Notify_Player_When_Mentioned.Sound")), 1.5F, 1.5F);
 					
+					player.playSound(player.getLocation(), Sound.valueOf(ChatControl.Config.getString("Chat.Notify_Player_When_Mentioned.Sound")), 1.5F, 1.5F);
 				} else if (e.getMessage().startsWith("/r ") || e.getMessage().startsWith("/reply ")) {
 					Player reply = ChatControl.plugin.getReplyTo(pl);
-					
+
 					if(reply != null && reply.hasPermission(Permissions.Notify.whenMentioned))
 						reply.playSound(reply.getLocation(), Sound.valueOf(ChatControl.Config.getString("Chat.Notify_Player_When_Mentioned.Sound")), 1.5F, 1.5F);
 				}

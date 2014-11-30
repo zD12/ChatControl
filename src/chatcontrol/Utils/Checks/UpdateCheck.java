@@ -12,12 +12,11 @@ import java.nio.file.StandardCopyOption;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import chatcontrol.ChatControl;
 import chatcontrol.Utils.Common;
 
-public class UpdateCheck extends BukkitRunnable {
+public class UpdateCheck implements Runnable {
 
 	private String fileUrl;
 

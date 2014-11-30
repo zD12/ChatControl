@@ -38,14 +38,14 @@ public class ChatControl extends JavaPlugin {
 
 	// Player IP, Time
 	public static Mapa<String, Long> ipLastLogin = new Mapa<>();
-	
+
 	// Player Name, Player Cache
 	private static Mapa<String, PlayerCache> playerData = new Mapa<>();
 
 	public static boolean muted = false;
 
 	private Essentials ess;
-	
+
 	public void onEnable(){		
 		plugin = this;
 		Config = getConfig();
@@ -54,7 +54,7 @@ public class ChatControl extends JavaPlugin {
 			ipLastLogin.zobrazovavatVarovania();
 			playerData.zobrazovavatVarovania();
 		}
-		
+
 		getConfig().options().copyDefaults(true);
 		saveDefaultConfig();
 
@@ -75,10 +75,10 @@ public class ChatControl extends JavaPlugin {
 
 
 		if(ConsoleConfig.getConfig().getBoolean("Console.Filter_Enabled") || ConsoleConfig.getConfig().getBoolean("Console.Correct_Color_Codes")) {
-			if(getServer().getBukkitVersion().startsWith("1.7")) {
+			try {
 				new Log4jFilter().init();
 				Common.debug("Console filtering now using Log4j Filter.");
-			} else {
+			} catch (Throwable t) {
 				Filter filter = new ConsoleFilter();
 				if(ConsoleConfig.getConfig().getBoolean("Console.Filter_Plugin_Messages"))
 					for (Plugin p : getServer().getPluginManager().getPlugins())
@@ -158,18 +158,18 @@ public class ChatControl extends JavaPlugin {
 
 		return source;
 	}
-	
+
 	public static void createDataIfNotExistFor(String pl) {
 		playerData.putIfAbsent(pl, new PlayerCache());
 	}
-	
+
 	public static PlayerCache getDataFor(Player pl) {
 		return getDataFor(pl.getName());
 	}
-	
+
 	public static PlayerCache getDataFor(String pl) {
 		createDataIfNotExistFor(pl);
-		
+
 		return playerData.get(pl);
 	}
 }

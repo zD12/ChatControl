@@ -12,7 +12,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.Ansi.Attribute;
 
@@ -29,7 +28,7 @@ public class Common {
 	}
 	
 	public static void sendRawTimedMsg(final Player pl, final String str, int delay_in_seconds){
-		Bukkit.getScheduler().runTaskLater(ChatControl.plugin, new BukkitRunnable() {
+		Bukkit.getScheduler().runTaskLater(ChatControl.plugin, new Runnable() {
 			@Override
 			public void run() {
 				pl.sendMessage( colorize( str.replace("%prefix", prefix()).replace("%player", resolvedSender(pl)) ) );
