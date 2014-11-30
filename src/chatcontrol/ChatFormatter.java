@@ -17,10 +17,10 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
+import chatcontrol.Hooks.MultiverseHook;
+import chatcontrol.Hooks.TownyHook;
 import chatcontrol.Utils.Common;
 import chatcontrol.Utils.Permissions;
-import chatcontrol.hooks.MultiverseHook;
-import chatcontrol.hooks.TownyHook;
 
 @SuppressWarnings("deprecation")
 public class ChatFormatter implements Listener {

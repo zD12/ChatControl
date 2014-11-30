@@ -7,8 +7,8 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
-
-import net.minecraft.util.org.apache.commons.io.FileUtils;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -56,19 +56,26 @@ public class UpdateCheck extends BukkitRunnable {
 		if (cislom(novaVerzia) > cislom(staraVer)) {
 			if (ChatControl.Config.getBoolean("Miscellaneous.Download_Automatically")) {
 				URL adresa = null;
+				
 				try {
 					Common.Log("&bChatControl is updating! Downloading v" + novaVerzia);
 
 					adresa = new URL("https://raw.githubusercontent.com/kangarko/ChatControl/master/precompiled/ChatControl_v" + novaVerzia + ".jar");
 
-					Common.Log("Got file of size: " + ((double) adresa.openConnection().getContentLengthLong() / 1000) + " kb");
+					Common.Log("Got file of size: " + ((double) adresa.openConnection().getContentLengthLong() / 1000) + " kb");		
 					
-					FileUtils.copyURLToFile(adresa, new File(Bukkit.getUpdateFolder() + "/ChatControl.jar"));
-
+					File file = new File(Bukkit.getUpdateFolder(), "ChatControl.jar");
+					
+					if (!file.exists())
+						file.mkdirs();
+					
+					Files.copy(adresa.openStream(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+					
 					Common.Log("Downloaded! File uploaded into the " + Bukkit.getUpdateFolder() + " folder. Please copy it to plugins folder.");
 				} catch (FileNotFoundException ex) {
 					Common.Warn("Cannot download file from " + adresa.toString() + " (Malformed URL / file not uploaded yet)");
-				} catch (Exception ex) {
+				} catch (IOException ex) {
+					Common.Warn("Cannot download file from " + adresa.toString() + " (check console for error)");
 					ex.printStackTrace();
 				}
 			} else {

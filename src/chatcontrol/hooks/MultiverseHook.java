@@ -1,4 +1,4 @@
-package chatcontrol.hooks;
+package chatcontrol.Hooks;
 
 import org.bukkit.Bukkit;
 
