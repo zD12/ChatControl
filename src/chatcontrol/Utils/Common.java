@@ -21,7 +21,11 @@ import chatcontrol.Utils.Writer.TypSuboru;
 @SuppressWarnings("deprecation")
 public class Common {
 
-	private static ConsoleCommandSender console = Bukkit.getConsoleSender();
+	private static final ConsoleCommandSender console;
+	
+	static {
+		console = Bukkit.getServer().getConsoleSender();
+	}
 
 	public static void sendRawMsg(CommandSender pl, String str){
 		pl.sendMessage( colorize( str.replace("%prefix", prefix()).replace("%player", resolvedSender(pl)) ) );
@@ -364,7 +368,7 @@ public class Common {
 	}
 
 	public static String toAnsiColors(String str) {
-		str = colorize(str);
+		str = str.replace("§", "&");
 		str = str.replace("&0", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLACK).boldOff().toString());
 		str = str.replace("&1", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLUE).boldOff().toString());
 		str = str.replace("&2", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.GREEN).boldOff().toString());
