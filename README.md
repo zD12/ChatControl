@@ -1,25 +1,20 @@
 ChatControl
 ===========
 
-A chat management plugin for Bukkit.
-
-Check the ChatControl's wiki for frequently asked questions/issues [here](https://github.com/kangarko/ChatControl/wiki/Frequently-asked-questions-or-issues).
+ChatControl is an open source chat management and formatting solution for bukkit that significantly reduces amount of spam, ads, swearing and bots on your server! This also comes with many other fresh and unique features.
 
 Features
------------
+--------
 
-* Efficient antispam that works. This include commands (e.g. private messages).
-* Blocking of advertisements, swears, etc in chat, commands and signs.
-* Own rules, e.g. replace a piece of text with another text.
-* Fully configurable and intuitive interface.
-* Extremely efficient and low RAM/CPU usage.
+* Recude amount of spam, ads and swearing.
+* Create your own rules and filters.
+* Many other fully configurable advanced features.
 
-Check out its webpage for more information.
-
-Update: As of November 2013, ChatControl is found on Spigot page instead of the Bukkit dev page.
+Check out http://www.spigotmc.org/resources/chatcontrol.271/ for more information.
 
 Links
 -----
 
-* Homepage: http://www.spigotmc.org/resources/chatcontrol.271/
+* [Homepage](http://www.spigotmc.org/resources/chatcontrol.271)
+* [ChatControl's Wiki](https://github.com/kangarko/ChatControl/wiki/Frequently-asked-questions-or-issues)
 * Releases: in folder precompiled or on the homepage
