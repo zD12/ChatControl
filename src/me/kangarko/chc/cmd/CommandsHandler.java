@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import me.kangarko.chc.ChatControl;
-import me.kangarko.chc.model.ChatMessageType;
+import me.kangarko.chc.model.ChatMessage;
 import me.kangarko.chc.model.ConfHelper;
 import me.kangarko.chc.model.Localization;
 import me.kangarko.chc.model.Settings;
@@ -127,25 +127,35 @@ public class CommandsHandler implements CommandExecutor {
 
 			String fakePlayer = args.length != 3 ? sender.getName() : Common.colorize(args[2]);
 
-			if (parameter.equalsIgnoreCase("join") || parameter.equalsIgnoreCase("j")) {
-				if (Settings.Messages.JOIN == ChatMessageType.DEFAULT)
+			if (parameter.equalsIgnoreCase("join") || parameter.equalsIgnoreCase("j") || parameter.equalsIgnoreCase("pripoj") || parameter.equalsIgnoreCase("prihlas")) {
+				if (Settings.Messages.JOIN.getType() == ChatMessage.Type.DEFAULT)
 					Bukkit.broadcastMessage(ChatColor.YELLOW + fakePlayer + ChatColor.YELLOW + " joined the game.");
 
-				else if (Settings.Messages.JOIN == ChatMessageType.HIDDEN)
+				else if (Settings.Messages.JOIN.getType() == ChatMessage.Type.HIDDEN)
 					Common.tell(sender, Localization.CANNOT_BROADCAST_EMPTY_MESSAGE.replace("%event", Localization.Parts.JOIN));
 
 				else
-					Bukkit.broadcastMessage(Common.colorize(Settings.Messages.JOIN.getMsg().replace("%player", fakePlayer).replace("%prefix", Common.prefix())));
+					Bukkit.broadcastMessage(Common.colorize(Settings.Messages.JOIN.getMessage().replace("%player", fakePlayer).replace("%prefix", Common.prefix())));
 
-			} else if (parameter.equalsIgnoreCase("quit") || parameter.equalsIgnoreCase("q") || parameter.equalsIgnoreCase("leave") || parameter.equalsIgnoreCase("l")) {
-				if (Settings.Messages.QUIT == ChatMessageType.DEFAULT)
+			} else if (parameter.equalsIgnoreCase("quit") || parameter.equalsIgnoreCase("q") || parameter.equalsIgnoreCase("leave") || parameter.equalsIgnoreCase("l") || parameter.equalsIgnoreCase("odhlas") || parameter.equalsIgnoreCase("odpoj")) {
+				if (Settings.Messages.QUIT.getType() == ChatMessage.Type.DEFAULT)
 					Bukkit.broadcastMessage(ChatColor.YELLOW + fakePlayer + ChatColor.YELLOW + " left the game.");
 
-				else if (Settings.Messages.QUIT == ChatMessageType.HIDDEN)
+				else if (Settings.Messages.QUIT.getType() == ChatMessage.Type.HIDDEN)
 					Common.tell(sender, Localization.CANNOT_BROADCAST_EMPTY_MESSAGE.replace("%event", Localization.Parts.QUIT));
 
 				else
-					Bukkit.broadcastMessage(Common.colorize(Settings.Messages.QUIT.getMsg().replace("%player", fakePlayer).replace("%prefix", Common.prefix())));
+					Bukkit.broadcastMessage(Common.colorize(Settings.Messages.QUIT.getMessage().replace("%player", fakePlayer).replace("%prefix", Common.prefix())));
+				
+			} else if (parameter.equalsIgnoreCase("kick") || parameter.equalsIgnoreCase("k") || parameter.equalsIgnoreCase("kickni") || parameter.equalsIgnoreCase("vyhod")) {
+					if (Settings.Messages.KICK.getType() == ChatMessage.Type.DEFAULT)
+						Bukkit.broadcastMessage(ChatColor.YELLOW + fakePlayer + ChatColor.YELLOW + " left the game.");
+
+					else if (Settings.Messages.KICK.getType() == ChatMessage.Type.HIDDEN)
+						Common.tell(sender, Localization.CANNOT_BROADCAST_EMPTY_MESSAGE.replace("%event", Localization.Parts.QUIT));
+
+					else
+						Bukkit.broadcastMessage(Common.colorize(Settings.Messages.KICK.getMessage().replace("%player", fakePlayer).replace("%prefix", Common.prefix())));
 
 			} else {
 				Common.tell(sender, Localization.USAGE_FAKE_CMD);

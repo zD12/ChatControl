@@ -33,6 +33,7 @@ public class Common {
 
 	/**
 	 * Basic, colorizes msg and handles %prefix.
+	 * every other method to tell player should extend this
 	 */
 	public static void tellColored(CommandSender sender, String msg) {
 		sender.sendMessage(colorize(msg.replace("%prefix", prefix())));
@@ -200,7 +201,7 @@ public class Common {
 		Logger.getLogger("Minecraft").log(Level.WARNING, "[ChatControl] " + colorize(str));
 	}
 
-	public static void debug(String str) {
+	public static void Debug(String str) {
 		if (debugEnabled())
 			console.sendMessage("[ChatControl Debug] " + colorize(str));
 	}
@@ -322,7 +323,7 @@ public class Common {
 		Pattern pattern = null;
 		TimedCharSequence timedMsg = new TimedCharSequence(plain_msg, Settings.REGEX_TIMEOUT);
 
-		debug("Checking " + plain_msg + " against " + regex);
+		Debug("Checking " + plain_msg + " against " + regex);
 
 		try {
 			pattern = Pattern.compile(regex);

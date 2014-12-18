@@ -27,16 +27,22 @@ public class Localization extends ConfHelper {
 	public static class Parts {
 		public static String JOIN;
 		public static String QUIT;
+		public static String KICK;
 		public static String PREFIX;
 		public static String CONSOLE;
 		public static String REASON;
+		public static String SIGN;
+		public static CasusHelper SECONDS;
 		
 		private static final void init() {
 			JOIN = getString("general.player-join", "player join");
 			QUIT = getString("general.player-quit", "player quit");
+			KICK = getString("general.player-kick", "player kick");
 			PREFIX = getString("general.prefix", "&7[&bChatControl&7]&f");
 			CONSOLE = getString("general.console", "&cserver");
 			REASON = getString("general.reason", "&7Reason:&f%reason");
+			SIGN = getString("general.sign", "SIGN");
+			SECONDS = new CasusHelper(getString("general.seconds", "second, seconds"));
 		}
 	}
 
@@ -99,8 +105,8 @@ public class Localization extends ConfHelper {
 		ANTISPAM_SIMILAR_COMMAND = getString("anti-spam.similar-command", "&cPlease do not repeat the same (or similar) command.");
 		ANTISPAM_CAPS_MESSAGE = getString("anti-spam.too-much-caps", "&cDo not use so much CAPS LOCK!");
 		
-		COMMAND_WAIT_MESSAGE = getString("commands.wait-time", "&cPlease wait %time second(s) before your next command.");
-		CHAT_WAIT_MESSAGE = getString("chat.wait-time", "&cPlease wait %time second(s) before your next message.");
+		COMMAND_WAIT_MESSAGE = getString("commands.wait-time", "&cPlease wait %time %seconds before your next command.");
+		CHAT_WAIT_MESSAGE = getString("chat.wait-time", "&cPlease wait %time %seconds before your next message.");
 		
 		UPDATE_AVAILABLE = getString("update-available", "&2A new version of &3ChatControl&2 is available.\\n&2Current version: &f%current&2; New version: &f%new\\n&2You can disable this notification in the config.");
 		NO_PERMISSION = getString("no-permission",  "&cInsufficient permission.");

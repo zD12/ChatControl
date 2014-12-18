@@ -74,7 +74,7 @@ public class ChatControl extends JavaPlugin {
 		if (SettingsConsole.filterEnabled || SettingsConsole.filterColorToAnsi) {
 			try {
 				new Log4jFilter().init();
-				Common.debug("Console filtering now using Log4j Filter.");
+				Common.Debug("Console filtering now using Log4j Filter.");
 			} catch (Throwable t) {
 				Filter filter = new ConsoleFilter();
 				if (SettingsConsole.filterPluginMessages)
@@ -82,7 +82,7 @@ public class ChatControl extends JavaPlugin {
 						p.getLogger().setFilter(filter);
 
 				Bukkit.getLogger().setFilter(filter);
-				Common.debug("Console filtering initiated (MC 1.6.4 and lower).");
+				Common.Debug("Console filtering initiated (MC 1.6.4 and lower).");
 			}
 		}
 
@@ -115,11 +115,11 @@ public class ChatControl extends JavaPlugin {
 
 		if (Settings.Updater.ENABLED)
 			getServer().getScheduler().runTaskAsynchronously(this, new UpdateCheck("https://raw.github.com/kangarko/ChatControl/master/plugin.yml"));
-
+		
 		boolean removeMe;
-		getLogger().severe("**********************************");
-		getLogger().severe("WARNING: This version of plugin is incomplete, broken and NOT WORKING! Downgrade to 4x");
-		getLogger().severe("**********************************");
+		Common.Log("&b**********************************");
+		Common.Log("&aWARNING: &eThis version of plugin is incomplete, broken and NOT WORKING! Downgrade to 4x");
+		Common.Log("&b**********************************");
 	}
 
 	public void onDisable() {

@@ -47,7 +47,9 @@ public class CommandListener implements Listener {
 				if (Settings.Commands.WHITELIST_TIME.contains(e.getMessage().split(" ")[0]))
 					break timeCheck;
 
-				Common.tell(pl, Localization.COMMAND_WAIT_MESSAGE.replace("%time", String.valueOf(Settings.Commands.TIME_DELAY - (cas - ChatControl.getDataFor(pl).lastCommandTime))));
+				long time = Settings.Commands.TIME_DELAY - (cas - ChatControl.getDataFor(pl).lastCommandTime);
+				
+				Common.tell(pl, Localization.COMMAND_WAIT_MESSAGE.replace("%time", String.valueOf(time)).replace("%seconds", Localization.Parts.SECONDS.formatNumbers(time)));
 				e.setCancelled(true);
 				return;
 			} else {

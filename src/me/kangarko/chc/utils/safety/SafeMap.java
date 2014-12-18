@@ -31,13 +31,6 @@ public class SafeMap<Key, Value> extends SafetyWarnings {
 		return map.containsKey(key);
 	}
 
-
-	@SuppressWarnings("unchecked")
-	/** Beware: Only use when storing String as a Key! */
-	public boolean containsKey(Player pl) {
-		return containsKey((Key) pl.getName());
-	}
-
 	// Object -> String
 	public Value remove(Key key) {
 		if (!containsKey(key))

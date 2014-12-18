@@ -32,7 +32,7 @@ public class SettingsChat extends ConfHelper {
 	public static boolean smileys;
 	public static HashMap<String, String> replaceMap;
 	
-	private static final void smileysAndReplacements() {
+	private static final void init() {
 		smileys = getBoolean("inbuilt-smileys", true);
 		
 		HashMap<String, String> defaults = new HashMap<>();

@@ -66,12 +66,12 @@ public class PlayerListener implements Listener {
 			return;
 		}
 
-		switch (Settings.Messages.JOIN) {
+		switch (Settings.Messages.JOIN.getType()) {
 			case HIDDEN:
 				e.setJoinMessage(null);
 				break;
 			case CUSTOM:
-				e.setJoinMessage(Common.colorize(Settings.Messages.JOIN.getMsg().replace("%player", e.getPlayer().getName()).replace("%displayname", e.getPlayer().getDisplayName()).replace("%prefix", Common.prefix())));
+				e.setJoinMessage(Common.colorize(Settings.Messages.JOIN.getMessage().replace("%player", e.getPlayer().getName()).replace("%displayname", e.getPlayer().getDisplayName()).replace("%prefix", Common.prefix())));
 				break;
 			default:
 				break;
@@ -85,12 +85,12 @@ public class PlayerListener implements Listener {
 			return;
 		}
 
-		switch (Settings.Messages.QUIT) {
+		switch (Settings.Messages.QUIT.getType()) {
 			case HIDDEN:
 				e.setQuitMessage(null);
 				break;
 			case CUSTOM:
-				e.setQuitMessage(Common.colorize(Settings.Messages.QUIT.getMsg().replace("%player", e.getPlayer().getName()).replace("%displayname", e.getPlayer().getDisplayName()).replace("%prefix", Common.prefix())));
+				e.setQuitMessage(Common.colorize(Settings.Messages.QUIT.getMessage().replace("%player", e.getPlayer().getName()).replace("%displayname", e.getPlayer().getDisplayName()).replace("%prefix", Common.prefix())));
 				break;
 			default:
 				break;
@@ -104,12 +104,12 @@ public class PlayerListener implements Listener {
 			return;
 		}
 
-		switch (Settings.Messages.KICK) {
+		switch (Settings.Messages.KICK.getType()) {
 			case HIDDEN:
 				e.setLeaveMessage(null);
 				break;
 			case CUSTOM:
-				e.setLeaveMessage(Common.colorize(Settings.Messages.KICK.getMsg().replace("%player", e.getPlayer().getName()).replace("%displayname", e.getPlayer().getDisplayName()).replace("%prefix", Common.prefix())));
+				e.setLeaveMessage(Common.colorize(Settings.Messages.KICK.getMessage().replace("%player", e.getPlayer().getName()).replace("%displayname", e.getPlayer().getDisplayName()).replace("%prefix", Common.prefix())));
 				break;
 			default:
 				break;
@@ -151,7 +151,7 @@ public class PlayerListener implements Listener {
 					return;
 
 				Common.customAction(e.getPlayer(), "Anti_Ad.Custom_Command", msg);
-				Common.messages(e.getPlayer(), ChatColor.GRAY + "[SIGN] " + ChatColor.WHITE + msg);
+				Common.messages(e.getPlayer(), "&7[" + Localization.Parts.SIGN + "&7] " + ChatColor.WHITE + msg);
 
 				if (Settings.Signs.REWRITE_LINES_WHEN_AD_FOUND) {
 					String[] cenzura = Common.colorize(Settings.Signs.REWRITE_TEXT).split(":");

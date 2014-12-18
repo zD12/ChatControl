@@ -140,7 +140,7 @@ public class ChatFormatter implements Listener {
 
 			return recipients;
 		} catch (ArrayIndexOutOfBoundsException ex) {
-			Common.debug("(ChatFormat-rangeChat) Got " + ex.getMessage() + ", trying backup.");
+			Common.Debug("(ChatFormat-rangeChat) Got " + ex.getMessage() + ", trying backup.");
 
 			if (manager.has(pl, Permissions.Formatter.overrideRanged)) {
 				for (Player recipient : Bukkit.getServer().getOnlinePlayers()) {

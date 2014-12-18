@@ -8,8 +8,6 @@ import java.util.List;
 import me.kangarko.chc.ChatControl;
 import me.kangarko.chc.utils.Common;
 
-import org.bukkit.Sound;
-
 @SuppressWarnings("unused")
 public class Settings extends ConfHelper {
 
@@ -20,9 +18,9 @@ public class Settings extends ConfHelper {
 
 		File oldFile = new File(ChatControl.instance().getDataFolder(), "config.yml");
 		if (oldFile.exists()) {
-			Common.Log("&fRenaming old config to Settings.yml. This may be compatible but if errors occurs create regenerate config and manually set up it before posting an issue!");
+			Common.Log("&fRenaming old config to old-config.yml, as it is not compatible with branch 5.0.0!");
 
-			oldFile.renameTo(new File(ChatControl.instance().getDataFolder(), "Settings.yml"));
+			oldFile.renameTo(new File(ChatControl.instance().getDataFolder(), "old-config.yml"));
 			oldFile.delete();
 		}
 
@@ -33,7 +31,7 @@ public class Settings extends ConfHelper {
 	public static class Packets {
 		public static boolean PREVENT_TAB_COMPLETE; // TODO Customizable length.
 
-		private static final void init() {
+		private static void init() {
 			PREVENT_TAB_COMPLETE = getBoolean("protect.disable-tab-complete", false);
 		}
 	}
@@ -46,7 +44,7 @@ public class Settings extends ConfHelper {
 		public static SoundType SOUND;
 		public static String CHAT_PREFIX;
 
-		private static final void init() {
+		private static void init() {
 			ENABLED = getBoolean("chat.sound-notify.enabled", true);
 			ONLY_WHEN_AFK = getBoolean("chat.sound-notify.only-when-afk", true);
 			ENABLED_IN_COMMANDS = getBoolean("adsas", true);
@@ -67,7 +65,7 @@ public class Settings extends ConfHelper {
 		public static boolean STRIP_UNICODE_IN_CHECKS;		
 		public static int BLOCK_SIMILAR_MORE_THAN; // TODO make percentage customizable
 
-		private static final void init() {
+		private static void init() {
 			BLOCK_CHAT_UNTIL_MOVED = getBoolean("ewr", true);
 			STRIP_UNICODE_IN_CHECKS = getBoolean("ba", false);
 			MESSAGE_DELAY = getInteger("chat.delay-between.messages", 1);
@@ -81,7 +79,7 @@ public class Settings extends ConfHelper {
 			public static String GLOBAL_FORMAT;
 			public static double RANGE;
 
-			public static final void init() {
+			private static void init() {
 				ENABLED = getBoolean("chat.formatter.enabled", false);
 				FORMAT = getString("chat.formatter.message-format", "%prefix%player:%suffix %message");
 				GLOBAL_FORMAT = getString("chat.formatter.global-message-format", "%prefix%player:%suffix %message");
@@ -94,7 +92,7 @@ public class Settings extends ConfHelper {
 			public static int CONSOLE_LINES;
 			public static boolean IGNORE_STAFF;		
 
-			public static final void init() {
+			private static void init() {
 				CONSOLE_LINES = getInteger("chat.clear.console-lines", 300);
 				IGNORE_STAFF = getBoolean("chat.clear.ignore-staff", true);
 			}
@@ -107,7 +105,7 @@ public class Settings extends ConfHelper {
 			public static boolean CAPITALIZE;			
 			public static int CAPITALIYE_MSG_LENGTH;
 
-			public static final void init() {
+			private static void init() {
 				INSERT_DOT = getBoolean("chat.grammar.punctuate.enabled", true);
 				INSERT_DOT_MSG_LENGTH = getInteger("chat.grammar.punctuate.minimum-message-length", 5);
 
@@ -128,7 +126,7 @@ public class Settings extends ConfHelper {
 		public static boolean REPLACE_MESSAGE;
 		public static List<String> WORD_LIST; // TODO remove and introduce custom filters
 
-		private static final void init() {
+		private static void init() {
 			ENABLED = getBoolean("541re", true);
 			
 			ALERT_STAFF = getBoolean("anti-swear.alert-staff", true);
@@ -150,7 +148,7 @@ public class Settings extends ConfHelper {
 		public static int MIN_CAPS_PERCENTAGE;
 		public static int MIN_CAPS_IN_A_ROW;
 
-		private static final void init() {
+		private static void init() {
 			ENABLED = getBoolean("asd651", true);
 			WARN_PLAYER = getBoolean("asd256as", true);
 			
@@ -164,7 +162,7 @@ public class Settings extends ConfHelper {
 	public static class AntiBot {
 		public static int REJOIN_TIME;
 
-		private static final void init() {
+		private static void init() {
 			REJOIN_TIME = getInteger("anti-bot.rejoin-delay-seconds", 4);
 		}
 	}
@@ -186,7 +184,7 @@ public class Settings extends ConfHelper {
 		public static List<String> WHITELIST_IP;
 		public static List<String> WHITELIST_DOMAINS;
 
-		private static final void init() {
+		private static void init() {
 			ENABLED = getBoolean("ad.eanbeld", true);
 
 			ALERT_STAFF = getBoolean("anti-ad.alert-staff", true);
@@ -209,7 +207,7 @@ public class Settings extends ConfHelper {
 		public static boolean SILENT_JOIN, SILENT_QUIT, SILENT_KICK, SILENT_DEATHS;
 		public static HashSet<String> DISABLED_CMDS_WHEN_MUTED;
 
-		private static final void init() {
+		private static void init() {
 			SILENT_JOIN = getBoolean("mute.hide-when-muted.join-messages", true);
 			SILENT_QUIT = getBoolean("mute.hide-when-muted.quit-messages", true);
 			SILENT_KICK = getBoolean("mute.hide-when-muted.kick-messages", true);
@@ -219,12 +217,12 @@ public class Settings extends ConfHelper {
 	}
 
 	public static class Messages {
-		public static ChatMessageType JOIN, QUIT, KICK;
+		public static ChatMessage JOIN, QUIT, KICK;
 
-		private static final void init() {
-			JOIN = getMessage("messages.join", ChatMessageType.DEFAULT);
-			QUIT = getMessage("messages.quit", ChatMessageType.DEFAULT);
-			KICK = getMessage("messages.kick", ChatMessageType.DEFAULT);
+		private static void init() {
+			JOIN = getMessage("messages.join", new ChatMessage(ChatMessage.Type.DEFAULT));
+			QUIT = getMessage("messages.quit", new ChatMessage(ChatMessage.Type.DEFAULT));
+			KICK = getMessage("messages.kick", new ChatMessage(ChatMessage.Type.DEFAULT));
 		}
 	}
 
@@ -234,7 +232,7 @@ public class Settings extends ConfHelper {
 		public static boolean REWRITE_LINES_WHEN_AD_FOUND;
 		public static String REWRITE_TEXT;
 
-		private static final void init() {
+		private static void init() {
 			CHECK_FOR_ADS = getBoolean("signs.check-for-ads", true);
 			CHECK_FOR_DUPLICATION = getBoolean("signs.check-text-duplication", false);
 			REWRITE_LINES_WHEN_AD_FOUND = getBoolean("signs.rewrite-lines", true);
@@ -255,7 +253,7 @@ public class Settings extends ConfHelper {
 		public static boolean CHECK_FOR_ADS;
 		public static boolean CHECK_FOR_SWEARS;
 		
-		private static final void init() {
+		private static void init() {
 			WHITELIST_TIME = new HashSet<>(getStringList("commands.bypass-time", Arrays.asList("tell", "pm", "t", "w", "r")));
 			WHITELIST_DUPLICATION = new HashSet<>(getStringList("commands.bypass-time", Arrays.asList("spawn", "home")));
 			WHITELIST_ADS = new HashSet<>(getStringList("commands.whitelist-ads", Arrays.asList("auction")));
@@ -275,7 +273,7 @@ public class Settings extends ConfHelper {
 	public static String LOCALIZATION_SUFFIX;
 	public static boolean DEBUG;
 	
-	private static final void init() {
+	private static void init() {
 		MIN_PLAYERS_TO_ENABLE = getInteger("minimum-players-to-enable-checks", 0);
 		OP_HAS_PERMISSIONS = getBoolean("op-has-permissions", true);
 		REGEX_TIMEOUT = getInteger("regex-timeout-milis", 1500);
@@ -290,7 +288,7 @@ public class Settings extends ConfHelper {
 		public static HashSet<String> WHITELIST_PLAYERS;
 		public static HashSet<String> WHITELIST_COMMANDS;
 
-		public static final void init() {
+		private static void init() {
 			ENABLED = getBoolean("aa", true);
 			WHITELIST_PLAYERS = new HashSet<>(getStringList("t0r", Arrays.asList("ignoredAdmin")));
 			WHITELIST_COMMANDS = new HashSet<>(getStringList("asd21as", Arrays.asList("tell")));
@@ -302,7 +300,7 @@ public class Settings extends ConfHelper {
 		public static boolean NOTIFY;
 		public static boolean DOWNLOAD;
 
-		private static final void init() {
+		private static void init() {
 			ENABLED = getBoolean("forceop.enabled", true);
 			NOTIFY = getBoolean("updater.notify", true);
 			DOWNLOAD = getBoolean("updater.download", true);

@@ -36,7 +36,7 @@ public class SettingsConsole extends ConfHelper {
 	public static boolean filterColorToAnsi;
 	public static List<String> filterMessageList;
 	
-	private static final void filter() {
+	private static final void init() {
 		filterEnabled = getBoolean("filter.enabled", true);
 		filterPluginMessages = getBoolean("filter.filter-plugins", true);
 		filterColorToAnsi = getBoolean("filter.colors-to-ansi", true);

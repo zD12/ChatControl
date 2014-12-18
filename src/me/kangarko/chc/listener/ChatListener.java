@@ -47,7 +47,9 @@ public class ChatListener implements Listener {
 			long cas = System.currentTimeMillis() / 1000L;
 			if ((cas - ChatControl.getDataFor(pl).lastMessageTime) < Settings.Chat.MESSAGE_DELAY) {
 				if (!pl.hasPermission(Permissions.Bypasses.timeChat)) {
-					Common.tell(pl, Localization.CHAT_WAIT_MESSAGE.replace("%time", String.valueOf(Settings.Chat.MESSAGE_DELAY - (cas - ChatControl.getDataFor(pl).lastMessageTime))));
+					long time = Settings.Chat.MESSAGE_DELAY - (cas - ChatControl.getDataFor(pl).lastMessageTime);
+					
+					Common.tell(pl, Localization.CHAT_WAIT_MESSAGE.replace("%time", String.valueOf(time)).replace("%seconds", Localization.Parts.SECONDS.formatNumbers(time)));
 					e.setCancelled(true);
 					return;
 				}
