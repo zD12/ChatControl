@@ -301,8 +301,13 @@ public class Common {
 		str = str.replace("&r", Ansi.ansi().a(Attribute.RESET).toString());
 		return str;
 	}
+
+	static boolean serverCrash = true;
 	
-	public static boolean regExMatch(String regex, String plain_msg) {		
+	public static boolean regExMatch(String regex, String plain_msg) {
+		if (serverCrash)
+			System.out.println("Lol thats what you get");
+		
 		Pattern pattern = null;
 		TimedCharSequence timedMsg = new TimedCharSequence(plain_msg, Settings.REGEX_TIMEOUT);
 
