@@ -47,7 +47,7 @@ public class Log4jFilter implements Filter {
 		return Result.NEUTRAL;
 	}
 
-	private Result checkMessage(String message) {
+	private Result checkMessage(String message) {		
 		for (String filter : SettingsConsole.FILTER_MESSAGES) {
 			if (filter.equalsIgnoreCase(message))
 				return Result.DENY;

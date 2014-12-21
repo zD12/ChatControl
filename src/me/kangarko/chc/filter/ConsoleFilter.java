@@ -6,7 +6,6 @@ import java.util.logging.LogRecord;
 import me.kangarko.chc.model.SettingsConsole;
 import me.kangarko.chc.utils.Common;
 
-@Deprecated // TODO
 public class ConsoleFilter implements Filter {
 
 	public boolean isLoggable(LogRecord record) {

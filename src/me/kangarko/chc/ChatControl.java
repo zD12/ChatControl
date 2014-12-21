@@ -70,8 +70,9 @@ public class ChatControl extends JavaPlugin {
 			try {
 				new Log4jFilter().init();
 				Common.Debug("Console filtering now using Log4j Filter.");
-			} catch (Throwable t) {
+			} catch (NoSuchFieldError err) {				
 				Filter filter = new ConsoleFilter();
+				
 				if (SettingsConsole.FILTER_FILTER_PLUGINS)
 					for (Plugin p : getServer().getPluginManager().getPlugins())
 						p.getLogger().setFilter(filter);
