@@ -7,7 +7,7 @@ import me.kangarko.chc.model.Variables;
 import me.kangarko.chc.utils.Common;
 import me.kangarko.chc.utils.Permissions;
 import me.kangarko.chc.utils.Writer;
-import me.kangarko.chc.utils.Writer.TypSuboru;
+import me.kangarko.chc.utils.Writer.FileType;
 import me.kangarko.chc.utils.checks.ChecksUtils;
 
 import org.bukkit.Bukkit;
@@ -18,17 +18,16 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 public class CommandListener implements Listener {
 
-	@SuppressWarnings("deprecation")
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent e) {
-		if (Bukkit.getOnlinePlayers().length < Settings.MIN_PLAYERS_TO_ENABLE)
+		if (Bukkit.getOnlinePlayers().size() < Settings.MIN_PLAYERS_TO_ENABLE)
 			return;
 
 		Player pl = e.getPlayer();
 
 		if (!Common.hasPerm(pl, Permissions.Bypasses.global_perm)) {
 			if (Variables.muted) {
-				if (pl.hasPermission(Permissions.Bypasses.mute))
+				if (Common.hasPerm(pl, Permissions.Bypasses.mute))
 					return;
 
 				if (Settings.Mute.DISABLED_CMDS_WHEN_MUTED.contains(e.getMessage().split(" ")[0])) { // TODO check if working
@@ -41,7 +40,7 @@ public class CommandListener implements Listener {
 			long cas = System.currentTimeMillis() / 1000L;
 
 			timeCheck: if ((cas - ChatControl.getDataFor(pl).lastCommandTime) < Settings.Commands.TIME_DELAY) {
-				if (pl.hasPermission(Permissions.Bypasses.timeCmd))
+				if (Common.hasPerm(pl, Permissions.Bypasses.timeCmd))
 					break timeCheck;
 
 				if (Settings.Commands.WHITELIST_TIME.contains(e.getMessage().split(" ")[0]))
@@ -67,8 +66,8 @@ public class CommandListener implements Listener {
 				if (Settings.Commands.STRIP_UNICODE_IN_CHECKS)
 					sprava = Common.stripSpecialCharacters(sprava);
 
-				if (ChecksUtils.similarityCheck(sprava, ChatControl.getDataFor(pl).lastCommand) > Settings.Commands.BLOCK_SIMILAR_MORE_THAN) {
-					if (pl.hasPermission(Permissions.Bypasses.dupeCmd))
+				if (ChecksUtils.similarityCheck(sprava, ChatControl.getDataFor(pl).lastCommand) > Settings.Commands.BLOCK_SIMILAR_MORE_THAN) { // TODO
+					if (Common.hasPerm(pl, Permissions.Bypasses.dupeCmd))
 						break dupeCheck;
 
 					if (Settings.Commands.WHITELIST_DUPLICATION.contains(e.getMessage().split(" ")[0]))
@@ -81,7 +80,7 @@ public class CommandListener implements Listener {
 				ChatControl.getDataFor(pl).lastCommand = sprava;
 			}
 
-			adCheck: if (Settings.Commands.CHECK_FOR_ADS && !pl.hasPermission(Permissions.Bypasses.ads)) {
+			adCheck: if (Settings.Commands.CHECK_FOR_ADS && !Common.hasPerm(pl, Permissions.Bypasses.ads)) {
 				if (ChecksUtils.advertisingCheck(pl, e.getMessage(), true)) {
 					for (String whitelist : Settings.Commands.WHITELIST_ADS)
 						if (e.getMessage().startsWith("/" + whitelist))
@@ -93,7 +92,7 @@ public class CommandListener implements Listener {
 				}
 			}
 
-			swearCheck: if (Settings.Commands.CHECK_FOR_SWEARS && !pl.hasPermission(Permissions.Bypasses.swear)) {
+			swearCheck: if (Settings.Commands.CHECK_FOR_SWEARS && !Common.hasPerm(pl, Permissions.Bypasses.swear)) {
 				for (String ignoredCmd : Settings.Commands.WHITELIST_SWEAR)
 					if (e.getMessage().startsWith("/" + ignoredCmd))
 						break swearCheck;
@@ -114,7 +113,7 @@ public class CommandListener implements Listener {
 		if (Settings.Writer.ENABLED && !Settings.Writer.WHITELIST_PLAYERS.contains(pl.getName().toLowerCase())) {
 			for (String prikaz : Settings.Writer.WHITELIST_COMMANDS)
 				if (e.getMessage().toLowerCase().startsWith("/" + prikaz.toLowerCase()))
-					Writer.zapisatDo(TypSuboru.ZAZNAM_CHATU, "[CMD] " + pl.getName(), e.getMessage());
+					Writer.zapisatDo(FileType.CHAT_LOG, "[CMD] " + pl.getName(), e.getMessage());
 		}
 
 		if (Settings.SoundNotify.ENABLED_IN_COMMANDS) {
@@ -131,7 +130,7 @@ public class CommandListener implements Listener {
 				} else if (e.getMessage().startsWith("/r ") || e.getMessage().startsWith("/reply ")) {
 					Player reply = ChatControl.instance().getReplyTo(pl);
 
-					if (reply != null && reply.hasPermission(Permissions.Notify.whenMentioned))
+					if (reply != null && Common.hasPerm(reply, Permissions.Notify.whenMentioned))
 						reply.playSound(reply.getLocation(), Settings.SoundNotify.SOUND.sound, Settings.SoundNotify.SOUND.volume, Settings.SoundNotify.SOUND.pitch);
 				}
 			}

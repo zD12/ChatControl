@@ -4,7 +4,7 @@ import me.kangarko.chc.model.Settings;
 import me.kangarko.chc.utils.Common;
 import me.kangarko.chc.utils.Permissions;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 
 public class ChecksUtils {
@@ -14,7 +14,7 @@ public class ChecksUtils {
 	 * @deprecated inconsistend, make it in one class
 	 */
 	public static boolean advertisingCheck(Player pl, String msg, boolean command) {
-		if (pl.hasPermission(Permissions.Bypasses.ads))
+		if (!Common.hasPerm(pl, Permissions.Bypasses.ads))
 			return false;
 
 		String finalMsg = msg.replaceAll(Settings.AntiAd.PREPROCESS_STRIP, "");
@@ -79,7 +79,7 @@ public class ChecksUtils {
 			if (longerLength == 0) 
 				return 0; /* both strings are zero length */ 
 
-			return ((longerLength - StringUtils.getJaroWinklerDistance(longer, shorter)) / (double) longerLength);
+			return ((longerLength - StringUtils.getLevenshteinDistance(longer, shorter)) / (double) longerLength);
 	}
 
 	public static boolean stringsAreSimilar(String string1, String string2) {
@@ -119,16 +119,5 @@ public class ChecksUtils {
 		}
 
 		return false;
-	}
-
-	public static double similarity(String a, String b) {
-		double count = 0;
-		String[] words = a.split(" ");
-		for(String word : words) {
-			if(b.indexOf(word) != -1) {
-				count++;
-			}
-		}
-		return count / words.length;
 	}
 }

@@ -6,56 +6,51 @@ import java.io.FileWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import me.kangarko.chc.ChatControl;
 
+import org.bukkit.Bukkit;
+
 public class Writer {
 
-	public static enum TypSuboru {
-		REKLAMY("advertisements.txt"), // Some of the hostings automatically cleans .log files.
-		ZAZNAM_CHATU("chat.txt"),
-		ZAZNAM_CHYB("errors.txt");
+	private static final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+	
+	// Some hostings automatically clean .log files.
+	public static enum FileType {
+		ADVERTISEMENTS("advertisements.txt"),
+		CHAT_LOG("chat.txt"),
+		ERROR_LOG("errors.txt");
 
-		public String nazovSuboru;
-		TypSuboru (String nazovSuboru) {
-			this.nazovSuboru = nazovSuboru;
+		public String fileName;
+		FileType (String fileName) {
+			this.fileName = fileName;
 		}
 	}
 
 	/** @param prefix moze byt aj null */
-	public static void zapisatDo(TypSuboru typSuboru, String prefix, String msg) {
-		BufferedWriter bw = null;
+	public static void zapisatDo(FileType typSuboru, String prefix, String msg) {
 		File file;
-		if (typSuboru == TypSuboru.ZAZNAM_CHYB)
+
+		if (typSuboru == FileType.ERROR_LOG)
 			file = ChatControl.instance().getDataFolder();
 		else
 			file = new File(ChatControl.instance().getDataFolder() + "/logs");
 
-		if(!file.exists())
+		if (!file.exists())
 			file.mkdir();
 
-		try {
-			try {
-				bw = new BufferedWriter(new FileWriter(file + "/" + typSuboru.nazovSuboru, true));					
-				for (String line : msg.split("\n")) {
-					bw.write("[" + getTime() + "] " + (prefix != null ? prefix + ": " : "") + line);
-					bw.newLine();
-				}
-			} finally {
-				if (bw != null) {
-					bw.flush();
-					bw.close();
-				}
+		try (BufferedWriter bw = new BufferedWriter(new FileWriter(file + "/" + typSuboru.fileName, true))) {
+			for (String line : msg.split("\n")) {
+				bw.write("[" + getTime() + "] " + (prefix != null ? prefix + ": " : "") + line);
+				bw.newLine();
 			}
 		} catch (Exception ex) {
-			Logger.getLogger("Minecraft").log(Level.WARNING, "ChatControl was unable to write to " + typSuboru.nazovSuboru, ex);
+			Bukkit.getLogger().log(Level.WARNING, "ChatControl was unable to write to " + typSuboru.fileName, ex);
 		}
 	}
 
 	public static String getTime() {
-		DateFormat date = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
-		return date.format(System.currentTimeMillis());
+		return dateFormat.format(System.currentTimeMillis());
 	}
 
 }

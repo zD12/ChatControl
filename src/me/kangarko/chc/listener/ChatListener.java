@@ -7,7 +7,7 @@ import me.kangarko.chc.model.Variables;
 import me.kangarko.chc.utils.Common;
 import me.kangarko.chc.utils.Permissions;
 import me.kangarko.chc.utils.Writer;
-import me.kangarko.chc.utils.Writer.TypSuboru;
+import me.kangarko.chc.utils.Writer.FileType;
 import me.kangarko.chc.utils.checks.ChecksUtils;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,12 +18,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-@SuppressWarnings("deprecation")
 public class ChatListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onPlayerChat(AsyncPlayerChatEvent e) {
-		if (Bukkit.getOnlinePlayers().length < Settings.MIN_PLAYERS_TO_ENABLE)
+		if (Bukkit.getOnlinePlayers().size() < Settings.MIN_PLAYERS_TO_ENABLE)
 			return;
 
 		Player pl = e.getPlayer();
@@ -31,14 +30,14 @@ public class ChatListener implements Listener {
 
 		if (!Common.hasPerm(pl, Permissions.Bypasses.global_perm)) {
 			if (Settings.Chat.BLOCK_CHAT_UNTIL_MOVED && pl.getLocation().equals(ChatControl.getDataFor(pl).loginLocation)) {
-				if (!pl.hasPermission(Permissions.Bypasses.move)) {
+				if (!Common.hasPerm(pl, Permissions.Bypasses.move)) {
 					Common.tell(pl, Localization.CANNOT_CHAT_UNTIL_MOVED);
 					e.setCancelled(true);
 					return;
 				}
 			}
 
-			if (Variables.muted && !pl.hasPermission(Permissions.Bypasses.mute)) {
+			if (Variables.muted && !Common.hasPerm(pl, Permissions.Bypasses.mute)) {
 				Common.tell(pl, Localization.CANNOT_CHAT_WHILE_MUTED);
 				e.setCancelled(true);
 				return;
@@ -46,7 +45,7 @@ public class ChatListener implements Listener {
 
 			long cas = System.currentTimeMillis() / 1000L;
 			if ((cas - ChatControl.getDataFor(pl).lastMessageTime) < Settings.Chat.MESSAGE_DELAY) {
-				if (!pl.hasPermission(Permissions.Bypasses.timeChat)) {
+				if (!Common.hasPerm(pl, Permissions.Bypasses.timeChat)) {
 					long time = Settings.Chat.MESSAGE_DELAY - (cas - ChatControl.getDataFor(pl).lastMessageTime);
 					
 					Common.tell(pl, Localization.CHAT_WAIT_MESSAGE.replace("%time", String.valueOf(time)).replace("%seconds", Localization.Parts.SECONDS.formatNumbers(time)));
@@ -62,10 +61,8 @@ public class ChatListener implements Listener {
 				if (Settings.Chat.STRIP_UNICODE_IN_CHECKS)
 					sprava = Common.stripSpecialCharacters(sprava);
 
-				System.out.println("MSGs similar: " + ChecksUtils.similarity(sprava, ChatControl.getDataFor(pl).lastMessage)); // TODO
-				
-				if (ChecksUtils.similarityCheck(sprava, ChatControl.getDataFor(pl).lastMessage) > Settings.Chat.BLOCK_SIMILAR_MORE_THAN) {
-					if (!pl.hasPermission(Permissions.Bypasses.dupeChat)) {
+				if (ChecksUtils.similarityCheck(sprava, ChatControl.getDataFor(pl).lastMessage) > Settings.Chat.BLOCK_SIMILAR_MORE_THAN) { // TODO
+					if (!Common.hasPerm(pl, Permissions.Bypasses.dupeChat)) {
 						Common.tell(pl, Localization.ANTISPAM_SIMILAR_MESSAGE);
 						e.setCancelled(true);
 						return;
@@ -74,10 +71,10 @@ public class ChatListener implements Listener {
 				ChatControl.getDataFor(pl).lastMessage = sprava;
 			}
 
-			if (!pl.hasPermission(Permissions.Bypasses.replace))
+			if (!Common.hasPerm(pl, Permissions.Bypasses.replace))
 				theMessage = Common.replaceCharacters(pl, theMessage);
 
-			if (Settings.AntiAd.ENABLED && !pl.hasPermission(Permissions.Bypasses.ads)) {
+			if (Settings.AntiAd.ENABLED && !Common.hasPerm(pl, Permissions.Bypasses.ads)) {
 				if (ChecksUtils.advertisingCheck(pl, theMessage.toLowerCase(), false)) {
 					Common.customAction(pl, "Anti_Ad.Custom_Command", theMessage);
 					Common.messages(pl, theMessage);
@@ -85,7 +82,7 @@ public class ChatListener implements Listener {
 				}
 			}
 
-			if (Settings.AntiCaps.ENABLED && !pl.hasPermission(Permissions.Bypasses.caps)) {
+			if (Settings.AntiCaps.ENABLED && !Common.hasPerm(pl, Permissions.Bypasses.caps)) {
 				if (theMessage.length() >= Settings.AntiCaps.MIN_MESSAGE_LENGTH) {
 
 					int[] newMessage = Common.checkCaps(theMessage);
@@ -123,7 +120,7 @@ public class ChatListener implements Listener {
 				}
 			}
 
-			if (Settings.AntiSwear.ENABLED && !pl.hasPermission(Permissions.Bypasses.swear)) {
+			if (Settings.AntiSwear.ENABLED && !Common.hasPerm(pl, Permissions.Bypasses.swear)) {
 
 				String censoredMessage = ChecksUtils.swearCheck(pl, theMessage, Common.prepareForSwearCheck(theMessage));
 
@@ -138,26 +135,26 @@ public class ChatListener implements Listener {
 			}
 		}
 
-		if (!pl.hasPermission(Permissions.Bypasses.capitalize))
+		if (!Common.hasPerm(pl, Permissions.Bypasses.capitalize))
 			theMessage = Common.capitalize(theMessage);
-		if (!pl.hasPermission(Permissions.Bypasses.insertDot))
+		if (!Common.hasPerm(pl, Permissions.Bypasses.insertDot))
 			theMessage = Common.insertDot(theMessage);
 
 		if (!theMessage.equals(e.getMessage()))
 			e.setMessage(theMessage);
 
 		if (Settings.Writer.ENABLED && !Settings.Writer.WHITELIST_PLAYERS.contains(pl.getName().toLowerCase()))
-			Writer.zapisatDo(TypSuboru.ZAZNAM_CHATU, pl.getName(), theMessage);
+			Writer.zapisatDo(FileType.CHAT_LOG, pl.getName(), theMessage);
 
 		if (Settings.SoundNotify.ENABLED) {
 			if (Settings.SoundNotify.CHAT_PREFIX.equalsIgnoreCase("none")) {
 				for (Player online : Bukkit.getOnlinePlayers())
-					if (theMessage.toLowerCase().contains(online.getName().toLowerCase()) && ChatControl.instance().checkForAfk(online.getName()) && online.hasPermission(Permissions.Notify.whenMentioned))
+					if (theMessage.toLowerCase().contains(online.getName().toLowerCase()) && ChatControl.instance().checkForAfk(online.getName()) && Common.hasPerm(online, Permissions.Notify.whenMentioned))
 						online.playSound(online.getLocation(), Settings.SoundNotify.SOUND.sound, Settings.SoundNotify.SOUND.volume, Settings.SoundNotify.SOUND.pitch);
 
 			} else {
 				for (Player online : Bukkit.getOnlinePlayers())
-					if (theMessage.toLowerCase().contains(Settings.SoundNotify.CHAT_PREFIX + online.getName().toLowerCase()) && ChatControl.instance().checkForAfk(online.getName()) && online.hasPermission(Permissions.Notify.whenMentioned))
+					if (theMessage.toLowerCase().contains(Settings.SoundNotify.CHAT_PREFIX + online.getName().toLowerCase()) && ChatControl.instance().checkForAfk(online.getName()) && Common.hasPerm(online, Permissions.Notify.whenMentioned))
 						online.playSound(online.getLocation(), Settings.SoundNotify.SOUND.sound, Settings.SoundNotify.SOUND.volume, Settings.SoundNotify.SOUND.pitch);
 			}
 		}

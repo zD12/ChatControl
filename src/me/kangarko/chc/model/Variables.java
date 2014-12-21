@@ -1,6 +1,7 @@
 package me.kangarko.chc.model;
 
 // TODO consider move to Settings
+// TODO fix unknown class error when reloading
 public class Variables {
 
 	public static boolean muted = false;

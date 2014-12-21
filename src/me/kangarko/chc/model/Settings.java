@@ -13,7 +13,7 @@ public class Settings extends ConfHelper {
 
 	// TODO prevent typos by prefixes , e.g. "chat.formatter"
 
-	public static void load() {
+	public static void load() throws ReflectiveOperationException {
 		file = new File(ChatControl.instance().getDataFolder(), "Settings.yml");
 
 		File oldFile = new File(ChatControl.instance().getDataFolder(), "config.yml");
@@ -41,7 +41,7 @@ public class Settings extends ConfHelper {
 		public static boolean ONLY_WHEN_AFK;
 		public static boolean ENABLED_IN_COMMANDS; // TODO move to cmd section
 		public static HashSet<String> ENABLED_IN_FOLLOWING_COMMANDS; // TODO fix name and move.
-		public static SoundType SOUND;
+		public static SoundHelper SOUND;
 		public static String CHAT_PREFIX;
 
 		private static void init() {
@@ -50,7 +50,7 @@ public class Settings extends ConfHelper {
 			ENABLED_IN_COMMANDS = getBoolean("adsas", true);
 			ENABLED_IN_FOLLOWING_COMMANDS = new HashSet<>(getStringList("chat.sound-notify.enabled-in-commands", Arrays.asList("r")));
 			try {
-				SOUND = new SoundType(getString("dopitche", "CHICKEN_EGG_POP, 1F, 1.5F"));
+				SOUND = new SoundHelper(getString("dopitche", "CHICKEN_EGG_POP, 1F, 1.5F"));
 			} catch (Exception ex) {
 				throw new RuntimeException(ex);
 			}
@@ -89,10 +89,12 @@ public class Settings extends ConfHelper {
 		}
 
 		public static class Clear {
+			public static boolean BROADCAST;	
 			public static int CONSOLE_LINES;
 			public static boolean IGNORE_STAFF;		
 
 			private static void init() {
+				BROADCAST = getBoolean("chat.clear.broadcast", true);
 				CONSOLE_LINES = getInteger("chat.clear.console-lines", 300);
 				IGNORE_STAFF = getBoolean("chat.clear.ignore-staff", true);
 			}
@@ -204,10 +206,12 @@ public class Settings extends ConfHelper {
 	}
 
 	public static class Mute {
+		public static boolean BROADCAST;
 		public static boolean SILENT_JOIN, SILENT_QUIT, SILENT_KICK, SILENT_DEATHS;
 		public static HashSet<String> DISABLED_CMDS_WHEN_MUTED;
 
 		private static void init() {
+			BROADCAST = getBoolean("mute.broadcast", true);
 			SILENT_JOIN = getBoolean("mute.hide-when-muted.join-messages", true);
 			SILENT_QUIT = getBoolean("mute.hide-when-muted.quit-messages", true);
 			SILENT_KICK = getBoolean("mute.hide-when-muted.kick-messages", true);
@@ -278,7 +282,7 @@ public class Settings extends ConfHelper {
 		OP_HAS_PERMISSIONS = getBoolean("op-has-permissions", true);
 		REGEX_TIMEOUT = getInteger("regex-timeout-milis", 1500);
 
-		LOCALIZATION_SUFFIX = "messages_" + getString("localization", "sk") + ".yml";
+		LOCALIZATION_SUFFIX = "messages_" + getString("localization", "en") + ".yml";
 		DEBUG = getBoolean("debug", false);
 	}
 	

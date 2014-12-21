@@ -24,22 +24,18 @@ import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
-@SuppressWarnings("deprecation")
 public class ChatFormatter implements Listener {
 
-	private Pattern COLOR_REGEX = Pattern.compile("(?i)&([0-9A-F])");
-	private Pattern MAGIC_REGEN = Pattern.compile("(?i)&([K])");
-	private Pattern BOLD_REGEX = Pattern.compile("(?i)&([L])");
-	private Pattern STRIKETHROUGH_REGEX = Pattern.compile("(?i)&([M])");
-	private Pattern UNDERLINE_REGEX = Pattern.compile("(?i)&([N])");
-	private Pattern ITALIC_REGEX = Pattern.compile("(?i)&([O])");
-	private Pattern RESET_REGEX = Pattern.compile("(?i)&([R])");
+	private final Pattern COLOR_REGEX = Pattern.compile("(?i)&([0-9A-F])");
+	private final Pattern MAGIC_REGEN = Pattern.compile("(?i)&([K])");
+	private final Pattern BOLD_REGEX = Pattern.compile("(?i)&([L])");
+	private final Pattern STRIKETHROUGH_REGEX = Pattern.compile("(?i)&([M])");
+	private final Pattern UNDERLINE_REGEX = Pattern.compile("(?i)&([N])");
+	private final Pattern ITALIC_REGEX = Pattern.compile("(?i)&([O])");
+	private final Pattern RESET_REGEX = Pattern.compile("(?i)&([R])");
 
 	private MultiverseHook mvHook;
 	private TownyHook townyHook;
-
-	//private MultiverseCore multiVerse;
-	//private boolean useTowny = false;
 
 	public ChatFormatter() {
 		if (Bukkit.getPluginManager().getPlugin("Multiverse-Core") != null)
@@ -63,7 +59,7 @@ public class ChatFormatter implements Listener {
 		boolean rangedMode = Settings.Chat.Formatter.RANGED_MODE;
 		String theMessage = e.getMessage();
 
-		if (rangedMode && theMessage.startsWith("!") && pl.hasPermission(Permissions.Formatter.globalChat)) {
+		if (rangedMode && theMessage.startsWith("!") && Common.hasPerm(pl, Permissions.Formatter.globalChat)) {
 			rangedMode = false;
 			theMessage = theMessage.substring(1);
 
@@ -88,21 +84,6 @@ public class ChatFormatter implements Listener {
 			e.getRecipients().addAll(getLocalRecipients(pl, messageFormat, range));
 		}
 	}
-
-	/*private void updateDisplayNames() {
-		for (Player pl : Bukkit.getServer().getOnlinePlayers())
-			updateDisplayName(pl);
-	}
-
-	private void updateDisplayName(Player pl) {
-		PermissionUser user = PermissionsEx.getPermissionManager().getUser(pl);
-
-		if (user == null)
-			return;
-
-		String world = pl.getWorld().getName();
-		pl.setDisplayName(formatColor(replacePlayerVariables(pl, user.getOption("display-name-format", world, "%prefix%player%suffix"))));
-	}*/
 
 	private String replacePlayerVariables(Player pl, String format) {
 

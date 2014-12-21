@@ -12,14 +12,14 @@ public class ConsoleFilter implements Filter {
 	public boolean isLoggable(LogRecord record) {
 		String msg = record.getMessage();
 
-		/*if (SettingsConsole.filterEnabled) TODO get replace back
-			for(String str : ChatControl.ConsoleConfig.getConfig().getConfigurationSection("Console.Replace_Messages").getKeys(false))
-				msg = msg.replaceAll("(?i)" + str.replace("<DOT>", "\\."), ChatControl.ConsoleConfig.getConfig().getString("Console.Replace_Messages." + str));*/
+		if (SettingsConsole.FILTER_ENABLED)
+			for(String str : SettingsConsole.FILTER_REPLACE_MAP.keySet())
+				msg = msg.replace(str.replace("<dot>", "."), SettingsConsole.FILTER_REPLACE_MAP.get(str));
 
-		if (SettingsConsole.filterEnabled && SettingsConsole.filterColorToAnsi)
+		if (SettingsConsole.FILTER_ENABLED && SettingsConsole.FILTER_COLORS_TO_ANSI)
 			record.setMessage(Common.toAnsiColors(msg));
 
-		for (String blacklist : SettingsConsole.filterMessageList) {
+		for (String blacklist : SettingsConsole.FILTER_MESSAGES) {
 			if (msg.equalsIgnoreCase(blacklist))
 				return false;
 			else if (blacklist.contains(msg))

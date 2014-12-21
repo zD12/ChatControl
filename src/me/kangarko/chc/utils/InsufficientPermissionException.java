@@ -1,4 +1,4 @@
-package me.kangarko.chc.cmd;
+package me.kangarko.chc.utils;
 
 
 public class InsufficientPermissionException extends Exception {

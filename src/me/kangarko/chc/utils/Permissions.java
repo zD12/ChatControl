@@ -44,9 +44,6 @@ public class Permissions {
 		// Allow player to send duplicate messages.
 		public static final String dupeChat = "chatcontrol.bypass.dupe.chat";
 		
-		// Allow player to place signs with same text.
-		public static final String dupeSigns = "chatcontrol.bypass.dupe.signs";
-		
 		// Bypass advertising check.
 		public static final String ads = "chatcontrol.bypass.ad";
 		

@@ -1,16 +1,19 @@
 package me.kangarko.chc.model;
 
 import java.io.File;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
 import me.kangarko.chc.ChatControl;
 
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.craftbukkit.libs.jline.internal.InputStreamReader;
+
+import com.sun.xml.internal.bind.api.impl.NameConverter.Standard;
 
 @SuppressWarnings("unused")
 public class Localization extends ConfHelper {
-
-	public static void load() {
+	
+	public static void load() throws ReflectiveOperationException {
 		// try if the user has modified version of localization inside his plugin folder		
 		file = new File(ChatControl.instance().getDataFolder(), Settings.LOCALIZATION_SUFFIX);
 
@@ -18,31 +21,33 @@ public class Localization extends ConfHelper {
 			cfg = YamlConfiguration.loadConfiguration(file);
 		else {
 			file = null;
-			cfg = YamlConfiguration.loadConfiguration(new InputStreamReader(Localization.class.getResourceAsStream("/localization/" + Settings.LOCALIZATION_SUFFIX)));
+			cfg = YamlConfiguration.loadConfiguration(new InputStreamReader(Localization.class.getResourceAsStream("/localization/" + Settings.LOCALIZATION_SUFFIX), StandardCharsets.UTF_8));
 		}
 
 		loadValues(Localization.class);
 	}
 
-	public static class Parts {
+	public static class Parts {		
 		public static String JOIN;
 		public static String QUIT;
 		public static String KICK;
-		public static String PREFIX;
+		public static String PREFIX = "";
 		public static String CONSOLE;
 		public static String REASON;
 		public static String SIGN;
 		public static CasusHelper SECONDS;
 		
 		private static final void init() {
-			JOIN = getString("general.player-join", "player join");
-			QUIT = getString("general.player-quit", "player quit");
-			KICK = getString("general.player-kick", "player kick");
-			PREFIX = getString("general.prefix", "&7[&bChatControl&7]&f");
-			CONSOLE = getString("general.console", "&cserver");
-			REASON = getString("general.reason", "&7Reason:&f%reason");
-			SIGN = getString("general.sign", "SIGN");
-			SECONDS = new CasusHelper(getString("general.seconds", "second, seconds"));
+			pathPrefix("General");
+			
+			JOIN = getString("Player Join", "player join");
+			QUIT = getString("Player Quit", "player quit");
+			KICK = getString("Player Kick", "player kick");
+			PREFIX = getString("Prefix", "&7[&bChatControl&7]&f");
+			CONSOLE = getString("Console", "&cserver");
+			REASON = getString("Reason", "&7Reason: &f%reason");
+			SIGN = getString("Sign", "SIGN");
+			SECONDS = new CasusHelper(getString("Seconds", "second, seconds"));
 		}
 	}
 
@@ -69,55 +74,79 @@ public class Localization extends ConfHelper {
 	public static String CHAT_WAIT_MESSAGE;
 	
 	public static String ANTIBOT_REJOIN_TOO_QUICKLY;
-	public static String ANTIBOT_DUPE_SIGN;
 	
+	public static String MUTE_BROADCAST;
+	public static String MUTE_UNMUTE_BROADCAST;	
+	public static String MUTE_ANON_BROADCAST;
+	public static String MUTE_ANON_UNMUTE_BROADCAST;	
+	public static String MUTE_SUCCESS;
+	public static String MUTE_UNMUTE_SUCCESS;
+	
+	public static String CLEAR_BROADCAST;
+	public static String CLEAR_ANON_BROADCAST;
+	public static String CLEAR_CONSOLE;
+	public static String CLEAR_CONSOLE_MSG;
+	public static String CLEAR_STAFF;
+	
+	public static String USAGE_FAKE_CMD;
 	public static String UPDATE_AVAILABLE;
 	public static String NO_PERMISSION;
 	public static String RELOAD_COMPLETE;
+	public static String RELOAD_FAILED;
 	
-	public static String MUTE_SUCCESS;
-	public static String MUTE_UNMUTE_SUCCESS;
-	public static String CHATCLEAR_CONSOLE;
-	public static String CHATCLEAR_STAFF;
-	public static String USAGE_FAKE_CMD;
-	
-	private static final void init() {
-		WRONG_PARAMETERS = getString("wrong-parameters", "&cWrong parameters, available are: &7%params");
-		WRONG_ARGUMENTS = getString("wrong-arguments", "&cWrong arguments. Type &6/chc list&c for command list.");
+	private static final void init() {		
+		pathPrefix("Cannot");
+		CANNOT_BROADCAST_EMPTY_MESSAGE = getString("Broadcast Empty Message", "&cMessage on %event is empty. No broadcast.");
+		CANNOT_CHAT_WHILE_MUTED = getString("Chat While Muted", "&7You cannot chat while the chat is muted!");
+		CANNOT_COMMAND_WHILE_MUTED = getString("Command While Muted", "&7You cannot use this command while the chat is muted!");
+		CANNOT_CHAT_UNTIL_MOVED = getString("Chat Until Moved", "&7You cannot chat until you move!"); // TODO radius?
 		
-		CANNOT_BROADCAST_EMPTY_MESSAGE = getString("cannot.broadcast-empty-message", "&cMessage on %event is empty. No broadcast.");
-		CANNOT_CHAT_WHILE_MUTED = getString("cannot.chat-while-muted", "&7You cannot chat while the chat is muted!");
-		CANNOT_COMMAND_WHILE_MUTED = getString("cannot.use-command-while-muted", "&7You cannot use this command while the chat is muted!");
-		CANNOT_CHAT_UNTIL_MOVED = getString("cannot.chat-until-moved", "&7You cannot chat until you move!"); // TODO radius?
+		pathPrefix("Anti Swear");
+		ANTISWEAR_PLAYER_WARN = getString("Player Warn", "&cPlease do not swear, otherwise an action will be taken!");
+		ANTISWEAR_STAFF_ALERT = getString("Staff Alert", "%prefix &c%player has sworn:&f %message");
 		
-		ANTISWEAR_PLAYER_WARN = getString("anti-swear.player-warn", "&cPlease do not swear, otherwise an action will be taken!");
-		ANTISWEAR_STAFF_ALERT = getString("anti-swear.staff-alert", "%prefix &c%player has sworn:&f %message");
+		pathPrefix("Anti Bot");
+		ANTIBOT_REJOIN_TOO_QUICKLY = getString("Rejoin Message", "%prefix\\n\\n&6Please wait &7%time second(s)&6 before logging in again.");
 		
-		ANTIBOT_REJOIN_TOO_QUICKLY = getString("anti-bot.rejoin-message", "%prefix\\n\\n&6Please wait &7%time second(s)&6 before logging in again.");
-		ANTIBOT_DUPE_SIGN = getString("anti-bot.sign-dupe", "&cPlease do not repeat the same text on signs."); // FIXME remove, handled better by nocheatplus, no point including it her
+		pathPrefix("Anti Ad");
+		ANTIAD_PLAYER_WARN = getString("Player Warn", "&7Please do not advertise other websites or IP adresses.");
+		ANTIAD_STAFF_ALERT = getString("Staff Alert", "&c%player might have advertised: &f%message");
+		ANTIAD_BROADCAST_ALERT = getString("Broadcast Alert", "&c%player might have advertised, alert admins!");
+		ANTIAD_CONSOLE_ALERT = getString("Console Alert", "&c%player might have advertised: &f%message");
 		
-		ANTIAD_PLAYER_WARN = getString("anti-ad.player-warn", "&7Please do not advertise other websites or IP adresses.");
-		ANTIAD_STAFF_ALERT = getString("anti-ad.staff-alert", "&c%player might have advertised: &f%message");
-		ANTIAD_BROADCAST_ALERT = getString("anti-ad.broadcast-alert", "&c%player might have advertised, alert admins!");
-		ANTIAD_CONSOLE_ALERT = getString("anti-ad.console-alert", "&c%player might have advertised: &f%message");
+		pathPrefix("Anti Spam");
+		ANTISPAM_SIMILAR_MESSAGE = getString("Similar Message", "&cPlease do not repeat the same (or similar) message.");
+		ANTISPAM_SIMILAR_COMMAND = getString("Similar Command", "&cPlease do not repeat the same (or similar) command.");
+		ANTISPAM_CAPS_MESSAGE = getString("Too Much Caps", "&cDo not use so much CAPS LOCK!");
+		COMMAND_WAIT_MESSAGE = getString("Command Wait Message", "&cPlease wait %time %seconds before your next command.");
+		CHAT_WAIT_MESSAGE = getString("Chat Wait Message", "&cPlease wait %time %seconds before your next message.");
 		
-		ANTISPAM_SIMILAR_MESSAGE = getString("anti-spam.similar-message", "&cPlease do not repeat the same (or similar) message.");
-		ANTISPAM_SIMILAR_COMMAND = getString("anti-spam.similar-command", "&cPlease do not repeat the same (or similar) command.");
-		ANTISPAM_CAPS_MESSAGE = getString("anti-spam.too-much-caps", "&cDo not use so much CAPS LOCK!");
+		pathPrefix("Chat Mute");
+		MUTE_SUCCESS = getString("Mute", "&7Chat was successfully muted.");
+		MUTE_UNMUTE_SUCCESS = getString("Unmute", "&7Chat is no longer muted.");
 		
-		COMMAND_WAIT_MESSAGE = getString("commands.wait-time", "&cPlease wait %time %seconds before your next command.");
-		CHAT_WAIT_MESSAGE = getString("chat.wait-time", "&cPlease wait %time %seconds before your next message.");
+		MUTE_BROADCAST = getString("Mute Broadcast", "&6%player has muted the chat.");
+		MUTE_UNMUTE_BROADCAST = getString("Unmute Broadcast", "&6%player has unmuted the chat.");
+		MUTE_ANON_BROADCAST = getString("Anonymous Mute Broadcast", "&cInitiated global chat mute.");
+		MUTE_ANON_UNMUTE_BROADCAST = getString("Anonymous Unmute Broadcast", "&cGlobal chat mute cancelled.");
 		
-		UPDATE_AVAILABLE = getString("update-available", "&2A new version of &3ChatControl&2 is available.\\n&2Current version: &f%current&2; New version: &f%new\\n&2You can disable this notification in the config.");
-		NO_PERMISSION = getString("no-permission",  "&cInsufficient permission.");
-		RELOAD_COMPLETE = getString("reload-completed", "%prefix &2Reloading done. &7Beware: Reload might not be safe. In case of issues try restarting server.");
+		pathPrefix("Chat Clear");
+		CLEAR_BROADCAST = getString("Broadcast", "%prefix &e%player cleared the chat.");
+		CLEAR_ANON_BROADCAST = getString("Anonymous Broadcast", "&cThe game chat was cleared.");
+		CLEAR_CONSOLE = getString("Console Player Message", "%prefix &7Console was successfully cleared.");
+		CLEAR_CONSOLE_MSG = getString("Console Message", "&7Console was cleared by %player");
+		CLEAR_STAFF = getString("Chat Staff Message", "&7^----- [ == &fChat was cleared by %player &7== ] -----^");
 		
-		MUTE_SUCCESS = getString("chat.mute", "&7Chat was successfully muted.");
-		MUTE_UNMUTE_SUCCESS = getString("chat.unmute", "%prefix &eChat was muted by %player!");
+		pathPrefix("Usage");
+		USAGE_FAKE_CMD = getString("Fake Command", "%prefix Usage: /chatcontrol fake <&bjoin&f/&aleave&f>");
 		
-		CHATCLEAR_CONSOLE = getString("chat-clear.console-message", "%prefix &7Console was successfully cleared.");
-		CHATCLEAR_STAFF = getString("chat-clear.staff-message", "&7^----- [ == &fChat was cleared by %player &7== ] -----^");
+		pathPrefix(null);
+		UPDATE_AVAILABLE = getString("Update Available", "&2A new version of &3ChatControl&2 is available.\\n&2Current version: &f%current&2; New version: &f%new\\n&2You can disable this notification in the config.");
+		NO_PERMISSION = getString("No Permission",  "&cInsufficient permission.");
+		RELOAD_COMPLETE = getString("Reload Complete", "%prefix &2Configuration reloaded successfuly.");
+		RELOAD_FAILED = getString("Reload Failed", "%prefix &cReloading configuration failed, check console.");
 		
-		USAGE_FAKE_CMD = getString("usage.fake-cmd", "%prefix Usage: /chatcontrol fake <&bjoin&f/&aleave&f>");
+		WRONG_PARAMETERS = getString("Wrong Parameters", "&cWrong parameters, type &6/chc list&c for instructions.");
+		WRONG_ARGUMENTS = getString("Wrong Arguments", "&cWrong arguments. Type &6/chc list&c for command list.");
 	}
 }

@@ -10,7 +10,7 @@ import me.kangarko.chc.ChatControl;
 import me.kangarko.chc.model.Localization;
 import me.kangarko.chc.model.Settings;
 import me.kangarko.chc.model.SettingsChat;
-import me.kangarko.chc.utils.Writer.TypSuboru;
+import me.kangarko.chc.utils.Writer.FileType;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -22,7 +22,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.fusesource.jansi.Ansi;
 import org.fusesource.jansi.Ansi.Attribute;
 
-@SuppressWarnings("deprecation")
 public class Common {
 
 	private static final ConsoleCommandSender console;
@@ -36,7 +35,7 @@ public class Common {
 	 * every other method to tell player should extend this
 	 */
 	public static void tellColored(CommandSender sender, String msg) {
-		sender.sendMessage(colorize(msg.replace("%prefix", prefix())));
+		sender.sendMessage(colorize(msg));
 	}
 
 	/**
@@ -63,57 +62,42 @@ public class Common {
 		}.runTaskLater(ChatControl.instance(), delay_in_seconds * 20);
 	}
 
-	// TODO get rid of
-	@Deprecated
-	public static String prefix() {
-		return Localization.Parts.PREFIX;
+	public static void broadcast(String message) {
+		Bukkit.broadcastMessage(colorize(message));
 	}
 
-	// TODO get rid of
-	@Deprecated
-	public static String console() {
-		return Localization.Parts.CONSOLE;
+	public static void broadcastWithPlayer(String message, String playerReplacement) {
+		broadcast(message.replace("%player", playerReplacement));
 	}
 
-	public static void broadcastMsgIfEnabled(CommandSender pl, String configPath, String message, String reason) {
-		/* TODO try {
-			if(!ChatControl.Config.getBoolean(configPath))
-				return;
-		} catch (NullPointerException ex){
-			ChatControl.Config.set(configPath, false);
-			Bukkit.broadcastMessage(colorize("&e<Missing config key: &6\"" + configPath + "\"&e>"));
-			return;
-		}*/
-
-		try {
-			String finalMessage = "NOT_IMPLEMENTED_BROADCAST_IF_ENABLED".replace("%prefix", prefix()).replace("%player", (pl == null ? "" : resolvedSender(pl)));
-			Bukkit.broadcastMessage(colorize(finalMessage + (reason == "" ? "" : " " + Localization.Parts.PREFIX.replace("%reason", reason))));
-		} catch (NullPointerException ex) {
-			Bukkit.broadcastMessage(colorize("&e<Missing language key: &6\"" + message + "\"&e>"));
-		}
+	public static void broadcastIfEnabled(boolean enabled, CommandSender plReplace, String msg, String reason) {
+		if (enabled)
+			broadcastWithPlayer(msg + (reason.equals("") ? "" : " " + Localization.Parts.REASON.replace("%reason", reason)), plReplace == null ? "" : resolvedSender(plReplace));
 	}
 
-	public static void messages(Player pl, String msg) {
+	public static void messages(Player advertiser, String msg) {
 		if (Settings.AntiAd.ALERT_STAFF)
-			for (Player hrac : Bukkit.getOnlinePlayers())
-				if (hrac.isOp() || hrac.hasPermission(Permissions.Notify.ad))
-					tellColored(hrac, Localization.ANTIAD_STAFF_ALERT.replace("%message", msg).replace("%player", pl.getName()));
+			for (Player staff : Bukkit.getOnlinePlayers())
+				if (Common.hasPerm(staff, Permissions.Notify.ad))
+					tell(staff, Localization.ANTIAD_STAFF_ALERT.replace("%message", msg), advertiser.getName());
 
-		tell(pl, Localization.ANTIAD_PLAYER_WARN);
+		tell(advertiser, Localization.ANTIAD_PLAYER_WARN);
 
 		if (Settings.AntiAd.BROADCAST_BLOCK)
-			for (Player hrac : Bukkit.getOnlinePlayers())
-				if (!hrac.isOp() && !hrac.getName().equals(pl.getName()))
-					tellColored(hrac, Localization.ANTIAD_BROADCAST_ALERT.replace("%message", msg).replace("%player", pl.getName()));
+			for (Player online : Bukkit.getOnlinePlayers())
+				if (!online.isOp() && !online.getName().equals(advertiser.getName()))
+					tell(online, Localization.ANTIAD_BROADCAST_ALERT.replace("%message", msg), advertiser.getName());
 
 		if (Settings.AntiAd.ALERT_CONSOLE)
-			Log(Localization.ANTIAD_CONSOLE_ALERT.replace("%player", pl.getName()).replace("%message", msg));
+			Log(Localization.ANTIAD_CONSOLE_ALERT.replace("%player", advertiser.getName()).replace("%message", msg));
 
 		if (Settings.AntiAd.WRITE_TO_FILE)
-			Writer.zapisatDo(TypSuboru.REKLAMY, pl.getName(), msg);
+			Writer.zapisatDo(FileType.ADVERTISEMENTS, advertiser.getName(), msg);
 	}
 
 	public static boolean hasPerm(CommandSender sender, String str) {
+		if (sender.hasPermission(str) && sender.isOp() && !Settings.OP_HAS_PERMISSIONS)
+			return false;
 		if (sender.isOp() && Settings.OP_HAS_PERMISSIONS)
 			return true;
 		if (sender.hasPermission(str))
@@ -145,7 +129,7 @@ public class Common {
 		String[] words = msg.split("\\s");
 		String lastWord = words[(words.length - 1)];
 
-		if ((lastChar.matches("(?i)[a-z]")) && (!jeOdkaz(lastWord)))
+		if ((lastChar.matches("(?i)[a-z]")) && (!isDomain(lastWord)))
 			msg = msg + ".";
 
 		return msg;
@@ -163,7 +147,7 @@ public class Common {
 		for (String sentence : sentences) {
 			String slovo = msg.split("\\s")[0];
 
-			if (!jeOdkaz(slovo))
+			if (!isDomain(slovo))
 				sentence = sentence.substring(0, 1).toUpperCase() + sentence.substring(1);
 
 			tempMessage = tempMessage + sentence + " ";
@@ -174,24 +158,28 @@ public class Common {
 	public static String replaceCharacters(Player pl, String msg) {
 		String finalMsg = msg;
 
-		if (SettingsChat.smileys)
-			finalMsg = osmajlikovat(msg);
+		if (!SettingsChat.REPLACE_UTF_MAP.isEmpty())
+			for (String character : SettingsChat.REPLACE_UTF_MAP.keySet())
+				finalMsg = finalMsg.replace(colorize(character), SettingsChat.REPLACE_UTF_MAP.get(character));
+		
+		if (!SettingsChat.REPLACE_REGEX_MAP.isEmpty())
+			for (String character : SettingsChat.REPLACE_REGEX_MAP.keySet())
+				finalMsg = finalMsg.replaceAll(colorize(character), SettingsChat.REPLACE_REGEX_MAP.get(character));
 
-		if (!SettingsChat.replaceMap.isEmpty())
-			for (String character : SettingsChat.replaceMap.keySet())
-				finalMsg = finalMsg.replaceAll("(?i)" + Common.colorize(character), SettingsChat.replaceMap.get(character));
-
-		return finalMsg;
+		return colorize(finalMsg);
 	}
 
-	public static String osmajlikovat(String msg) { // FIXME Corrupted characters
-		msg = msg.replace(":)", "�?�").replace(":-)", "�?�").replace(":(", "�?�").replace(":-(", "�?�").replace(";)", "㋡").replace(";-)", "㋡").replace(":love:", "♥").replace(":square:", "■").replace(":rectangle:", "�?").replace("<3", "♥");
-		return msg;
+	// ---------------------------- PRIVATE --------------------------------------
+
+	private static String setPrefix(String str) {
+		return str.replace("%prefix", Localization.Parts.PREFIX);
 	}
 
-	private static boolean jeOdkaz(String str) {
+	private static boolean isDomain(String str) {
 		return str.matches("(https?:\\/\\/)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?$");
 	}
+
+	// -------------------------------------------------------------------
 
 	public static void Log(String str) {
 		console.sendMessage("[ChatControl] " + colorize(str));
@@ -210,19 +198,19 @@ public class Common {
 		return Settings.DEBUG;
 	}
 
-	public static void error(String str, Throwable ex) {
-		throw new Error("Exception in ChatControl " + ChatControl.instance().getDescription().getVersion() + ": " + colorize(str), ex);
+	public static void Error(String str, Throwable ex) {
+		throw new Error("Error in ChatControl " + ChatControl.instance().getDescription().getVersion() + ": " + colorize(str), ex);
 	}
 
 	public static String colorize(String str) {
-		return ChatColor.translateAlternateColorCodes('&', str);
+		return ChatColor.translateAlternateColorCodes('&', setPrefix(str));
 	}
 
 	public static String resolvedSender(CommandSender sender) {
-		if (sender instanceof Player) {
+		if (sender instanceof Player)
 			return sender.getName();
-		}
-		return console();
+
+		return Localization.Parts.CONSOLE;
 	}
 
 	public static String stripSpecialCharacters(String str) {
@@ -323,7 +311,7 @@ public class Common {
 		Pattern pattern = null;
 		TimedCharSequence timedMsg = new TimedCharSequence(plain_msg, Settings.REGEX_TIMEOUT);
 
-		Debug("Checking " + plain_msg + " against " + regex);
+		Log("Checking " + plain_msg + " against " + regex);
 
 		try {
 			pattern = Pattern.compile(regex);
@@ -339,8 +327,8 @@ public class Common {
 		try {
 			return matcher.find();
 		} catch (RuntimeException ex) {
-			Writer.zapisatDo(TypSuboru.ZAZNAM_CHYB, null, "Regex check timed out (bad regex?) (plugin ver. " + ChatControl.instance().getDescription().getVersion() + ")! \nString checked: " + timedMsg + "\nRegex: " + pattern.pattern());
-			Common.error("RegEx \"" + pattern.pattern() + "\" has timed out while checking \"" + timedMsg + "\"! (malformed regex?)", ex);
+			Writer.zapisatDo(FileType.ERROR_LOG, null, "Regex check timed out (bad regex?) (plugin ver. " + ChatControl.instance().getDescription().getVersion() + ")! \nString checked: " + timedMsg + "\nRegex: " + pattern.pattern());
+			Common.Error("RegEx \"" + pattern.pattern() + "\" has timed out while checking \"" + timedMsg + "\"! (malformed regex?)", ex);
 			return false;
 		}
 	}
@@ -349,7 +337,7 @@ public class Common {
 		if (Settings.AntiSwear.ALERT_STAFF)
 			for (Player pl : Bukkit.getOnlinePlayers())
 				if (hasPerm(pl, Permissions.Notify.swear))
-					Common.tellColored(pl, Localization.ANTISWEAR_STAFF_ALERT.replace("%message", theMessage).replace("%player", swearer.getName()));
+					Common.tell(pl, Localization.ANTISWEAR_STAFF_ALERT.replace("%message", theMessage), swearer.getName());
 
 		if (Settings.AntiSwear.WARN_PLAYER)
 			Common.tell(swearer, Localization.ANTISWEAR_PLAYER_WARN);

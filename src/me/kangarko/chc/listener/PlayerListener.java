@@ -8,6 +8,7 @@ import me.kangarko.chc.utils.Common;
 import me.kangarko.chc.utils.Permissions;
 import me.kangarko.chc.utils.checks.ChecksUtils;
 
+import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -21,7 +22,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-@SuppressWarnings("deprecation")
 public class PlayerListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
@@ -41,25 +41,20 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
-		ChatControl.createDataIfNotExistFor(e.getPlayer().getName());
 		long now = System.currentTimeMillis() / 1000L;
 
-		if (!e.getPlayer().isOp() && !e.getPlayer().hasPermission(Permissions.Bypasses.rejoin))
+		if (!Common.hasPerm(e.getPlayer(), Permissions.Bypasses.rejoin))
 			ChatControl.ipLastLogin.put(e.getPlayer().getAddress().getAddress().getHostAddress(), now);
 
 		ChatControl.getDataFor(e.getPlayer()).loginLocation = e.getPlayer().getLocation();
 
-		if (Variables.needsUpdate && Settings.Updater.NOTIFY) {
-
-			for (Player pl : Bukkit.getOnlinePlayers()) {
-
-				if (pl.isOp() || pl.hasPermission(Permissions.Notify.plugin_update)) {
+		if (Variables.needsUpdate && Settings.Updater.NOTIFY)
+			for (Player pl : Bukkit.getOnlinePlayers())
+				if (Common.hasPerm(pl, Permissions.Notify.plugin_update)) {
 					String sprava = Common.colorize(Localization.UPDATE_AVAILABLE).replace("%current", ChatControl.instance().getDescription().getVersion()).replace("%new", Variables.newVersion);
 					sprava.split("\n");
 					Common.tellTimed(pl, sprava, 5);
 				}
-			}
-		}
 
 		if (Variables.muted && Settings.Mute.SILENT_JOIN) {
 			e.setJoinMessage(null);
@@ -71,7 +66,7 @@ public class PlayerListener implements Listener {
 				e.setJoinMessage(null);
 				break;
 			case CUSTOM:
-				e.setJoinMessage(Common.colorize(Settings.Messages.JOIN.getMessage().replace("%player", e.getPlayer().getName()).replace("%displayname", e.getPlayer().getDisplayName()).replace("%prefix", Common.prefix())));
+				e.setJoinMessage(Common.colorize(Settings.Messages.JOIN.getMessage().replace("%player", e.getPlayer().getName()).replace("%displayname", e.getPlayer().getDisplayName())));
 				break;
 			default:
 				break;
@@ -90,7 +85,7 @@ public class PlayerListener implements Listener {
 				e.setQuitMessage(null);
 				break;
 			case CUSTOM:
-				e.setQuitMessage(Common.colorize(Settings.Messages.QUIT.getMessage().replace("%player", e.getPlayer().getName()).replace("%displayname", e.getPlayer().getDisplayName()).replace("%prefix", Common.prefix())));
+				e.setQuitMessage(Common.colorize(Settings.Messages.QUIT.getMessage().replace("%player", e.getPlayer().getName()).replace("%displayname", e.getPlayer().getDisplayName())));
 				break;
 			default:
 				break;
@@ -109,7 +104,7 @@ public class PlayerListener implements Listener {
 				e.setLeaveMessage(null);
 				break;
 			case CUSTOM:
-				e.setLeaveMessage(Common.colorize(Settings.Messages.KICK.getMessage().replace("%player", e.getPlayer().getName()).replace("%displayname", e.getPlayer().getDisplayName()).replace("%prefix", Common.prefix())));
+				e.setLeaveMessage(Common.colorize(Settings.Messages.KICK.getMessage().replace("%player", e.getPlayer().getName()).replace("%displayname", e.getPlayer().getDisplayName())));
 				break;
 			default:
 				break;
@@ -127,27 +122,15 @@ public class PlayerListener implements Listener {
 		if (Common.hasPerm(e.getPlayer(), Permissions.Bypasses.global_perm))
 			return;
 
-		if (Bukkit.getOnlinePlayers().length < Settings.MIN_PLAYERS_TO_ENABLE)
+		if (Bukkit.getOnlinePlayers().size() < Settings.MIN_PLAYERS_TO_ENABLE)
 			return;
-		
-		if (Settings.Signs.CHECK_FOR_DUPLICATION) {
-			if (e.getPlayer().hasPermission(Permissions.Bypasses.dupeSigns))
-				return;
-
-			if (ChatControl.getDataFor(e.getPlayer()).lastSignText.equals(e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3))) {
-				Common.tell(e.getPlayer(), Localization.ANTIBOT_DUPE_SIGN);
-				e.setCancelled(true);
-				return;
-			}
-			ChatControl.getDataFor(e.getPlayer()).lastSignText = e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3);
-		}
 
 		if (Settings.Signs.CHECK_FOR_ADS) {
 			// TODO swear check too?
 			String msg = e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3);
 
 			if (ChecksUtils.advertisingCheck(e.getPlayer(), msg.toLowerCase(), false)) {
-				if (e.getPlayer().hasPermission(Permissions.Bypasses.ads))
+				if (Common.hasPerm(e.getPlayer(), Permissions.Bypasses.ads))
 					return;
 
 				Common.customAction(e.getPlayer(), "Anti_Ad.Custom_Command", msg);
@@ -155,13 +138,10 @@ public class PlayerListener implements Listener {
 
 				if (Settings.Signs.REWRITE_LINES_WHEN_AD_FOUND) {
 					String[] cenzura = Common.colorize(Settings.Signs.REWRITE_TEXT).split(":");
-					try {
-						e.setLine(0, cenzura[0]);
-						e.setLine(1, cenzura[1]);
-						e.setLine(2, cenzura[2]);
-						e.setLine(3, cenzura[3]);
-					} catch (Exception ex) {
-					} // TODO this is crappy
+					Validate.isTrue(cenzura.length <= 4, "A sign can only have 4 lines, but rewrite text has: " + cenzura.length);
+					
+					for (int i = 0; i < cenzura.length; i++) 
+						e.setLine(i, cenzura[i]);
 				} else
 					e.setCancelled(true);
 			}

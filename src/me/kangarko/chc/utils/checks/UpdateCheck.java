@@ -37,10 +37,9 @@ public class UpdateCheck implements Runnable {
 		String novaVerzia = staraVer;
 		
 		try {
-			InputStreamReader input = new InputStreamReader(new URL(fileUrl).openConnection().getInputStream());
-			YamlConfiguration conf;
+			YamlConfiguration conf;			
 			try {
-				conf = YamlConfiguration.loadConfiguration(input);
+				conf = YamlConfiguration.loadConfiguration(new InputStreamReader(new URL(fileUrl).openConnection().getInputStream()));
 			} catch (NoSuchMethodError ex) {
 				conf = YamlConfiguration.loadConfiguration(new URL(fileUrl).openConnection().getInputStream());
 			}
@@ -48,7 +47,7 @@ public class UpdateCheck implements Runnable {
 		} catch (UnknownHostException | MalformedURLException ex) {
 			Common.Warn("ChatControl failed update check, could not connect to: " + fileUrl);
 		} catch (IOException ex) {
-			Common.error("Could not fetch latest version of ChatControl from: " + fileUrl, ex);
+			Common.Error("Could not fetch latest version of ChatControl from: " + fileUrl, ex);
 		}
 
 		if (novaVerzia.contains("SNAPSHOT") || novaVerzia.contains("DEV"))

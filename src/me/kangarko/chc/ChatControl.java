@@ -3,9 +3,7 @@ package me.kangarko.chc;
 import static me.kangarko.chc.packetlistener.PacketListener.initPacketListener;
 
 import java.util.logging.Filter;
-import java.util.logging.Level;
 
-import me.kangarko.chc.cmd.CommandsHandler;
 import me.kangarko.chc.filter.ConsoleFilter;
 import me.kangarko.chc.filter.Log4jFilter;
 import me.kangarko.chc.listener.ChatListener;
@@ -27,12 +25,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.earth2me.essentials.CommandSource;
 import com.earth2me.essentials.Essentials;
 
-@SuppressWarnings("deprecation")
 // TODO common.class overhaul, catch up all broadcast from bukkit and colorize it
 // TODO implement death messages
 // TODO implement timed messages
 // TODO replace remap and pwnfilter
-// TODO replace hasPermission with Common. hasPerm
 public class ChatControl extends JavaPlugin {
 
 	private static ChatControl instance;
@@ -51,9 +47,8 @@ public class ChatControl extends JavaPlugin {
 		try {
 			ConfHelper.loadAll();
 		} catch (Throwable t) {
-			getLogger().log(Level.SEVERE, "Error loading configuration, plugin disabled.", t);
 			getPluginLoader().disablePlugin(this);
-			return;
+			throw new RuntimeException("Error loading configuration, plugin disabled.", t);
 		}
 
 		if (Common.debugEnabled()) {
@@ -71,13 +66,13 @@ public class ChatControl extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		getServer().getPluginManager().registerEvents(new CommandListener(), this);
 
-		if (SettingsConsole.filterEnabled || SettingsConsole.filterColorToAnsi) {
+		if (SettingsConsole.FILTER_ENABLED || SettingsConsole.FILTER_COLORS_TO_ANSI) {
 			try {
 				new Log4jFilter().init();
 				Common.Debug("Console filtering now using Log4j Filter.");
 			} catch (Throwable t) {
 				Filter filter = new ConsoleFilter();
-				if (SettingsConsole.filterPluginMessages)
+				if (SettingsConsole.FILTER_FILTER_PLUGINS)
 					for (Plugin p : getServer().getPluginManager().getPlugins())
 						p.getLogger().setFilter(filter);
 
@@ -118,7 +113,7 @@ public class ChatControl extends JavaPlugin {
 		
 		boolean removeMe;
 		Common.Log("&b**********************************");
-		Common.Log("&aWARNING: &eThis version of plugin is incomplete, broken and NOT WORKING! Downgrade to 4x");
+		Common.Log("&cCRITICAL: &eThis version is incomplete, broken and NOT WORKING! Downgrade to 4x");
 		Common.Log("&b**********************************");
 	}
 
