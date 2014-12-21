@@ -13,15 +13,14 @@ public class ChecksUtils {
 	 * Advertising check.
 	 * @deprecated inconsistend, make it in one class
 	 */
-	public static boolean advertisingCheck(Player pl, String msg, boolean command) {
-		if (!Common.hasPerm(pl, Permissions.Bypasses.ads))
+	public static boolean advertisingCheck(Player pl, String msg, boolean command) {		
+		if (Common.hasPerm(pl, Permissions.Bypasses.ads))
 			return false;
-
 		String finalMsg = msg.replaceAll(Settings.AntiAd.PREPROCESS_STRIP, "");
 
 		if(command && !Settings.AntiAd.ENABLED_IN_COMMANDS)
 			return false;
-
+		
 		for(String ip : Settings.AntiAd.WHITELIST_IP)
 			if(msg.contains(ip))
 				return false;
@@ -32,7 +31,7 @@ public class ChecksUtils {
 
 		if (Common.regExMatch(Settings.AntiAd.REGEX_IP, finalMsg) || Common.regExMatch(Settings.AntiAd.REGEX_DOMAINS, finalMsg))
 			return true;
-
+		
 		if (!Settings.AntiAd.REGEX_CUSTOM.equalsIgnoreCase("none"))
 			if(Common.regExMatch(Settings.AntiAd.REGEX_CUSTOM, finalMsg))
 				return true;

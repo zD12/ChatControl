@@ -24,7 +24,7 @@ public class ConfHelper {
 	protected static File file;;
 	private static String pathPrefix = null;
 
-	public static void loadAll() throws ReflectiveOperationException {
+	public static void loadAll() {
 		// Order matters.
 		Settings.load();
 		SettingsConsole.load();
@@ -32,28 +32,13 @@ public class ConfHelper {
 		Localization.load();
 	}
 
-	protected static void loadValues(Class<?> clazz) throws ReflectiveOperationException {
+	protected static void loadValues(Class<?> clazz) {
 		Objects.requireNonNull(cfg, "YamlConfiguration is null!");
 		Common.Log("Setting up config: " + clazz.getSimpleName());
-		
-		// Look in the class itself
-		for (Method m : clazz.getDeclaredMethods()) {
-			int modifier = m.getModifiers();
 
-			if (Modifier.isPrivate(modifier) && Modifier.isStatic(modifier) && m.getReturnType() == Void.TYPE && m.getParameterTypes().length == 0) {
-				Validate.isTrue(m.getName().equals("init"), "Unknown method named " + m.getName());
-
-				m.setAccessible(true);
-				m.invoke(null);
-				pathPrefix(null);
-			}
-		}
-
-		// Look in all sub-classes
-		for (Class<?> subClazz : clazz.getDeclaredClasses()) {
-			Common.Log("Setting up config section: " + subClazz.getSimpleName());
-
-			for (Method m : subClazz.getDeclaredMethods()) {
+		try {
+			// Look in the class itself
+			for (Method m : clazz.getDeclaredMethods()) {
 				int modifier = m.getModifiers();
 
 				if (Modifier.isPrivate(modifier) && Modifier.isStatic(modifier) && m.getReturnType() == Void.TYPE && m.getParameterTypes().length == 0) {
@@ -65,9 +50,11 @@ public class ConfHelper {
 				}
 			}
 
-			for (Class<?> subSubClazz : subClazz.getDeclaredClasses()) {
-				Common.Log("Setting up config section: " + subClazz.getSimpleName() + "." + subSubClazz.getSimpleName());
-				for (Method m : subSubClazz.getDeclaredMethods()) {
+			// Look in all sub-classes
+			for (Class<?> subClazz : clazz.getDeclaredClasses()) {
+				Common.Log("Setting up config section: " + subClazz.getSimpleName());
+
+				for (Method m : subClazz.getDeclaredMethods()) {
 					int modifier = m.getModifiers();
 
 					if (Modifier.isPrivate(modifier) && Modifier.isStatic(modifier) && m.getReturnType() == Void.TYPE && m.getParameterTypes().length == 0) {
@@ -78,9 +65,25 @@ public class ConfHelper {
 						pathPrefix(null);
 					}
 				}
-			}
-		}
 
+				for (Class<?> subSubClazz : subClazz.getDeclaredClasses()) {
+					Common.Log("Setting up config section: " + subClazz.getSimpleName() + "." + subSubClazz.getSimpleName());
+					for (Method m : subSubClazz.getDeclaredMethods()) {
+						int modifier = m.getModifiers();
+
+						if (Modifier.isPrivate(modifier) && Modifier.isStatic(modifier) && m.getReturnType() == Void.TYPE && m.getParameterTypes().length == 0) {
+							Validate.isTrue(m.getName().equals("init"), "Unknown method named " + m.getName());
+
+							m.setAccessible(true);
+							m.invoke(null);
+							pathPrefix(null);
+						}
+					}
+				}
+			}
+		} catch (ReflectiveOperationException ex) {
+			ex.printStackTrace();
+		}
 		save();
 	}
 
@@ -163,7 +166,7 @@ public class ConfHelper {
 
 		if (!cfg.isSet(path)) {
 			validate(path, def);
-			
+
 			for (String str : def.keySet())
 				cfg.set(path + "." + str, def.get(str));
 		}
@@ -290,21 +293,21 @@ public class ConfHelper {
 			return genitivePl;
 		}
 	}
-	
+
 	public static class SoundHelper {
 		public final Sound sound;
 		public final float volume, pitch;
-		
+
 		public SoundHelper(String raw) {			
 			String[] values = raw.split(", ");
-			
+
 			if (values.length == 1) {
 				this.sound = Sound.valueOf(values[0].toUpperCase());
 				this.volume = 1F;
 				this.pitch = 1.5F;
 				return;
 			}
-			
+
 			Validate.isTrue(values.length == 3, "Malformed sound type, use format: bukkit_sound_name, float_volume, float_pitch");
 			this.sound = Sound.valueOf(values[0].toUpperCase());
 			this.volume = Float.parseFloat(values[1]);

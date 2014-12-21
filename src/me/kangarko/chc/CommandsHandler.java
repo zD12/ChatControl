@@ -180,7 +180,7 @@ public class CommandsHandler implements CommandExecutor {
 			
 			try {
 				ConfHelper.loadAll();
-			} catch (ReflectiveOperationException ex) {
+			} catch (Exception ex) {
 				Common.tell(sender, Localization.RELOAD_FAILED);
 				ex.printStackTrace();
 			} finally {

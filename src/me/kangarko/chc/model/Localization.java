@@ -13,7 +13,7 @@ import com.sun.xml.internal.bind.api.impl.NameConverter.Standard;
 @SuppressWarnings("unused")
 public class Localization extends ConfHelper {
 	
-	public static void load() throws ReflectiveOperationException {
+	public static void load() {
 		// try if the user has modified version of localization inside his plugin folder		
 		file = new File(ChatControl.instance().getDataFolder(), Settings.LOCALIZATION_SUFFIX);
 

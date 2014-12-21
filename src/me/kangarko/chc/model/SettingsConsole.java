@@ -1,7 +1,6 @@
 package me.kangarko.chc.model;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +13,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 @SuppressWarnings("unused")
 public class SettingsConsole extends ConfHelper {
 
-	public static void load() throws ReflectiveOperationException {
+	public static void load() {
 		file = new File(ChatControl.instance().getDataFolder(), "Console.yml");
 
 		File oldFile = new File(ChatControl.instance().getDataFolder(), "console.yml");

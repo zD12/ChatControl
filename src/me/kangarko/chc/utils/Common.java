@@ -1,7 +1,6 @@
 package me.kangarko.chc.utils;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -24,11 +23,7 @@ import org.fusesource.jansi.Ansi.Attribute;
 
 public class Common {
 
-	private static final ConsoleCommandSender console;
-
-	static {
-		console = Bukkit.getServer().getConsoleSender();
-	}
+	private static final ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 
 	/**
 	 * Basic, colorizes msg and handles %prefix.
@@ -78,7 +73,7 @@ public class Common {
 	public static void messages(Player advertiser, String msg) {
 		if (Settings.AntiAd.ALERT_STAFF)
 			for (Player staff : Bukkit.getOnlinePlayers())
-				if (Common.hasPerm(staff, Permissions.Notify.ad))
+				if (hasPerm(staff, Permissions.Notify.ad))
 					tell(staff, Localization.ANTIAD_STAFF_ALERT.replace("%message", msg), advertiser.getName());
 
 		tell(advertiser, Localization.ANTIAD_PLAYER_WARN);
@@ -186,7 +181,7 @@ public class Common {
 	}
 
 	public static void Warn(String str) {
-		Logger.getLogger("Minecraft").log(Level.WARNING, "[ChatControl] " + colorize(str));
+		Bukkit.getLogger().log(Level.WARNING, "[ChatControl] " + colorize(str));
 	}
 
 	public static void Debug(String str) {
@@ -306,12 +301,12 @@ public class Common {
 		str = str.replace("&r", Ansi.ansi().a(Attribute.RESET).toString());
 		return str;
 	}
-
-	public static boolean regExMatch(String regex, String plain_msg) {
+	
+	public static boolean regExMatch(String regex, String plain_msg) {		
 		Pattern pattern = null;
 		TimedCharSequence timedMsg = new TimedCharSequence(plain_msg, Settings.REGEX_TIMEOUT);
 
-		Log("Checking " + plain_msg + " against " + regex);
+		Debug("Checking " + plain_msg + " against " + regex);
 
 		try {
 			pattern = Pattern.compile(regex);
@@ -328,7 +323,7 @@ public class Common {
 			return matcher.find();
 		} catch (RuntimeException ex) {
 			Writer.zapisatDo(FileType.ERROR_LOG, null, "Regex check timed out (bad regex?) (plugin ver. " + ChatControl.instance().getDescription().getVersion() + ")! \nString checked: " + timedMsg + "\nRegex: " + pattern.pattern());
-			Common.Error("RegEx \"" + pattern.pattern() + "\" has timed out while checking \"" + timedMsg + "\"! (malformed regex?)", ex);
+			Error("RegEx \"" + pattern.pattern() + "\" has timed out while checking \"" + timedMsg + "\"! (malformed regex?)", ex);
 			return false;
 		}
 	}
@@ -337,11 +332,11 @@ public class Common {
 		if (Settings.AntiSwear.ALERT_STAFF)
 			for (Player pl : Bukkit.getOnlinePlayers())
 				if (hasPerm(pl, Permissions.Notify.swear))
-					Common.tell(pl, Localization.ANTISWEAR_STAFF_ALERT.replace("%message", theMessage), swearer.getName());
+					tell(pl, Localization.ANTISWEAR_STAFF_ALERT.replace("%message", theMessage), swearer.getName());
 
 		if (Settings.AntiSwear.WARN_PLAYER)
-			Common.tell(swearer, Localization.ANTISWEAR_PLAYER_WARN);
+			tell(swearer, Localization.ANTISWEAR_PLAYER_WARN);
 
-		Common.customAction(swearer, "Anti_Swear.Custom_Command", theMessage);
+		customAction(swearer, "Anti_Swear.Custom_Command", theMessage);
 	}
 }

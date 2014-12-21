@@ -11,7 +11,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 @SuppressWarnings("unused")
 public class SettingsChat extends ConfHelper {
 
-	public static void load() throws ReflectiveOperationException {
+	public static void load() {
 		file = new File(ChatControl.instance().getDataFolder(), "Chat.yml");
 
 		File oldFile = new File(ChatControl.instance().getDataFolder(), "chat.yml");

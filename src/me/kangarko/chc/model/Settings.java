@@ -13,7 +13,7 @@ public class Settings extends ConfHelper {
 
 	// TODO prevent typos by prefixes , e.g. "chat.formatter"
 
-	public static void load() throws ReflectiveOperationException {
+	public static void load() {
 		file = new File(ChatControl.instance().getDataFolder(), "Settings.yml");
 
 		File oldFile = new File(ChatControl.instance().getDataFolder(), "config.yml");
