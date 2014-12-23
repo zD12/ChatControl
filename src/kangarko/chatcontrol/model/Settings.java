@@ -1,7 +1,9 @@
 package kangarko.chatcontrol.model;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -164,9 +166,14 @@ public class Settings extends ConfHelper {
 
 	public static class Messages {
 		public static ChatMessage JOIN, QUIT, KICK;
-		//public static boolean TIMED_ENABLED; // TODO
-		//public static int TIMED_DELAY_MINUTES;
-		public static HashSet<String> TIMED;
+		
+		public static boolean TIMED_ENABLED;
+		public static boolean TIMED_RANDOM_ORDER;
+		public static boolean TIMED_RANDOM_NO_REPEAT;
+		public static String TIMED_PREFIX;
+		public static int TIMED_DELAY_SECONDS;
+		
+		public static HashMap<String, List<String>> TIMED;
 
 		private static void init() {
 			pathPrefix("Messages");
@@ -174,9 +181,38 @@ public class Settings extends ConfHelper {
 			JOIN = getMessage("Join", new ChatMessage(Type.DEFAULT));
 			QUIT = getMessage("Quit", new ChatMessage(Type.DEFAULT));
 			KICK = getMessage("Kick", new ChatMessage(Type.DEFAULT));
-			//TIMED_ENABLED = getBoolean("Timed.Enabled", true);
-			//TIMED_DELAY_MINUTES = getInteger("Timed.Delay_Minutes", 2);
-			// TODO death
+			
+			pathPrefix("Messages.Timed");
+			TIMED_ENABLED = getBoolean("Enabled", true);
+			TIMED_RANDOM_ORDER = getBoolean("Random_Order", false);
+			TIMED_RANDOM_NO_REPEAT = getBoolean("Random_No_Repeat", true);
+			TIMED_PREFIX = getString("Prefix", "&8[&2Tip&8]&2");
+			TIMED_DELAY_SECONDS = getInteger("Delay_Seconds", 180);
+			
+			
+			HashMap<String, List<String>> timedDef = new HashMap<>();
+			timedDef.put("global", Arrays.asList("Hey, %player, did you know that this server is running ChatControl?", "Visit developer website: &awww.rushmine.6f.sk"));
+			timedDef.put("hardcore", Arrays.asList("Grief is not permitted what-so-ever and every griefer will be banned.", "Can you survive the night on hardcore world?"));
+			timedDef.put("creative", Arrays.asList("excludeGlobal", "Welcome on Creative world. Enjoy your gamemode :)"));
+			timedDef.put("ignored-world", Arrays.asList(""));
+			
+			TIMED = getValuesAndList("Message_List", timedDef);
+			
+			List<String> global = new ArrayList<>(TIMED.get("global"));
+				
+			for (String world : TIMED.keySet()) {
+				List<String> worldMessages = TIMED.get(world);
+
+				if (worldMessages.size() == 0 || world.equalsIgnoreCase("global"))
+					continue;
+				
+				if (worldMessages.get(0).equalsIgnoreCase("excludeGlobal")) {
+					worldMessages.remove(0);
+					continue;
+				}
+
+				worldMessages.addAll(global);
+			}
 		}
 	}
 

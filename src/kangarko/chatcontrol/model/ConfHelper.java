@@ -8,6 +8,7 @@ import java.lang.reflect.Modifier;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -58,9 +59,9 @@ public class ConfHelper {
 					invokeMethods(subSubClazz);
 				}
 			}
-			
-		save();
-		
+
+			save();
+
 		} catch (IOException | ReflectiveOperationException ex) {
 			ex.printStackTrace();
 		}
@@ -159,6 +160,29 @@ public class ConfHelper {
 		return cfg.getDouble(path);
 	}
 
+	protected static HashMap<String, List<String>> getValuesAndList(String path, HashMap<String, List<String>> def) {
+		path = addPathPrefix(path);
+
+		if (!cfg.isSet(path)) {
+			validate(path, def);
+
+			for (String str : def.keySet())
+				cfg.set(path + "." + str, def.get(str));
+		}
+
+		Validate.isTrue(cfg.isConfigurationSection(path), "Malformed config value, expected configuration section at: " + path);
+		HashMap<String, List<String>> keys = new HashMap<>();
+
+		for (String key : cfg.getConfigurationSection(path).getKeys(true)) {
+			if (keys.containsKey(key))
+				Common.Warn("Duplicate key: " + key + " in " + path);
+
+			keys.put(key, getStringList(path + "." + key, Arrays.asList(""), false));
+		}
+
+		return keys;
+	}
+
 	protected static HashMap<String, String> getValuesAndKeys(String path, HashMap<String, String> def, boolean deep) {
 		path = addPathPrefix(path);
 
@@ -181,8 +205,9 @@ public class ConfHelper {
 		return keys;
 	}
 
-	protected static List<String> getStringList(String path, List<String> def) {
-		path = addPathPrefix(path);
+	protected static List<String> getStringList(String path, List<String> def, boolean addPathPrefix) {
+		if (addPathPrefix)
+			path = addPathPrefix(path);
 
 		if (!cfg.isSet(path)) {
 			validate(path, def);
@@ -193,12 +218,17 @@ public class ConfHelper {
 		return cfg.getStringList(path);
 	}
 
+	protected static List<String> getStringList(String path, List<String> def) {
+		return getStringList(path, def, true);
+	}
+
 	protected static ChatMessage getMessage(String path, ChatMessage def) {
-		path = addPathPrefix(path);
 		return new ChatMessage(getString(path, def.getMessage()));
 	}
 
 	private static <T> void validate(String path, T def) {
+		Common.Log("&eWriting in path \"" + path + "\" value: \"" + def + "\"");
+		
 		if (file == null)
 			throw new RuntimeException("Inbuilt config doesn't contains " + def.getClass().getTypeName() + " at \"" + path + "\". Is it outdated?");
 	}

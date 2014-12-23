@@ -11,3 +11,6 @@ permissions:
     chatcontrol.notify.whenmentioned:
         default: true
         description: Play sound to player when notified by another player and function is enabled.
+    chatcontrol.broadcaster.view:
+        default: true
+        description: View timed messages from auto broadcaster.

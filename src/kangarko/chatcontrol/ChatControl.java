@@ -1,5 +1,9 @@
 package kangarko.chatcontrol;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
 import java.util.logging.Filter;
 
 import kangarko.chatcontrol.checks.UpdateCheck;
@@ -16,13 +20,16 @@ import kangarko.chatcontrol.model.SettingsConsole;
 import kangarko.chatcontrol.model.Variables;
 import kangarko.chatcontrol.utils.Common;
 import kangarko.chatcontrol.utils.MissingResourceException;
+import kangarko.chatcontrol.utils.Permissions;
 import kangarko.chatcontrol.utils.safety.SafeMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import com.earth2me.essentials.CommandSource;
 import com.earth2me.essentials.Essentials;
@@ -86,12 +93,12 @@ public class ChatControl extends JavaPlugin {
 			ess = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
 			Common.Log("&fHooked with Essentials!");
 		}
-		
+
 		if (Bukkit.getPluginManager().getPlugin("AuthMe") != null) {
 			AuthMeHook.hooked = true;
 			Common.Log("&fHooked with AuthMe!");
 		}
-			
+
 		getServer().getPluginManager().registerEvents(new ChatListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		getServer().getPluginManager().registerEvents(new CommandListener(), this);
@@ -102,7 +109,7 @@ public class ChatControl extends JavaPlugin {
 				Common.Debug("Console filtering now using Log4j Filter.");
 			} catch (NoClassDefFoundError err) {				
 				Filter filter = new ConsoleFilter();
-				
+
 				if (SettingsConsole.FILTER_FILTER_PLUGINS)
 					for (Plugin p : getServer().getPluginManager().getPlugins())
 						p.getLogger().setFilter(filter);
@@ -134,6 +141,9 @@ public class ChatControl extends JavaPlugin {
 			}
 		}
 
+		if (Settings.Messages.TIMED_ENABLED)
+			scheduleTimedMessages();
+
 		getCommand("chatcontrol").setExecutor(new CommandsHandler());
 
 		if (Settings.Updater.ENABLED)
@@ -150,6 +160,94 @@ public class ChatControl extends JavaPlugin {
 
 		ess = null;
 		instance = null;
+
+		getServer().getScheduler().cancelTasks(this);
+	}
+
+	private HashMap<String, Integer> indexes;
+	private HashMap<String, List<String>> cache;
+
+	private final Random rand = new Random();
+
+	private void scheduleTimedMessages() {
+		if (!Settings.Messages.TIMED_RANDOM_ORDER) {
+			indexes = new HashMap<String, Integer>();
+
+			for (String world : Settings.Messages.TIMED.keySet())
+				indexes.put(world, 0);
+		}
+
+		if (Settings.Messages.TIMED_RANDOM_NO_REPEAT) {
+			cache = new HashMap<>();
+
+			for (String world : Settings.Messages.TIMED.keySet())
+				cache.put(world, new ArrayList<String>(Settings.Messages.TIMED.get(world)));
+		}
+
+			for (String world : Settings.Messages.TIMED.keySet()) {
+				Common.Log("&fMessages for: " + world);
+
+				for (String msg : Settings.Messages.TIMED.get(world))
+					Common.Log(" - " + msg);
+			}
+
+		new BukkitRunnable() {
+			@Override
+			public void run() {				
+				for (String world : Settings.Messages.TIMED.keySet()) {
+					List<String> msgs = Settings.Messages.TIMED.get(world);
+					if (msgs.size() == 0)
+						continue;
+
+					String msg = Settings.Messages.TIMED_PREFIX + " ";
+
+					if (Settings.Messages.TIMED_RANDOM_ORDER) {
+						if (Settings.Messages.TIMED_RANDOM_NO_REPEAT) {
+							List<String> worldCache = cache.get(world);
+
+							if (worldCache.size() == 0)
+								worldCache.addAll(msgs);
+
+							int cacheRand = rand.nextInt(worldCache.size());
+
+							msg+= worldCache.get(cacheRand);
+							worldCache.remove(cacheRand);
+						} else
+							msg+= msgs.get(rand.nextInt(msgs.size()));
+					} else {
+						int last = indexes.get(world);
+
+						if (msgs.size() < last + 1)
+							last = 0;
+
+						msg = Settings.Messages.TIMED_PREFIX + " " + msgs.get(last);
+
+						indexes.put(world, last + 1);
+					}
+
+					if (msg.equals(Settings.Messages.TIMED_PREFIX + " "))
+						continue;
+
+					if (world.equalsIgnoreCase("global")) {
+						for (Player online : getOnlinePlayers()) {
+							if (Settings.Messages.TIMED.keySet().contains(online.getWorld().getName()) || !Common.hasPerm(online, Permissions.VIEW_TIMED_MESSAGES))
+								continue;
+
+							Common.tell(online, msg);
+						}
+					} else {
+						World bukkitworld = getServer().getWorld(world);
+
+						if (bukkitworld == null)
+							Common.Warn("World \"" + world + "\" doesn't exist. No timed messages broadcast.");
+						else
+							for (Player online : bukkitworld.getPlayers())
+								if (Common.hasPerm(online, Permissions.VIEW_TIMED_MESSAGES))
+									Common.tell(online, msg);
+					}
+				}
+			}
+		}.runTaskTimer(this, 20, 20 * Settings.Messages.TIMED_DELAY_SECONDS);
 	}
 
 	public boolean canSoundNotify(String name) {
@@ -180,10 +278,10 @@ public class ChatControl extends JavaPlugin {
 	public String formatPlayerVariables(Player pl, String message) {
 		if (formatter == null)
 			return message;
-		
+
 		return formatter.replacePlayerVariables(pl, message);
 	}
-	
+
 	public static void createDataIfNotExistFor(String pl) {
 		playerData.putIfAbsent(pl, new PlayerCache());
 	}
@@ -202,7 +300,7 @@ public class ChatControl extends JavaPlugin {
 	public static Player[] getOnlinePlayers() {
 		return Bukkit.getOnlinePlayers();
 	}
-	
+
 	public static ChatControl instance() {
 		if (instance == null) {
 			instance = new ChatControl();

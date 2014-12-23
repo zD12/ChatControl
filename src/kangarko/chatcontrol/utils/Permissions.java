@@ -130,4 +130,7 @@ public class Permissions {
 		// Permission to override the chat range (when enabled) and always speak to global chat.
 		public static final String OVERRIDE_RANGED = "chatcontrol.chat.overrideranged";
 	}
+	
+	// Permission to view timed message from broadcaster. (true by default, needs to be explicitly denied)
+	public static final String VIEW_TIMED_MESSAGES = "chatcontrol.broadcaster.view";
 }
