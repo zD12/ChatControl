@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+import kangarko.chatcontrol.hooks.AuthMeHook;
 import kangarko.chatcontrol.hooks.MultiverseHook;
 import kangarko.chatcontrol.hooks.TownyHook;
 import kangarko.chatcontrol.model.Settings;
@@ -103,6 +104,9 @@ public class ChatFormatter implements Listener {
 				.replace("%health", formatHealth(pl) + ChatColor.RESET)
 				
 				.replace("%player", pl.getDisplayName())
+				
+				.replace("%countrycode", AuthMeHook.getCountryCode(pl))
+				.replace("%countryname", AuthMeHook.getCountryName(pl))
 				
 				.replace("%town", getTown(pl))
 				.replace("%nation", getNation(pl));
