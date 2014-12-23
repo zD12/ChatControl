@@ -1,5 +1,5 @@
 name: ChatControl
-main: me.kangarko.chc.ChatControl
+main: kangarko.chatcontrol.ChatControl
 version: 5.0.0-DEV
 author: kangarko
 soft-depend: [Essentials, PermissionsEx, Multiverse-Core, ProtocolLib, Towny]

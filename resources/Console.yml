@@ -1,0 +1,26 @@
+# --------------------------------------------------------
+# This is the Console configuration file for ChatControl
+# Mainly provides support for hiding and/or replacing 
+# messages from your server console.
+# --------------------------------------------------------
+
+Filter:
+  Enabled: true
+
+  # Filter console messages coming from plugins?
+  Filter_Plugins: true
+
+  # Attempt to translate & characters into ansi in every message that is printed into console.
+  Add_Ansi_Colors_To_Console: true
+
+  # Remove certain messages from the server console.
+  Filter_Console_Messages:
+  - Reached end of stream for
+  - Connection reset
+  - lost connection
+
+  # Replace certain messages with provided replacement.
+  # Use <dot> to specify a dot '.'
+  # Note: Works only on 1.6.4 and lower.
+  Replace_Messages:
+    'CONSOLE: Reload complete<dot>': 'CONSOLE: &bReloaded by magical powers!'
