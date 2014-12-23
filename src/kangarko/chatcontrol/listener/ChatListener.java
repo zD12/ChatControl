@@ -71,7 +71,7 @@ public class ChatListener implements Listener {
 				rawMessage = Common.replaceCharacters(pl, rawMessage);
 
 			if (Settings.AntiAd.ENABLED && !Common.hasPerm(pl, Permissions.Bypasses.ADVERTISING)) {
-				if (ChecksUtils.isAdvertisement(pl, rawMessage.toLowerCase(), false, false))
+				if (ChecksUtils.advertisementCheck(pl, rawMessage.toLowerCase(), false, false))
 					e.setCancelled(true);
 			}
 
@@ -115,7 +115,7 @@ public class ChatListener implements Listener {
 
 			if (Settings.AntiSwear.ENABLED && !Common.hasPerm(pl, Permissions.Bypasses.SWEARING)) {
 
-				String censoredMessage = ChecksUtils.isSwear(pl, rawMessage, Common.prepareForSwearCheck(rawMessage));
+				String censoredMessage = ChecksUtils.swearCheck(pl, rawMessage, Common.prepareForSwearCheck(rawMessage));
 
 				if (censoredMessage != rawMessage) {
 					if (Settings.AntiSwear.BLOCK_MESSAGE) {

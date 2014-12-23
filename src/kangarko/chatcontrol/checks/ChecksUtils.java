@@ -12,7 +12,10 @@ import org.bukkit.entity.Player;
 
 public class ChecksUtils {
 
-	public static boolean isAdvertisement(Player pl, String msg, boolean command, boolean sign) {
+	/**
+	 * Return modified message if the check found an ad.
+	 */
+	public static boolean advertisementCheck(Player pl, String msg, boolean command, boolean sign) {
 		if (Common.hasPerm(pl, Permissions.Bypasses.ADVERTISING))
 			return false;
 
@@ -70,7 +73,10 @@ public class ChecksUtils {
 		return isAd;
 	}
 
-	public static String isSwear(Player swearer, String finalMessage, String strippedMsg) {
+	/**
+	 * Return modified message if the check found some swear.
+	 */
+	public static String swearCheck(Player swearer, String finalMessage, String strippedMsg) {
 		boolean isSwear = false;
 		String originalMsg = finalMessage;
 
@@ -94,8 +100,6 @@ public class ChecksUtils {
 
 		return finalMessage;
 	}
-
-	// ------------------------ choose one best TODO
 
 	/**
 	 * Calculates the similarity (a percentage within 0% and 100%) between two strings.

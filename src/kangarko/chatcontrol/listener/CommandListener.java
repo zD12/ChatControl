@@ -80,7 +80,7 @@ public class CommandListener implements Listener {
 			}
 
 			if (Settings.AntiAd.ENABLED_IN_COMMANDS && !Common.hasPerm(pl, Permissions.Bypasses.ADVERTISING)) {
-				if (ChecksUtils.isAdvertisement(pl, e.getMessage(), true, false))
+				if (ChecksUtils.advertisementCheck(pl, e.getMessage(), true, false))
 					e.setCancelled(true);
 			}
 
@@ -89,7 +89,7 @@ public class CommandListener implements Listener {
 					if (e.getMessage().startsWith("/" + ignoredCmd))
 						break swearCheck;
 
-				String finalMessage = ChecksUtils.isSwear(pl, e.getMessage(), Common.prepareForSwearCheck(e.getMessage()));
+				String finalMessage = ChecksUtils.swearCheck(pl, e.getMessage(), Common.prepareForSwearCheck(e.getMessage()));
 
 				if (finalMessage != e.getMessage()) {
 					//if (Settings.AntiSwear.BLOCK_MESSAGE) // FIXME This, this is buggy on commands, handle.

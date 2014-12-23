@@ -1,7 +1,5 @@
 package kangarko.chatcontrol.hooks;
 
-import kangarko.chatcontrol.utils.Common;
-
 import org.bukkit.entity.Player;
 
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
@@ -10,10 +8,6 @@ import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
 
 public class TownyHook {
-
-	public TownyHook() {
-		Common.Log("&2Towny 0.88x integration enabled.");
-	}
 
 	public String getNation(Player pl) {
 		try {

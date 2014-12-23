@@ -170,6 +170,19 @@ public class Common {
 	public static void Error(String str, Throwable ex) {
 		throw new Error("Error in ChatControl v" + ChatControl.instance().getDescription().getVersion() + ": " + colorize(str), ex);
 	}
+	
+	public static void LogInFrame(boolean disable, String... messages) {
+		Log(consoleLine());
+		for (String msg : messages)
+			Log(" &c" + msg);
+		
+		if (disable) {
+			Bukkit.getPluginManager().disablePlugin(ChatControl.instance());
+			Log(" &cPlugin is now disabled.");
+		}
+			
+		Log(consoleLine());
+	}
 
 	public static String colorize(String str) {
 		return ChatColor.translateAlternateColorCodes('&', setPrefix(str));

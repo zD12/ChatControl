@@ -1,7 +1,5 @@
 package kangarko.chatcontrol.hooks;
 
-import kangarko.chatcontrol.utils.Common;
-
 import org.bukkit.Bukkit;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
@@ -13,8 +11,6 @@ public class MultiverseHook {
 
 	public MultiverseHook() {
 		this.multiVerse = (MultiverseCore) Bukkit.getPluginManager().getPlugin("Multiverse-Core");
-
-		Common.Log("&2Hooked with Multiverse 2 (World Alias)!");
 	}
 
 	public String getColoredAlias(String world) {

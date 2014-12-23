@@ -105,26 +105,22 @@ public class ChatControl extends JavaPlugin {
 
 		if (Settings.Packets.DISABLE_TAB_COMPLETE) {
 			if (getServer().getPluginManager().getPlugin("ProtocolLib") == null) {
-				getLogger().warning("*** Cannot enable packet features!");
-				getLogger().warning("Required plugin missing: ProtocolLib");
-				Thread.dumpStack();
+				Common.LogInFrame(false, "Cannot enable packet features!", "Required plugin missing: ProtocolLib");
 			} else {
 				ProtocolLibHook.init();
-				Common.Log("Hooked with ProtocolLib (TAB complete listener)!");
+				Common.Log("&fHooked with ProtocolLib (Packet listener)!");
 			}
 		}
 
 		if (Settings.Chat.Formatter.ENABLED) {
-			if (getServer().getPluginManager().getPlugin("PermissionsEx") == null) {
-				getLogger().warning("You need PermissionEx to enable ChatFormatter.");
-				Thread.dumpStack();
+			if (getServer().getPluginManager().getPlugin("Vault") == null) {
+				Common.LogInFrame(false, "You need Vault to enable ChatFormatter.");
 			} else {
 				if (getServer().getPluginManager().getPlugin("ChatManager") != null) {
-					getLogger().severe("Detected ChatManager, please copy settings from it to ChatControl and remove it then!");
-					Thread.dumpStack();
+					Common.LogInFrame(true, "Detected ChatManager!", "Please copy settings from it", "to ChatControl and remove it then!");
 				} else
 					getServer().getPluginManager().registerEvents(new ChatFormatter(), this);
-				Common.Log("Hooked with PermissionsEx (Chat Formatter)!");
+				Common.Log("&fHooked with Vault (ChatFormatter)!");
 			}
 		}
 
@@ -133,9 +129,7 @@ public class ChatControl extends JavaPlugin {
 		if (Settings.Updater.ENABLED)
 			getServer().getScheduler().runTaskAsynchronously(this, new UpdateCheck("https://raw.github.com/kangarko/ChatControl/master/plugin.yml"));
 
-		Common.Log(Common.consoleLine());
-		Common.Log(" &aThis is a beta version, it might contains bugs!");
-		Common.Log(Common.consoleLine());
+		Common.LogInFrame(false, "&aThis is a beta version, it might contains bugs!");
 	}
 
 	public void onDisable() {

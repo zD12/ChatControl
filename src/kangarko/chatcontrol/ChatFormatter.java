@@ -10,19 +10,21 @@ import kangarko.chatcontrol.hooks.TownyHook;
 import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.utils.Common;
 import kangarko.chatcontrol.utils.Permissions;
+import net.milkbowl.vault.chat.Chat;
+import net.milkbowl.vault.economy.Economy;
+import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-
-import ru.tehkode.permissions.PermissionManager;
-import ru.tehkode.permissions.PermissionUser;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
+import org.bukkit.plugin.RegisteredServiceProvider;
 
 public class ChatFormatter implements Listener {
 
@@ -37,12 +39,48 @@ public class ChatFormatter implements Listener {
 	private MultiverseHook mvHook;
 	private TownyHook townyHook;
 
-	public ChatFormatter() {
-		if (Bukkit.getPluginManager().getPlugin("Multiverse-Core") != null)
-			mvHook = new MultiverseHook();
+	private Permission permission;
+	private Economy economy;
+	private Chat chat;
 
-		if (Bukkit.getPluginManager().getPlugin("Towny") != null)
+    private boolean setupPermissions() {
+        RegisteredServiceProvider<Permission> permissionProvider = Bukkit.getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+        if (permissionProvider != null)
+            permission = permissionProvider.getProvider();
+
+        return (permission != null);
+    }
+
+    private boolean setupChat() {
+        RegisteredServiceProvider<Chat> chatProvider = Bukkit.getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
+        if (chatProvider != null)
+            chat = chatProvider.getProvider();
+   
+        return (chat != null);
+    }
+
+    private boolean setupEconomy() {
+        RegisteredServiceProvider<Economy> economyProvider = Bukkit.getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
+        if (economyProvider != null)
+            economy = economyProvider.getProvider();
+
+        return (economy != null);
+    }
+	
+	public ChatFormatter() {
+		setupPermissions();
+		setupChat();
+		setupPermissions();
+		
+		if (Bukkit.getPluginManager().getPlugin("Multiverse-Core") != null) {
+			mvHook = new MultiverseHook();
+			Common.Log("&fHooked with Multiverse 2 (World Alias)!");
+		}
+
+		if (Bukkit.getPluginManager().getPlugin("Towny") != null) {
 			townyHook = new TownyHook();
+			Common.Log("&fTowny 0.88x integration enabled.");
+		}
 	}
 
 	@EventHandler(ignoreCancelled = true)
@@ -50,10 +88,10 @@ public class ChatFormatter implements Listener {
 
 		Player pl = e.getPlayer();
 		String world = pl.getWorld().getName();
-		PermissionUser user = PermissionsEx.getPermissionManager().getUser(pl);
-
-		if (user == null)
-			return;
+		//PermissionUser user = PermissionsEx.getPermissionManager().getUser(pl);
+		
+		//if (user == null)
+		//	return;
 
 		String messageFormat = Settings.Chat.Formatter.FORMAT;
 		boolean rangedMode = Settings.Chat.Formatter.RANGED_MODE;
@@ -68,7 +106,7 @@ public class ChatFormatter implements Listener {
 
 		messageFormat = formatColor(messageFormat);
 
-		theMessage = formatColor(theMessage, user, world);
+		theMessage = formatColor(theMessage, pl/*, user*/, world);
 
 		messageFormat = messageFormat.replace("%message", "%2$s").replace("%displayname", "%1$s");
 		messageFormat = replacePlayerVariables(pl, messageFormat);
@@ -86,44 +124,37 @@ public class ChatFormatter implements Listener {
 	}
 
 	private String replacePlayerVariables(Player pl, String format) {
-
-		PermissionUser user = PermissionsEx.getPermissionManager().getUser(pl);
 		String world = pl.getWorld().getName();
 
-		return format.replace("%prefix", formatColor(user.getPrefix(world))).replace("%suffix", formatColor(user.getSuffix(world))).replace("%world", getWorldAlias(world)).replace("%player", pl.getDisplayName()).replace("%group", user.getGroupsNames()[0]).replace("%town", getTown(pl)).replace("%nation", getNation(pl));
-	}
-
-	private String getNation(Player pl) {
-		if (townyHook == null)
-			return "";
-
-		return townyHook.getNation(pl);
-	}
-
-	private String getTown(Player pl) {
-		if (townyHook == null)
-			return "";
-
-		return townyHook.getTownName(pl);
+		return format.replace("%prefix", formatColor(chat.getPlayerPrefix(pl)))
+				.replace("%suffix", formatColor(chat.getPlayerSuffix(pl)))
+				
+				.replace("%world", getWorldAlias(world))
+				.replace("%health", formatHealth(pl) + ChatColor.RESET)
+				
+				.replace("%player", pl.getDisplayName())
+				//.replace("%group", pex.getGroupsNames()[0])
+				
+				.replace("%town", getTown(pl))
+				.replace("%nation", getNation(pl));
 	}
 
 	private List<Player> getLocalRecipients(Player pl, String message, double range) {
 		List<Player> recipients = new LinkedList<Player>();
-		PermissionManager manager = PermissionsEx.getPermissionManager();
 		try {
 			Location playerLocation = pl.getLocation();
 			double squaredDistance = Math.pow(range, 2.0D);
 
 			for (Player recipient : ChatControl.getOnlinePlayers())
 				if (recipient.getWorld().equals(pl.getWorld()))
-					if ((playerLocation.distanceSquared(recipient.getLocation()) <= squaredDistance) || (manager.has(pl, Permissions.Formatter.OVERRIDE_RANGED)))
+					if ((playerLocation.distanceSquared(recipient.getLocation()) <= squaredDistance) || (Common.hasPerm(pl, Permissions.Formatter.OVERRIDE_RANGED)))
 						recipients.add(recipient);
 
 			return recipients;
 		} catch (ArrayIndexOutOfBoundsException ex) {
-			Common.Debug("(ChatFormat-rangeChat) Got " + ex.getMessage() + ", trying backup.");
+			Common.Debug("(Range Chat) Got " + ex.getMessage() + ", trying backup.");
 
-			if (manager.has(pl, Permissions.Formatter.OVERRIDE_RANGED)) {
+			if (Common.hasPerm(pl, Permissions.Formatter.OVERRIDE_RANGED)) {
 				for (Player recipient : ChatControl.getOnlinePlayers()) {
 					if (recipient.getWorld().equals(pl.getWorld()))
 						recipients.add(recipient);
@@ -185,31 +216,41 @@ public class ChatFormatter implements Listener {
 		return str;
 	}
 
-	public String formatColor(String string, PermissionUser user, String worldName) {
+	public String formatColor(String string, Player pl, String worldName) {
 		if (string == null)
 			return "";
 
 		String str = string;
-		if (user.has(Permissions.Formatter.COLOR, worldName))
+		if (Common.hasPerm(pl, Permissions.Formatter.COLOR))
 			str = COLOR_REGEX.matcher(str).replaceAll("\u00A7$1");
 
-		if (user.has(Permissions.Formatter.MAGIC, worldName))
+		if (Common.hasPerm(pl, Permissions.Formatter.MAGIC))
 			str = MAGIC_REGEN.matcher(str).replaceAll("\u00A7$1");
 
-		if (user.has(Permissions.Formatter.BOLD, worldName))
+		if (Common.hasPerm(pl, Permissions.Formatter.BOLD))
 			str = BOLD_REGEX.matcher(str).replaceAll("\u00A7$1");
 
-		if (user.has(Permissions.Formatter.STRIKETHROUGH, worldName))
+		if (Common.hasPerm(pl, Permissions.Formatter.STRIKETHROUGH))
 			str = STRIKETHROUGH_REGEX.matcher(str).replaceAll("\u00A7$1");
 
-		if (user.has(Permissions.Formatter.UNDERLINE, worldName))
+		if (Common.hasPerm(pl, Permissions.Formatter.UNDERLINE))
 			str = UNDERLINE_REGEX.matcher(str).replaceAll("\u00A7$1");
 
-		if (user.has(Permissions.Formatter.ITALIC, worldName))
+		if (Common.hasPerm(pl, Permissions.Formatter.ITALIC))
 			str = ITALIC_REGEX.matcher(str).replaceAll("\u00A7$1");
 
 		str = RESET_REGEX.matcher(str).replaceAll("\u00A7$1");
 		return str;
+	}
+	
+	private String formatHealth(Player pl) {
+		int health = (int) ((Damageable)pl).getHealth();
+		
+		if (health > 10)
+			return ChatColor.DARK_GREEN + "" + health;
+		if (health > 5)
+			return ChatColor.GOLD + "" + health;
+		return ChatColor.RED + "" + health;
 	}
 
 	private String getWorldAlias(String world) {
@@ -217,5 +258,19 @@ public class ChatFormatter implements Listener {
 			return world;
 
 		return mvHook.getColoredAlias(world);
+	}
+	
+	private String getNation(Player pl) {
+		if (townyHook == null)
+			return "";
+
+		return townyHook.getNation(pl);
+	}
+
+	private String getTown(Player pl) {
+		if (townyHook == null)
+			return "";
+
+		return townyHook.getTownName(pl);
 	}
 }

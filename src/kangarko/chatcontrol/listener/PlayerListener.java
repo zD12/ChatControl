@@ -126,7 +126,7 @@ public class PlayerListener implements Listener {
 		// TODO swear check too?
 		String msg = e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3);
 
-		if (ChecksUtils.isAdvertisement(e.getPlayer(), msg.toLowerCase(), false, true))
+		if (ChecksUtils.advertisementCheck(e.getPlayer(), msg.toLowerCase(), false, true))
 			if (Settings.Signs.REWRITE_LINES_WHEN_AD_FOUND) {
 				String[] cenzura = Common.colorize(Settings.Signs.REWRITE_TEXT).split(":");
 				Validate.isTrue(cenzura.length <= 4, "A sign can only have 4 lines, but rewrite text has: " + cenzura.length);
