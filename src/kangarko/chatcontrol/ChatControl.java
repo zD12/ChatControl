@@ -5,6 +5,7 @@ import java.util.logging.Filter;
 import kangarko.chatcontrol.checks.UpdateCheck;
 import kangarko.chatcontrol.filter.ConsoleFilter;
 import kangarko.chatcontrol.filter.Log4jFilter;
+import kangarko.chatcontrol.hooks.AuthMeHook;
 import kangarko.chatcontrol.hooks.ProtocolLibHook;
 import kangarko.chatcontrol.listener.ChatListener;
 import kangarko.chatcontrol.listener.CommandListener;
@@ -41,6 +42,7 @@ public class ChatControl extends JavaPlugin {
 	private static SafeMap<String, PlayerCache> playerData = new SafeMap<>();
 
 	private Essentials ess;
+	private ChatFormatter formatter;
 
 	public void onEnable() {
 		instance = this;
@@ -80,9 +82,16 @@ public class ChatControl extends JavaPlugin {
 		for (Player pl : getOnlinePlayers())
 			createDataIfNotExistFor(pl.getName());
 
-		if (Bukkit.getPluginManager().getPlugin("Essentials") != null)
+		if (Bukkit.getPluginManager().getPlugin("Essentials") != null) {
 			ess = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
-
+			Common.Log("&fHooked with Essentials!");
+		}
+		
+		if (Bukkit.getPluginManager().getPlugin("AuthMe") != null) {
+			AuthMeHook.hooked = true;
+			Common.Log("&fHooked with AuthMe!");
+		}
+			
 		getServer().getPluginManager().registerEvents(new ChatListener(), this);
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 		getServer().getPluginManager().registerEvents(new CommandListener(), this);
@@ -118,9 +127,10 @@ public class ChatControl extends JavaPlugin {
 			} else {
 				if (getServer().getPluginManager().getPlugin("ChatManager") != null) {
 					Common.LogInFrame(true, "Detected ChatManager!", "Please copy settings from it", "to ChatControl and remove it then!");
-				} else
-					getServer().getPluginManager().registerEvents(new ChatFormatter(), this);
-				Common.Log("&fHooked with Vault (ChatFormatter)!");
+				} else {
+					formatter = new ChatFormatter();
+					getServer().getPluginManager().registerEvents(formatter, this);
+				}
 			}
 		}
 
@@ -167,6 +177,13 @@ public class ChatControl extends JavaPlugin {
 		return source;
 	}
 
+	public String formatPlayerVariables(Player pl, String message) {
+		if (formatter == null)
+			return message;
+		
+		return formatter.replacePlayerVariables(pl, message);
+	}
+	
 	public static void createDataIfNotExistFor(String pl) {
 		playerData.putIfAbsent(pl, new PlayerCache());
 	}

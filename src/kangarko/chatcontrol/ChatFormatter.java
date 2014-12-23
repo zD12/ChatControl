@@ -3,6 +3,7 @@ package kangarko.chatcontrol;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import kangarko.chatcontrol.hooks.MultiverseHook;
@@ -11,8 +12,6 @@ import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.utils.Common;
 import kangarko.chatcontrol.utils.Permissions;
 import net.milkbowl.vault.chat.Chat;
-import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -27,7 +26,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 public class ChatFormatter implements Listener {
-
+	
 	private final Pattern COLOR_REGEX = Pattern.compile("(?i)&([0-9A-F])");
 	private final Pattern MAGIC_REGEN = Pattern.compile("(?i)&([K])");
 	private final Pattern BOLD_REGEX = Pattern.compile("(?i)&([L])");
@@ -38,39 +37,15 @@ public class ChatFormatter implements Listener {
 
 	private MultiverseHook mvHook;
 	private TownyHook townyHook;
-
-	private Permission permission;
-	private Economy economy;
-	private Chat chat;
-
-    private boolean setupPermissions() {
-        RegisteredServiceProvider<Permission> permissionProvider = Bukkit.getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-        if (permissionProvider != null)
-            permission = permissionProvider.getProvider();
-
-        return (permission != null);
-    }
-
-    private boolean setupChat() {
-        RegisteredServiceProvider<Chat> chatProvider = Bukkit.getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
-        if (chatProvider != null)
-            chat = chatProvider.getProvider();
-   
-        return (chat != null);
-    }
-
-    private boolean setupEconomy() {
-        RegisteredServiceProvider<Economy> economyProvider = Bukkit.getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-        if (economyProvider != null)
-            economy = economyProvider.getProvider();
-
-        return (economy != null);
-    }
-	
+	private Chat chatHook;
+    
 	public ChatFormatter() {
-		setupPermissions();
-		setupChat();
-		setupPermissions();
+		RegisteredServiceProvider<Chat> chatProvider = Bukkit.getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
+		Objects.requireNonNull(chatProvider, "Unable to hook with Vault");
+
+		chatHook = chatProvider.getProvider();
+		
+		Common.Log("&fHooked with Vault (ChatFormatter)!");
 		
 		if (Bukkit.getPluginManager().getPlugin("Multiverse-Core") != null) {
 			mvHook = new MultiverseHook();
@@ -85,55 +60,49 @@ public class ChatFormatter implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onChatFormat(AsyncPlayerChatEvent e) {
-
 		Player pl = e.getPlayer();
 		String world = pl.getWorld().getName();
-		//PermissionUser user = PermissionsEx.getPermissionManager().getUser(pl);
-		
-		//if (user == null)
-		//	return;
 
-		String messageFormat = Settings.Chat.Formatter.FORMAT;
+		String msgFormat = Settings.Chat.Formatter.FORMAT;
 		boolean rangedMode = Settings.Chat.Formatter.RANGED_MODE;
-		String theMessage = e.getMessage();
+		String msg = e.getMessage();
 
-		if (rangedMode && theMessage.startsWith("!") && Common.hasPerm(pl, Permissions.Formatter.GLOBAL_CHAT)) {
+		if (rangedMode && msg.startsWith("!") && Common.hasPerm(pl, Permissions.Formatter.GLOBAL_CHAT)) {
 			rangedMode = false;
-			theMessage = theMessage.substring(1);
+			msg = msg.substring(1);
 
-			messageFormat = Settings.Chat.Formatter.GLOBAL_FORMAT;
+			msgFormat = Settings.Chat.Formatter.GLOBAL_FORMAT;
 		}
 
-		messageFormat = formatColor(messageFormat);
+		msgFormat = formatColor(msgFormat);
 
-		theMessage = formatColor(theMessage, pl/*, user*/, world);
+		msg = formatColor(msg, pl, world);
 
-		messageFormat = messageFormat.replace("%message", "%2$s").replace("%displayname", "%1$s");
-		messageFormat = replacePlayerVariables(pl, messageFormat);
-		messageFormat = replaceTime(messageFormat);
+		msgFormat = msgFormat.replace("%message", "%2$s").replace("%displayname", "%1$s");
+		msgFormat = replacePlayerVariables(pl, msgFormat);
+		msgFormat = replaceTime(msgFormat);
 
-		e.setFormat(messageFormat);
-		e.setMessage(theMessage);
+		e.setFormat(msgFormat);
+		e.setMessage(msg);
 
 		if (rangedMode) {
 			double range = Settings.Chat.Formatter.RANGE;
 
 			e.getRecipients().clear();
-			e.getRecipients().addAll(getLocalRecipients(pl, messageFormat, range));
+			e.getRecipients().addAll(getLocalRecipients(pl, msgFormat, range));
 		}
 	}
 
-	private String replacePlayerVariables(Player pl, String format) {
+	public String replacePlayerVariables(Player pl, String format) {
 		String world = pl.getWorld().getName();
 
-		return format.replace("%prefix", formatColor(chat.getPlayerPrefix(pl)))
-				.replace("%suffix", formatColor(chat.getPlayerSuffix(pl)))
+		return format.replace("%prefix", formatColor(chatHook.getPlayerPrefix(pl)))
+				.replace("%suffix", formatColor(chatHook.getPlayerSuffix(pl)))
 				
 				.replace("%world", getWorldAlias(world))
 				.replace("%health", formatHealth(pl) + ChatColor.RESET)
 				
 				.replace("%player", pl.getDisplayName())
-				//.replace("%group", pex.getGroupsNames()[0])
 				
 				.replace("%town", getTown(pl))
 				.replace("%nation", getNation(pl));
@@ -216,7 +185,7 @@ public class ChatFormatter implements Listener {
 		return str;
 	}
 
-	public String formatColor(String string, Player pl, String worldName) {
+	private String formatColor(String string, Player pl, String worldName) {
 		if (string == null)
 			return "";
 

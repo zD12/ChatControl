@@ -2,6 +2,7 @@ package kangarko.chatcontrol.listener;
 
 import kangarko.chatcontrol.ChatControl;
 import kangarko.chatcontrol.checks.ChecksUtils;
+import kangarko.chatcontrol.hooks.AuthMeHook;
 import kangarko.chatcontrol.model.Localization;
 import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.model.Variables;
@@ -64,7 +65,7 @@ public class PlayerListener implements Listener {
 				e.setJoinMessage(null);
 				break;
 			case CUSTOM:
-				e.setJoinMessage(Common.colorize(Settings.Messages.JOIN.getMessage().replace("%player", e.getPlayer().getName()).replace("%displayname", e.getPlayer().getDisplayName())));
+				e.setJoinMessage(replacePlayerVariables(Settings.Messages.JOIN.getMessage(), e.getPlayer()));
 				break;
 			default:
 				break;
@@ -83,7 +84,7 @@ public class PlayerListener implements Listener {
 				e.setQuitMessage(null);
 				break;
 			case CUSTOM:
-				e.setQuitMessage(Common.colorize(Settings.Messages.QUIT.getMessage().replace("%player", e.getPlayer().getName()).replace("%displayname", e.getPlayer().getDisplayName())));
+				e.setQuitMessage(replacePlayerVariables(Settings.Messages.QUIT.getMessage(), e.getPlayer()));
 				break;
 			default:
 				break;
@@ -102,7 +103,7 @@ public class PlayerListener implements Listener {
 				e.setLeaveMessage(null);
 				break;
 			case CUSTOM:
-				e.setLeaveMessage(Common.colorize(Settings.Messages.KICK.getMessage().replace("%player", e.getPlayer().getName()).replace("%displayname", e.getPlayer().getDisplayName())));
+				e.setLeaveMessage(replacePlayerVariables(Settings.Messages.KICK.getMessage(), e.getPlayer()));
 				break;
 			default:
 				break;
@@ -135,5 +136,15 @@ public class PlayerListener implements Listener {
 					e.setLine(i, cenzura[i]);
 			} else
 				e.setCancelled(true);
+	}
+	
+	public String replacePlayerVariables(String msg, Player pl) {
+		msg = msg.replace("%player", pl.getName())
+				.replace("%countrycode", AuthMeHook.getCountryCode(pl))
+				.replace("%countryname", AuthMeHook.getCountryName(pl));
+		
+		msg = ChatControl.instance().formatPlayerVariables(pl, msg);
+		
+		return Common.colorize(msg);
 	}
 }
