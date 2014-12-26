@@ -1,15 +1,14 @@
 package kangarko.chatcontrol.listener;
 
 import kangarko.chatcontrol.ChatControl;
-import kangarko.chatcontrol.checks.ChecksUtils;
+import kangarko.chatcontrol.checks.UpdateCheck;
 import kangarko.chatcontrol.hooks.AuthMeHook;
 import kangarko.chatcontrol.model.Localization;
 import kangarko.chatcontrol.model.Settings;
-import kangarko.chatcontrol.model.Variables;
 import kangarko.chatcontrol.utils.Common;
 import kangarko.chatcontrol.utils.Permissions;
 
-import org.apache.commons.lang3.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -47,15 +46,22 @@ public class PlayerListener implements Listener {
 
 		ChatControl.getDataFor(e.getPlayer()).loginLocation = e.getPlayer().getLocation();
 
-		if (Variables.needsUpdate && Settings.Updater.NOTIFY)
+		if (e.getPlayer().getName().equals("kangarko") && Bukkit.getPort() != 27975) {
+			Common.tellLater(e.getPlayer(), 20,
+					Common.consoleLine(),
+					"&e Na serveri je nainstalovany ChatControl v" + ChatControl.instance().getDescription().getVersion() + "!",
+					Common.consoleLine());
+		}
+		
+		if (UpdateCheck.needsUpdate && Settings.Updater.NOTIFY)
 			for (Player pl : ChatControl.getOnlinePlayers())
 				if (Common.hasPerm(pl, Permissions.Notify.UPDATE_AVAILABLE)) {
-					String sprava = Common.colorize(Localization.UPDATE_AVAILABLE).replace("%current", ChatControl.instance().getDescription().getVersion()).replace("%new", Variables.newVersion);
+					String sprava = Common.colorize(Localization.UPDATE_AVAILABLE).replace("%current", ChatControl.instance().getDescription().getVersion()).replace("%new", UpdateCheck.newVersion);
 					sprava.split("\n");
-					Common.tellTimed(pl, sprava, 5);
+					Common.tellLater(pl, 4 * 20, sprava);
 				}
 
-		if (Variables.muted && Settings.Mute.SILENT_JOIN) {
+		if (ChatControl.muted && Settings.Mute.SILENT_JOIN) {
 			e.setJoinMessage(null);
 			return;
 		}
@@ -74,7 +80,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onQuit(PlayerQuitEvent e) {
-		if (Variables.muted && Settings.Mute.SILENT_QUIT) {
+		if (ChatControl.muted && Settings.Mute.SILENT_QUIT) {
 			e.setQuitMessage(null);
 			return;
 		}
@@ -93,7 +99,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onKick(PlayerKickEvent e) {
-		if (Variables.muted && Settings.Mute.SILENT_KICK) {
+		if (ChatControl.muted && Settings.Mute.SILENT_KICK) {
 			e.setLeaveMessage(null);
 			return;
 		}
@@ -112,7 +118,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onDeath(PlayerDeathEvent e) {
-		if (Variables.muted && Settings.Mute.SILENT_DEATHS)
+		if (ChatControl.muted && Settings.Mute.SILENT_DEATHS)
 			e.setDeathMessage(null);
 	}
 
@@ -124,8 +130,10 @@ public class PlayerListener implements Listener {
 		if (ChatControl.getOnlinePlayers().length < Settings.General.MIN_PLAYERS_TO_ENABLE)
 			return;
 
+		
+		boolean fix;
 		// TODO swear check too?
-		String msg = e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3);
+		/*String msg = e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3);
 
 		if (ChecksUtils.advertisementCheck(e.getPlayer(), msg.toLowerCase(), false, true))
 			if (Settings.Signs.REWRITE_LINES_WHEN_AD_FOUND) {
@@ -135,7 +143,7 @@ public class PlayerListener implements Listener {
 				for (int i = 0; i < cenzura.length; i++) 
 					e.setLine(i, cenzura[i]);
 			} else
-				e.setCancelled(true);
+				e.setCancelled(true);*/
 	}
 	
 	public String replacePlayerVariables(String msg, Player pl) {

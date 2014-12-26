@@ -8,7 +8,7 @@ import java.util.regex.PatternSyntaxException;
 import kangarko.chatcontrol.ChatControl;
 import kangarko.chatcontrol.model.Localization;
 import kangarko.chatcontrol.model.Settings;
-import kangarko.chatcontrol.model.SettingsChat;
+import kangarko.chatcontrol.model.SettingsRemap;
 import kangarko.chatcontrol.utils.Writer.FileType;
 
 import org.apache.commons.lang.StringUtils;
@@ -24,6 +24,11 @@ import org.fusesource.jansi.Ansi.Attribute;
 public class Common {
 
 	private static final ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+	private static String INTERNAL_PREFIX = "";
+
+	public static void addLogPrefix() {
+		INTERNAL_PREFIX = "[ChatControl] ";
+	}
 
 	/**
 	 * Basic, colorizes msg and handles %prefix.
@@ -49,13 +54,13 @@ public class Common {
 		tellColored(pl, msg.replace("%player", plReplacement));
 	}
 
-	public static void tellTimed(CommandSender pl, String str, int delay_in_seconds) {
+	public static void tellLater(CommandSender pl, int delayTicks, String... msgs) {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				tell(pl, str);
+				tell(pl, msgs);
 			}
-		}.runTaskLater(ChatControl.instance(), delay_in_seconds * 20);
+		}.runTaskLater(ChatControl.instance(), delayTicks);
 	}
 
 	public static void broadcast(String message) {
@@ -76,16 +81,17 @@ public class Common {
 			return false;
 		if (sender.isOp() && Settings.General.OP_HAS_PERMISSIONS)
 			return true;
-		if (sender.hasPermission(str))
-			return true;
-		return false;
+
+		return sender.hasPermission(str);
 	}
 
 	public static void customAction(Player pl, String action, String msg) {
-		if(action.isEmpty() || action.equalsIgnoreCase("none"))
+		if (action.isEmpty() || action.equalsIgnoreCase("none"))
 			return;
 
 		new BukkitRunnable() {
+
+			@Override
 			public void run() {
 				Bukkit.dispatchCommand(Bukkit.getServer().getConsoleSender(), colorize(action.replace("%player", pl.getName()).replace("%message", msg)));
 			}
@@ -131,13 +137,13 @@ public class Common {
 	public static String replaceCharacters(Player pl, String msg) {
 		String finalMsg = msg;
 
-		if (!SettingsChat.REPLACE_UTF_MAP.isEmpty())
-			for (String character : SettingsChat.REPLACE_UTF_MAP.keySet())
-				finalMsg = finalMsg.replace(colorize(character), SettingsChat.REPLACE_UTF_MAP.get(character));
+		if (!SettingsRemap.REPLACE_UTF_MAP.isEmpty())
+			for (String character : SettingsRemap.REPLACE_UTF_MAP.keySet())
+				finalMsg = finalMsg.replace(colorize(character), SettingsRemap.REPLACE_UTF_MAP.get(character));
 
-		if (!SettingsChat.REPLACE_REGEX_MAP.isEmpty())
-			for (String character : SettingsChat.REPLACE_REGEX_MAP.keySet())
-				finalMsg = finalMsg.replaceAll(colorize(character), SettingsChat.REPLACE_REGEX_MAP.get(character));
+		if (!SettingsRemap.REPLACE_REGEX_MAP.isEmpty())
+			for (String character : SettingsRemap.REPLACE_REGEX_MAP.keySet())
+				finalMsg = finalMsg.replaceAll(colorize(character), SettingsRemap.REPLACE_REGEX_MAP.get(character));
 
 		return colorize(finalMsg);
 	}
@@ -155,32 +161,36 @@ public class Common {
 	// -------------------------------------------------------------------
 
 	public static void Log(String str) {
-		console.sendMessage("[ChatControl] " + colorize(str));
+		console.sendMessage(colorize(INTERNAL_PREFIX + str));
 	}
 
 	public static void Warn(String str) {
-		Bukkit.getLogger().log(Level.WARNING, "[ChatControl] " + colorize(str));
+		Bukkit.getLogger().log(Level.WARNING, colorize(INTERNAL_PREFIX + str));
 	}
 
 	public static void Debug(String str) {
 		if (Settings.General.DEBUG)
-			console.sendMessage("[ChatControl Debug] " + colorize(str));
+			console.sendMessage(colorize(INTERNAL_PREFIX + "[Debug] " + str));
 	}
 
 	public static void Error(String str, Throwable ex) {
 		throw new Error("Error in ChatControl v" + ChatControl.instance().getDescription().getVersion() + ": " + colorize(str), ex);
 	}
-	
+
+	public static void Error(String str) {
+		throw new Error("Error in ChatControl v" + ChatControl.instance().getDescription().getVersion() + ": " + colorize(str));
+	}
+
 	public static void LogInFrame(boolean disable, String... messages) {
 		Log(consoleLine());
 		for (String msg : messages)
 			Log(" &c" + msg);
-		
+
 		if (disable) {
 			Bukkit.getPluginManager().disablePlugin(ChatControl.instance());
 			Log(" &cPlugin is now disabled.");
 		}
-			
+
 		Log(consoleLine());
 	}
 
@@ -200,23 +210,14 @@ public class Common {
 
 		if (Settings.AntiSpam.STRIP_SPECIAL_CHARS)
 			str = str.replaceAll("[^a-zA-Z0-9\\s]", ""); // strip spec. characters EXCEPT spaces
-		
+
 		if (Settings.AntiSpam.STRIP_DUPLICATE_CHARS) {
 			str = str.replaceAll("(.)(?=\\1\\1+)", "");
 			str = str.replaceAll("(..)(?=\\1\\1+)", "");
 			str = str.replaceAll("(...)(?=\\1\\1+)", "");
 		}
-		
-		return str.toLowerCase();
-	}
 
-	public static String prepareForSwearCheck(String str) {
-		str = str.toLowerCase();
-		str = str.replaceAll("[^a-zA-Z\\d\\s:]", ""); //strips special characters expect spaces
-		str = str.replaceAll("(.)(?=\\1\\1+)", ""); // duplicate strip
-		str = str.replaceAll("(..)(?=\\1\\1+)", ""); // duplicate strip
-		str = str.replaceAll("(...)(?=\\1\\1+)", ""); // duplicate strip
-		return str;
+		return str.toLowerCase();
 	}
 
 	public static String stripDuplicate(String str) {
@@ -297,16 +298,15 @@ public class Common {
 
 	public static boolean regExMatch(String regex, String plain_msg) {
 		Pattern pattern = null;
-		TimedCharSequence timedMsg = new TimedCharSequence(plain_msg, Settings.General.REGEX_TIMEOUT);
+		TimedCharSequence timedMsg = new TimedCharSequence(plain_msg.toLowerCase(), Settings.General.REGEX_TIMEOUT);
 
-		Debug("Checking " + plain_msg + " against " + regex);
+		Debug("Checking " + timedMsg + " against " + regex);
 
 		try {
-			pattern = Pattern.compile(regex);
+			pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);
 		} catch (PatternSyntaxException ex) {
-			Log("&cInvalid regex: " + regex);
-			Log("&eUse online services (like regex101.com) for fixing errors");
 			ex.printStackTrace();
+			LogInFrame(false, "Malformed regex: \'" + regex + "\'", "Use online services (like &fregex101.com&f) for fixing errors");
 			return false;
 		}
 
@@ -315,29 +315,59 @@ public class Common {
 		try {
 			return matcher.find();
 		} catch (RuntimeException ex) {
-			Writer.zapisatDo(FileType.ERROR_LOG, null, "Regex check timed out (bad regex?) (plugin ver. " + ChatControl.instance().getDescription().getVersion() + ")! \nString checked: " + timedMsg + "\nRegex: " + pattern.pattern());
-			Error("RegEx \"" + pattern.pattern() + "\" took too long to check \"" + timedMsg + "\"! (malformed regex?)", ex);
-			return false;
+			Writer.zapisatDo(FileType.ERROR_LOG, null, "Regex check timed out (bad regex?) (plugin ver. " + ChatControl.instance().getDescription().getVersion() + ")! \nString checked: " + timedMsg + "\nRegex: " + regex + "");
+			throw new RuntimeException("RegEx checking " + ex.getMessage());
 		}
 	}
 
-	public static void swearActions(String theMessage, Player swearer) {
-		if (Settings.AntiSwear.ALERT_STAFF)
-			for (Player pl : ChatControl.getOnlinePlayers())
-				if (hasPerm(pl, Permissions.Notify.SWEAR))
-					tell(pl, Localization.ANTISWEAR_STAFF_ALERT.replace("%message", theMessage), swearer.getName());
+	/**
+	 * Calculates the similarity (a percentage within 0% and 100%) between two strings.
+	 */
+	public static int similarity(String s1, String s2) {
+		String longer = s1, shorter = s2;
 
-		if (Settings.AntiSwear.WARN_PLAYER) {
-			new BukkitRunnable() {
-
-				@Override
-				public void run() {
-					tell(swearer, Localization.ANTISWEAR_PLAYER_WARN);
-				}
-			}.runTaskLater(ChatControl.instance(), 1);
+		if (s1.length() < s2.length()) { // longer should always have greater length
+			longer = s2;
+			shorter = s1;
 		}
 
-		customAction(swearer, Settings.AntiSwear.DISPATCH_COMMAND, theMessage);
+		int longerLength = longer.length();
+
+		if (longerLength == 0)
+			return 100; /* both strings are zero length */
+
+		double result = (longerLength - editDistance(longer, shorter)) / (double) longerLength;
+
+		return (int) (result * 100);
+
+	}
+
+	// Example implementation of the Levenshtein Edit Distance
+	// See http://rosettacode.org/wiki/Levenshtein_distance#Java
+	private static int editDistance(String s1, String s2) {
+		s1 = s1.toLowerCase();
+		s2 = s2.toLowerCase();
+
+		int[] costs = new int[s2.length() + 1];
+		for (int i = 0; i <= s1.length(); i++) {
+			int lastValue = i;
+			for (int j = 0; j <= s2.length(); j++) {
+				if (i == 0)
+					costs[j] = j;
+				else {
+					if (j > 0) {
+						int newValue = costs[j - 1];
+						if (s1.charAt(i - 1) != s2.charAt(j - 1))
+							newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+						costs[j - 1] = lastValue;
+						lastValue = newValue;
+					}
+				}
+			}
+			if (i > 0)
+				costs[s2.length()] = lastValue;
+		}
+		return costs[s2.length()];
 	}
 	
 	public static String consoleLine() {

@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 
 import kangarko.chatcontrol.ChatControl;
 import kangarko.chatcontrol.utils.Common;
+import kangarko.chatcontrol.utils.IllegalLocaleException;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -22,8 +23,9 @@ public class Localization extends ConfHelper {
 				+ "If you want to customize the localization, simply\n"
 				+ "copy this file to plugin folder and start editing.\n"
 				+ "It will still be updated with new values in future releases.";
-		// try if the user has modified version of localization inside his plugin folder		
-		file = new File(ChatControl.instance().getDataFolder(), Settings.General.LOCALIZATION);
+		
+		// try if the user has his modified version of localization inside the plugin folder		
+		file = new File(ChatControl.instance().getDataFolder(), "localization/" + Settings.General.LOCALIZATION);
 
 		if (file.exists())
 			cfg = YamlConfiguration.loadConfiguration(file);
@@ -34,7 +36,7 @@ public class Localization extends ConfHelper {
 			} catch (NoSuchMethodError ex) {
 				cfg = YamlConfiguration.loadConfiguration(Localization.class.getResourceAsStream("/localization/" + Settings.General.LOCALIZATION));
 			} catch (NullPointerException ex) {
-				throw new IllegalStateException("Unknown locale: " + Settings.General.LOCALIZATION_SUFFIX);
+				throw new IllegalLocaleException();
 			}
 		}
 

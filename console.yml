@@ -1,8 +1,14 @@
-# --------------------------------------------------------
+# ---------------------------------------------------------
 # This is the Console configuration file for ChatControl
 # Mainly provides support for hiding and/or replacing 
 # messages from your server console.
-# --------------------------------------------------------
+#
+# It supports unicode characters when saved in UTF-8
+# encoding. Tested on Notepad++
+# WordPad or Notepad on Windows are known to cause issues!
+#
+# To make a dot (.) on the left side, simply type <DOT>
+# ---------------------------------------------------------
 
 Filter:
   Enabled: true

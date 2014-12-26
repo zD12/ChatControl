@@ -1,10 +1,9 @@
 package kangarko.chatcontrol.listener;
 
 import kangarko.chatcontrol.ChatControl;
-import kangarko.chatcontrol.checks.ChecksUtils;
+import kangarko.chatcontrol.PlayerCache;
 import kangarko.chatcontrol.model.Localization;
 import kangarko.chatcontrol.model.Settings;
-import kangarko.chatcontrol.model.Variables;
 import kangarko.chatcontrol.utils.Common;
 import kangarko.chatcontrol.utils.Permissions;
 import kangarko.chatcontrol.utils.Writer;
@@ -25,10 +24,11 @@ public class ChatListener implements Listener {
 			return;
 
 		Player pl = e.getPlayer();
-		String rawMessage = e.getMessage(); // TODO careful
+		PlayerCache playerData = ChatControl.getDataFor(pl);
+		String rawMessage = e.getMessage();
 
 		if (!Common.hasPerm(pl, Permissions.Bypasses.GLOBAL_PERM)) {
-			if (Settings.AntiSpam.BLOCK_CHAT_UNTIL_MOVED && pl.getLocation().equals(ChatControl.getDataFor(pl).loginLocation)) {
+			if (Settings.AntiSpam.BLOCK_CHAT_UNTIL_MOVED && pl.getLocation().equals(playerData.loginLocation)) {
 				if (!Common.hasPerm(pl, Permissions.Bypasses.MOVE)) {
 					Common.tell(pl, Localization.CANNOT_CHAT_UNTIL_MOVED);
 					e.setCancelled(true);
@@ -36,44 +36,44 @@ public class ChatListener implements Listener {
 				}
 			}
 
-			if (Variables.muted && !Common.hasPerm(pl, Permissions.Bypasses.MUTE)) {
+			if (ChatControl.muted && !Common.hasPerm(pl, Permissions.Bypasses.MUTE)) {
 				Common.tell(pl, Localization.CANNOT_CHAT_WHILE_MUTED);
 				e.setCancelled(true);
 				return;
 			}
 
 			long cas = System.currentTimeMillis() / 1000L;
-			if ((cas - ChatControl.getDataFor(pl).lastMessageTime) < Settings.AntiSpam.Messages.DELAY) {
+			if ((cas - playerData.lastMessageTime) < Settings.AntiSpam.Messages.DELAY) {
 				if (!Common.hasPerm(pl, Permissions.Bypasses.DELAY_CHAT)) {
-					long time = Settings.AntiSpam.Messages.DELAY - (cas - ChatControl.getDataFor(pl).lastMessageTime);
-					
+					long time = Settings.AntiSpam.Messages.DELAY - (cas - playerData.lastMessageTime);
+
 					Common.tell(pl, Localization.CHAT_WAIT_MESSAGE.replace("%time", String.valueOf(time)).replace("%seconds", Localization.Parts.SECONDS.formatNumbers(time)));
 					e.setCancelled(true);
 					return;
 				}
 			}
-			ChatControl.getDataFor(pl).lastMessageTime = cas;
-		
+			playerData.lastMessageTime = cas;
+
 			if (Settings.AntiSpam.Messages.SIMILARITY > 0 && Settings.AntiSpam.Messages.SIMILARITY < 100) {
 				String strippedMsg = Common.prepareForSimilarityCheck(rawMessage);
 
-				if (ChecksUtils.similarity(strippedMsg, ChatControl.getDataFor(pl).lastMessage) > Settings.AntiSpam.Messages.SIMILARITY) {
+				if (Common.similarity(strippedMsg, playerData.lastMessage) > Settings.AntiSpam.Messages.SIMILARITY) {
 					if (!Common.hasPerm(pl, Permissions.Bypasses.SIMILAR_CHAT)) {
 						Common.tell(pl, Localization.ANTISPAM_SIMILAR_MESSAGE);
 						e.setCancelled(true);
 						return;
 					}
 				}
-				ChatControl.getDataFor(pl).lastMessage = strippedMsg;
+				playerData.lastMessage = strippedMsg;
 			}
 
 			if (!Common.hasPerm(pl, Permissions.Bypasses.CHARACTER_REPLACE))
 				rawMessage = Common.replaceCharacters(pl, rawMessage);
 
-			if (Settings.AntiAd.ENABLED && !Common.hasPerm(pl, Permissions.Bypasses.ADVERTISING)) {
-				if (ChecksUtils.advertisementCheck(pl, rawMessage.toLowerCase(), false, false))
-					e.setCancelled(true);
-			}
+			rawMessage = ChatControl.instance().chatCeaser.handleRules(e, pl, rawMessage);
+			
+			if (e.isCancelled()) // cancelled from chat ceaser
+				return;
 
 			if (Settings.AntiCaps.ENABLED && !Common.hasPerm(pl, Permissions.Bypasses.CAPS)) {
 				if (rawMessage.length() >= Settings.AntiCaps.MIN_MESSAGE_LENGTH) {
@@ -81,19 +81,20 @@ public class ChatListener implements Listener {
 					int[] newMessage = Common.checkCaps(rawMessage);
 					if ((Common.percentageCaps(newMessage) >= Settings.AntiCaps.MIN_CAPS_PERCENTAGE) || (Common.checkCapsInRow(newMessage) >= Settings.AntiCaps.MIN_CAPS_IN_A_ROW)) {
 
-						String[] parts = e.getMessage().split(" ");
+						String[] parts = rawMessage.split(" ");
 						boolean capsAllowed = false;
+						boolean whitelisted = false;
+
 						for (int i = 0; i < parts.length; i++) {
-							boolean isOnWhitelist = false;
 							for (String whitelist : Settings.AntiCaps.WHITELIST) {
 								if (whitelist.equalsIgnoreCase(parts[i])) {
-									isOnWhitelist = true;
+									whitelisted = true;
 									capsAllowed = true;
 									break;
 								}
 							}
 
-							if (!isOnWhitelist) {
+							if (!whitelisted) {
 								if (!capsAllowed) {
 									char firstChar = parts[i].charAt(0);
 									parts[i] = (firstChar + parts[i].toLowerCase().substring(1));
@@ -110,20 +111,6 @@ public class ChatListener implements Listener {
 						if (Settings.AntiCaps.WARN_PLAYER)
 							Common.tell(pl, Localization.ANTISPAM_CAPS_MESSAGE);
 					}
-				}
-			}
-
-			if (Settings.AntiSwear.ENABLED && !Common.hasPerm(pl, Permissions.Bypasses.SWEARING)) {
-
-				String censoredMessage = ChecksUtils.swearCheck(pl, rawMessage, Common.prepareForSwearCheck(rawMessage));
-
-				if (censoredMessage != rawMessage) {
-					if (Settings.AntiSwear.BLOCK_MESSAGE) {
-						e.setCancelled(true);
-						return;
-					}
-					if (Settings.AntiSwear.REPLACE_MESSAGE)
-						rawMessage = censoredMessage;
 				}
 			}
 		}

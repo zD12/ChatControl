@@ -15,24 +15,25 @@ import kangarko.chatcontrol.utils.Common;
 public class Settings extends ConfHelper {
 
 	public static void load() throws Exception {
-		HEADER = "This is the main configuration for ChatControl plugin\n"
-				+ "\n"
-				+ "For general support and updates visit:\n"
-				+ "http://www.spigotmc.org/resources/chatcontrol.271\n"
-				+ "\n"
-				+ "For configuration help visit:\n"
-				+ "https://github.com/kangarko/ChatControl/blob/master/config.yml\n"
-				+ "\n"
-				+ "SLOVAK DEVELOPER FTW\n"
-				+ "Supports color codes with the '&' character.\n";		
-		FILE_NAME = "Settings.yml";
-		file = new File(ChatControl.instance().getDataFolder(), FILE_NAME);
+		HEADER = "---------------------------------------------------------\n" +
+				"This is the main configuration for ChatControl plugin\n" +
+				"\n" +
+				"For general support and updates visit:\n" +
+				"http://www.spigotmc.org/resources/chatcontrol.271\n" +
+				"\n" +
+				"For configuration help visit:\n" +
+				"https://github.com/kangarko/ChatControl/blob/master/config.yml\n" +
+				"\n" +
+				"SLOVAK DEVELOPER FTW\n" +
+				"Supports color codes with the '&' character.\n" +
+				"---------------------------------------------------------\n";		
+		FILE_NAME = "settings.yml";
 
 		File oldFile = new File(ChatControl.instance().getDataFolder(), "config.yml");
 		if (oldFile.exists()) {
-			Common.Log("&fRenaming old config to old-config.yml, as it is not compatible with versions 5.x!");
+			Common.Log("&fRenaming old config to old_config.yml, as it is not compatible with versions 5.x!");
 
-			oldFile.renameTo(new File(ChatControl.instance().getDataFolder(), "old-config.yml"));
+			oldFile.renameTo(new File(ChatControl.instance().getDataFolder(), "old_config.yml"));
 			oldFile.delete();
 		}
 
@@ -42,11 +43,9 @@ public class Settings extends ConfHelper {
 
 	public static class Packets {
 		public static boolean DISABLE_TAB_COMPLETE;
-		//public static boolean REMAP_MESSAGES; // TODO;
-		
+
 		private static void init() {
 			pathPrefix("Packets");
-			//REMAP_MESSAGES = getBoolean("Remap_Messages", false);
 			DISABLE_TAB_COMPLETE = getBoolean("Disable_Tab_Complete", false);
 		}
 	}
@@ -73,10 +72,10 @@ public class Settings extends ConfHelper {
 		public static class Messages {
 			public static int DELAY;
 			public static int SIMILARITY;
-			
+
 			private static void init() {
 				pathPrefix("Anti_Spam.Chat");
-				
+
 				DELAY = getInteger("Delay_Between_Messages", 1);
 				SIMILARITY = getInteger("Block_Similar_Over", 80);
 			}
@@ -87,10 +86,10 @@ public class Settings extends ConfHelper {
 			public static HashSet<String> WHITELIST_SIMILARITY;
 			public static int DELAY;
 			public static int SIMILARITY;
-			
+
 			private static void init() {
 				pathPrefix("Anti_Spam.Commands");
-				
+
 				DELAY = getInteger("Delay_Between_Commands", 2);
 				SIMILARITY = getInteger("Block_Similar_Over", 80);
 				WHITELIST_DELAY = new HashSet<>(getStringList("Whitelist_Delay", Arrays.asList("tell", "pm", "t", "w", "r")));
@@ -101,10 +100,10 @@ public class Settings extends ConfHelper {
 		public static boolean BLOCK_CHAT_UNTIL_MOVED;
 		public static boolean STRIP_SPECIAL_CHARS;
 		public static boolean STRIP_DUPLICATE_CHARS;
-		
+
 		private static void init() {
 			pathPrefix("Anti_Spam");
-			
+
 			BLOCK_CHAT_UNTIL_MOVED = getBoolean("Block_Chat_Until_Moved", true);
 			STRIP_SPECIAL_CHARS = getBoolean("Similarity_Check.Ignore_Special_Characters", true);
 			STRIP_DUPLICATE_CHARS = getBoolean("Similarity_Check.Ignore_Duplicate_Characters", false);
@@ -144,7 +143,7 @@ public class Settings extends ConfHelper {
 				INSERT_DOT_MSG_LENGTH = getInteger("Min_Message_Length", 5);
 
 				pathPrefix("Chat.Grammar.Capitalize");
-				
+
 				CAPITALIZE = getBoolean("Enabled", true);
 				CAPITALIYE_MSG_LENGTH = getInteger("Min_Message_Length", 5);
 			}
@@ -152,9 +151,8 @@ public class Settings extends ConfHelper {
 	}
 
 	public static class Commands {
-
-		public static HashSet<String> WHITELIST_ADS; // TODO introduce custom filters
-		public static HashSet<String> WHITELIST_SWEAR; // TODO introduce custom filters
+		public static HashSet<String> WHITELIST_ADS;
+		public static HashSet<String> WHITELIST_SWEAR;
 
 
 		private static void init() {
@@ -166,13 +164,13 @@ public class Settings extends ConfHelper {
 
 	public static class Messages {
 		public static ChatMessage JOIN, QUIT, KICK;
-		
+
 		public static boolean TIMED_ENABLED;
 		public static boolean TIMED_RANDOM_ORDER;
 		public static boolean TIMED_RANDOM_NO_REPEAT;
 		public static String TIMED_PREFIX;
 		public static int TIMED_DELAY_SECONDS;
-		
+
 		public static HashMap<String, List<String>> TIMED;
 
 		private static void init() {
@@ -181,31 +179,30 @@ public class Settings extends ConfHelper {
 			JOIN = getMessage("Join", new ChatMessage(Type.DEFAULT));
 			QUIT = getMessage("Quit", new ChatMessage(Type.DEFAULT));
 			KICK = getMessage("Kick", new ChatMessage(Type.DEFAULT));
-			
+
 			pathPrefix("Messages.Timed");
 			TIMED_ENABLED = getBoolean("Enabled", true);
 			TIMED_RANDOM_ORDER = getBoolean("Random_Order", false);
 			TIMED_RANDOM_NO_REPEAT = getBoolean("Random_No_Repeat", true);
 			TIMED_PREFIX = getString("Prefix", "&8[&2Tip&8]&2");
 			TIMED_DELAY_SECONDS = getInteger("Delay_Seconds", 180);
-			
-			
+
 			HashMap<String, List<String>> timedDef = new HashMap<>();
 			timedDef.put("global", Arrays.asList("Hey, %player, did you know that this server is running ChatControl?", "Visit developer website: &awww.rushmine.6f.sk"));
 			timedDef.put("hardcore", Arrays.asList("Grief is not permitted what-so-ever and every griefer will be banned.", "Can you survive the night on hardcore world?"));
 			timedDef.put("creative", Arrays.asList("excludeGlobal", "Welcome on Creative world. Enjoy your gamemode :)"));
-			timedDef.put("ignored-world", Arrays.asList(""));
-			
+			timedDef.put("ignored-world", Arrays.asList("excludeGlobal"));
+
 			TIMED = getValuesAndList("Message_List", timedDef);
-			
+
 			List<String> global = new ArrayList<>(TIMED.get("global"));
-				
+
 			for (String world : TIMED.keySet()) {
 				List<String> worldMessages = TIMED.get(world);
 
 				if (worldMessages.size() == 0 || world.equalsIgnoreCase("global"))
 					continue;
-				
+
 				if (worldMessages.get(0).equalsIgnoreCase("excludeGlobal")) {
 					worldMessages.remove(0);
 					continue;
@@ -247,75 +244,54 @@ public class Settings extends ConfHelper {
 		}
 	}
 
-	public static class AntiAd {
-		public static boolean ENABLED;
-		public static boolean ENABLED_IN_COMMANDS;
+	public static class Handlers {
+		public static class Ad {
+			public static boolean ENABLED_IN_COMMANDS;
 
-		public static boolean ALERT_STAFF;
-		public static boolean ALERT_CONSOLE;
-		public static boolean BROADCAST_BLOCK;
-		public static boolean WRITE_TO_FILE;
-		public static String DISPATCH_COMMAND;
+			public static boolean ALERT_STAFF;
+			public static boolean ALERT_CONSOLE;
+			public static boolean WARN_PLAYER;
+			public static boolean BROADCAST_BLOCK;
+			public static boolean WRITE_TO_FILE;
+			public static String DISPATCH_COMMAND;
 
-		public static String PREPROCESS_STRIP;
-		public static String REGEX_IP; // TODO Put it to the trash, where it belongs (and make custom filters)
-		public static String REGEX_DOMAINS; // TODO Put it to the trash, where it belongs (and make custom filters)
-		public static String REGEX_CUSTOM; // TODO Put it to the trash, where it belongs (and make custom filters)
+			private static void init() {
+				pathPrefix("Handlers.Ad");
 
-		public static List<String> WHITELIST_IP;
-		public static List<String> WHITELIST_DOMAINS;
+				ENABLED_IN_COMMANDS = getBoolean("Enabled_In_Commands", true);
 
-		private static void init() {
-			pathPrefix("Anti_Ad");
-
-			ENABLED = getBoolean("Enabled", true);
-			ENABLED_IN_COMMANDS = getBoolean("Enabled_In_Commands", true);
-
-			ALERT_STAFF = getBoolean("Alert_Staff", true);
-			ALERT_CONSOLE = getBoolean("Alert_Console", true);
-			BROADCAST_BLOCK = getBoolean("Broadcast", false);
-			WRITE_TO_FILE = getBoolean("Write_To_File", true);
-			DISPATCH_COMMAND = getString("Dispatch_Command", "none");
-
-			PREPROCESS_STRIP = getString("Filter_Preprocess", "[\\(\\[\\]\\)]");
-			REGEX_IP = getString("Ip_Filter", "\\b[0-9]{1,3}(\\.|dot|\\(dot\\)|-|;|:|,|(\\W|\\d|_)*\\s)+[0-9]{1,3}(\\.|dot|\\(dot\\)|-|;|:|,|(\\W|\\d|_)*\\s)+[0-9]{1,3}(\\.|dot|\\(dot\\)|-|;|:|,|(\\W|\\d|_)*\\s)+[0-9]{1,3}\\b");
-			REGEX_DOMAINS = getString("Domain_Filter", "[a-zA-Z0-9\\-\\.]+\\s?(\\.|dot|\\(dot\\)|-|;|:|,)\\s?(com|org|net|cz|co|uk|sk|biz|mobi|xxx|eu)\\b");
-			REGEX_CUSTOM = getString("Custom_Filter", "none");
-
-			WHITELIST_IP = getStringList("Whitelist_IPs", Arrays.asList("127.0.0.1", "Your.Server.IP"));
-			WHITELIST_DOMAINS = getStringList("Whitelist_Domains", Arrays.asList("google.com", "youtube.com", "your-server.domain"));
+				ALERT_STAFF = getBoolean("Alert_Staff", true);
+				ALERT_CONSOLE = getBoolean("Alert_Console", true);
+				WARN_PLAYER = getBoolean("Warn_Player", true);
+				BROADCAST_BLOCK = getBoolean("Broadcast", false);
+				WRITE_TO_FILE = getBoolean("Write_To_File", true);
+				DISPATCH_COMMAND = getString("Dispatch_Command", "none");
+			}
 		}
-	}
 
-	public static class AntiSwear {
 
-		public static boolean ENABLED;
-		public static boolean ENABLED_IN_COMMANDS;
-		public static boolean ALERT_STAFF;
-		public static boolean WARN_PLAYER;
-		public static String DISPATCH_COMMAND;
+		public static class Swear {
 
-		public static String REPLACEMENT;
-		public static boolean BLOCK_MESSAGE;
-		public static boolean REPLACE_MESSAGE;
-		@Deprecated
-		public static List<String> WORD_LIST; // TODO Put it to the trash, where it belongs (and make custom filters)
+			public static boolean ENABLED_IN_COMMANDS;
+			public static boolean ALERT_STAFF;
+			public static boolean WARN_PLAYER;
+			public static String DISPATCH_COMMAND;
 
-		private static void init() {
-			pathPrefix("Anti_Swear");
+			public static boolean BLOCK_MESSAGE;
+			public static boolean REPLACE_MESSAGE;
+			public static String REPLACEMENT;
 
-			ENABLED = getBoolean("Enabled", true);
-			ENABLED_IN_COMMANDS = getBoolean("Enabled_In_Commands", true);
+			private static void init() {
+				pathPrefix("Handlers.Swear");
 
-			ALERT_STAFF = getBoolean("Alert_Staff", true);
-			WARN_PLAYER = getBoolean("Warn_Player", true);
-			DISPATCH_COMMAND = getString("Dispatch_Command", "none");
-
-			BLOCK_MESSAGE = getBoolean("Block_Message", false);
-			REPLACE_MESSAGE = getBoolean("Replace_Word", true);
-			REPLACEMENT = getString("Replacement", "*****");
-
-			WORD_LIST = getStringList("Word_List_Deprecated", Arrays.asList("fuck", "pussy", "bitch", "\\bass\\b"));
+				ENABLED_IN_COMMANDS = getBoolean("Enabled_In_Commands", true);
+				ALERT_STAFF = getBoolean("Alert_Staff", true);
+				WARN_PLAYER = getBoolean("Warn_Player", true);
+				DISPATCH_COMMAND = getString("Dispatch_Command", "none");
+				BLOCK_MESSAGE = getBoolean("Block_Message", false);
+				REPLACE_MESSAGE = getBoolean("Replace_Word", true);
+				REPLACEMENT = getString("Replacement", "*****");
+			}
 		}
 	}
 

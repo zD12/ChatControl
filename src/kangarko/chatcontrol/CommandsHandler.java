@@ -6,7 +6,6 @@ import kangarko.chatcontrol.model.ConfHelper;
 import kangarko.chatcontrol.model.ConfHelper.ChatMessage;
 import kangarko.chatcontrol.model.Localization;
 import kangarko.chatcontrol.model.Settings;
-import kangarko.chatcontrol.model.Variables;
 import kangarko.chatcontrol.utils.Common;
 import kangarko.chatcontrol.utils.InsufficientPermissionException;
 import kangarko.chatcontrol.utils.Permissions;
@@ -59,18 +58,18 @@ public class CommandsHandler implements CommandExecutor {
 			checkPerm(sender, Permissions.Commands.MUTE);
 
 			if (param.isEmpty())
-				Common.broadcastIfEnabled(Settings.Mute.BROADCAST, sender, Variables.muted ? Localization.MUTE_UNMUTE_BROADCAST : Localization.MUTE_BROADCAST, reason);
+				Common.broadcastIfEnabled(Settings.Mute.BROADCAST, sender, ChatControl.muted ? Localization.MUTE_UNMUTE_BROADCAST : Localization.MUTE_BROADCAST, reason);
 			else if ((param.equalsIgnoreCase("-silent") || param.equalsIgnoreCase("-s")) && Common.hasPerm(sender, Permissions.Commands.MUTE_SILENT)) {
 				// do nothing
 			} else if ((param.equalsIgnoreCase("-anonymous") || param.equalsIgnoreCase("-a")) && Common.hasPerm(sender, Permissions.Commands.MUTE_ANONYMOUS))
-				Common.broadcastIfEnabled(Settings.Mute.BROADCAST, sender, Variables.muted ? Localization.MUTE_ANON_UNMUTE_BROADCAST : Localization.MUTE_ANON_BROADCAST, reason);
+				Common.broadcastIfEnabled(Settings.Mute.BROADCAST, sender, ChatControl.muted ? Localization.MUTE_ANON_UNMUTE_BROADCAST : Localization.MUTE_ANON_BROADCAST, reason);
 			else if (param.startsWith("-")) {
 				Common.tell(sender, Localization.WRONG_PARAMETERS);
 				return;
 			}
 
-			Common.tell(sender, Variables.muted ? Localization.MUTE_UNMUTE_SUCCESS: Localization.MUTE_SUCCESS);
-			Variables.muted = !Variables.muted;
+			Common.tell(sender, ChatControl.muted ? Localization.MUTE_UNMUTE_SUCCESS: Localization.MUTE_SUCCESS);
+			ChatControl.muted = !ChatControl.muted;
 		}
 
 		/**
@@ -180,6 +179,7 @@ public class CommandsHandler implements CommandExecutor {
 			
 			try {
 				ConfHelper.loadAll();
+				ChatControl.instance().chatCeaser.load();
 			} catch (Throwable t) {
 				t.printStackTrace();
 				Common.tell(sender, Localization.RELOAD_FAILED.replace("%error", t.getMessage()));

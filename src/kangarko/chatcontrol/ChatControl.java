@@ -1,5 +1,6 @@
 package kangarko.chatcontrol;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,8 +18,9 @@ import kangarko.chatcontrol.listener.PlayerListener;
 import kangarko.chatcontrol.model.ConfHelper;
 import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.model.SettingsConsole;
-import kangarko.chatcontrol.model.Variables;
+import kangarko.chatcontrol.rules.ChatCeaser;
 import kangarko.chatcontrol.utils.Common;
+import kangarko.chatcontrol.utils.IllegalLocaleException;
 import kangarko.chatcontrol.utils.MissingResourceException;
 import kangarko.chatcontrol.utils.Permissions;
 import kangarko.chatcontrol.utils.safety.SafeMap;
@@ -35,9 +37,7 @@ import com.earth2me.essentials.CommandSource;
 import com.earth2me.essentials.Essentials;
 
 // TODO implement death messages
-// TODO implement timed messages
-// TODO replace remap and pwnfilter
-// TODO Country flag and name (and IP) from API from Authme
+// TODO replace remap
 public class ChatControl extends JavaPlugin {
 
 	private static ChatControl instance;
@@ -48,152 +48,155 @@ public class ChatControl extends JavaPlugin {
 	// Player Name, Player Cache
 	private static SafeMap<String, PlayerCache> playerData = new SafeMap<>();
 
+	public static boolean muted = false;
+	
 	private Essentials ess;
 	private ChatFormatter formatter;
+	public ChatCeaser chatCeaser;
 
 	public void onEnable() {
-		instance = this;
-
 		try {
+			instance = this;
+
 			ConfHelper.loadAll();
+			
+			chatCeaser = new ChatCeaser("rules.txt");
+			chatCeaser.load();
+
+			if (Settings.General.DEBUG) {
+				ipLastLogin.displayWarnings();
+				playerData.displayWarnings();
+			}
+
+			for (Player pl : getOnlinePlayers())
+				getDataFor(pl);
+
+			if (doesPluginExist("Essentials"))
+				ess = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
+
+			if (doesPluginExist("AuthMe"))
+				AuthMeHook.enabled = true;
+
+			getServer().getPluginManager().registerEvents(new ChatListener(), this);
+			getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+			getServer().getPluginManager().registerEvents(new CommandListener(), this);
+
+			if (SettingsConsole.FILTER_ENABLED || SettingsConsole.FILTER_COLORS_TO_ANSI) {
+				try {
+					Log4jFilter.init();
+					Common.Debug("Console filtering now using Log4j Filter.");
+				} catch (NoClassDefFoundError err) {
+					Filter filter = new ConsoleFilter();
+
+					if (SettingsConsole.FILTER_FILTER_PLUGINS)
+						for (Plugin plugin : getServer().getPluginManager().getPlugins())
+							plugin.getLogger().setFilter(filter);
+
+					Bukkit.getLogger().setFilter(filter);
+					Common.Debug("Console filtering initiated (MC 1.6.4 and lower).");
+				}
+			}
+
+			if (Settings.Packets.DISABLE_TAB_COMPLETE) {
+				if (doesPluginExist("ProtocolLib")) {
+					if (new File("spigot.yml").exists())
+						Common.LogInFrame(false, "&aIf you want to disable tab complete, set", "&bcommands.tab-complete &ato 0 in &fspigot.yml &afile.", "&aFunction in ChatControl was disabled.");
+					else
+						ProtocolLibHook.init();
+				} else
+					Common.LogInFrame(false, "Cannot enable packet features!", "Required plugin missing: ProtocolLib");
+			}
+
+			if (Settings.Chat.Formatter.ENABLED) {
+				if (doesPluginExist("Vault")) {
+					if (doesPluginExist("ChatManager"))
+						Common.LogInFrame(true, "Detected &fChatManager&c! Please copy", "settings from it to ChatControl", "and disable the plugin afterwards!");
+					else {
+						formatter = new ChatFormatter();
+						getServer().getPluginManager().registerEvents(formatter, this);
+					}
+				} else
+					Common.LogInFrame(false, "You need Vault to enable ChatFormatter.");
+			}
+
+			if (Settings.Messages.TIMED_ENABLED)
+				scheduleTimedMessages();
+
+			getCommand("chatcontrol").setExecutor(new CommandsHandler());
+
+			if (Settings.Updater.ENABLED)
+				getServer().getScheduler().runTaskAsynchronously(this, new UpdateCheck("https://raw.github.com/kangarko/ChatControl/master/plugin.yml"));
+
+			Common.addLogPrefix();
+			Common.LogInFrame(false, "&aThis is a beta version, it might contains bugs!");
+
 		} catch (Throwable t) {
 			t.printStackTrace();
 			Common.Log("&4!----------------------------------------------!");
 			Common.Log(" &cError loading ChatControl, plugin is disabled!");
 			Common.Log("&4!----------------------------------------------!");
+			
 			if (t instanceof InvalidConfigurationException) {
 				Common.Log(" &cIt seems like your config is not a valid YAML.");
 				Common.Log(" &cUse online services like");
 				Common.Log(" &chttp://yaml-online-parser.appspot.com/");
 				Common.Log(" &cto check for syntax errors!");
-			} else if (t instanceof IllegalStateException) {
+			
+			} else if (t instanceof IllegalLocaleException) {
 				Common.Log(" &cChatControl doesn't have the locale: " + Settings.General.LOCALIZATION_SUFFIX);
+			
 			} else if (t instanceof MissingResourceException) {
 				Common.Log(" &c" + t.getMessage());
 				Common.Log(" &cTo fix it, create a blank file with");
-				Common.Log(" &cthe name &f" + ((MissingResourceException)t).file + " &cin plugin folder.");
+				Common.Log(" &cthe name &f" + ((MissingResourceException) t).file + " &cin plugin folder.");
 				Common.Log(" &cIt will be filled with default values.");
 				Common.Log(" &ePlease inform the developer about this error.");
+			
 			} else
 				Common.Log(" &cThe error was: " + t.getMessage());
 			Common.Log("&4!----------------------------------------------!");
 			getPluginLoader().disablePlugin(this);
-			return;
 		}
-
-		if (Settings.General.DEBUG) {
-			ipLastLogin.displayWarnings();
-			playerData.displayWarnings();
-		}
-
-		for (Player pl : getOnlinePlayers())
-			createDataIfNotExistFor(pl.getName());
-
-		if (Bukkit.getPluginManager().getPlugin("Essentials") != null) {
-			ess = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
-			Common.Log("&fHooked with Essentials!");
-		}
-
-		if (Bukkit.getPluginManager().getPlugin("AuthMe") != null) {
-			AuthMeHook.hooked = true;
-			Common.Log("&fHooked with AuthMe!");
-		}
-
-		getServer().getPluginManager().registerEvents(new ChatListener(), this);
-		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
-		getServer().getPluginManager().registerEvents(new CommandListener(), this);
-
-		if (SettingsConsole.FILTER_ENABLED || SettingsConsole.FILTER_COLORS_TO_ANSI) {
-			try {
-				new Log4jFilter().init();
-				Common.Debug("Console filtering now using Log4j Filter.");
-			} catch (NoClassDefFoundError err) {				
-				Filter filter = new ConsoleFilter();
-
-				if (SettingsConsole.FILTER_FILTER_PLUGINS)
-					for (Plugin p : getServer().getPluginManager().getPlugins())
-						p.getLogger().setFilter(filter);
-
-				Bukkit.getLogger().setFilter(filter);
-				Common.Debug("Console filtering initiated (MC 1.6.4 and lower).");
-			}
-		}
-
-		if (Settings.Packets.DISABLE_TAB_COMPLETE) {
-			if (getServer().getPluginManager().getPlugin("ProtocolLib") == null) {
-				Common.LogInFrame(false, "Cannot enable packet features!", "Required plugin missing: ProtocolLib");
-			} else {
-				ProtocolLibHook.init();
-				Common.Log("&fHooked with ProtocolLib (Packet listener)!");
-			}
-		}
-
-		if (Settings.Chat.Formatter.ENABLED) {
-			if (getServer().getPluginManager().getPlugin("Vault") == null) {
-				Common.LogInFrame(false, "You need Vault to enable ChatFormatter.");
-			} else {
-				if (getServer().getPluginManager().getPlugin("ChatManager") != null) {
-					Common.LogInFrame(true, "Detected ChatManager!", "Please copy settings from it", "to ChatControl and remove it then!");
-				} else {
-					formatter = new ChatFormatter();
-					getServer().getPluginManager().registerEvents(formatter, this);
-				}
-			}
-		}
-
-		if (Settings.Messages.TIMED_ENABLED)
-			scheduleTimedMessages();
-
-		getCommand("chatcontrol").setExecutor(new CommandsHandler());
-
-		if (Settings.Updater.ENABLED)
-			getServer().getScheduler().runTaskAsynchronously(this, new UpdateCheck("https://raw.github.com/kangarko/ChatControl/master/plugin.yml"));
-
-		Common.LogInFrame(false, "&aThis is a beta version, it might contains bugs!");
 	}
 
 	public void onDisable() {
+		muted = false;
 		playerData.clear();
 		ipLastLogin.clear();
-
-		Variables.reset();
 
 		ess = null;
 		instance = null;
 
+		UpdateCheck.needsUpdate = false;
+		AuthMeHook.enabled = false;
 		getServer().getScheduler().cancelTasks(this);
 	}
 
-	private HashMap<String, Integer> indexes;
-	private HashMap<String, List<String>> cache;
-
-	private final Random rand = new Random();
 
 	private void scheduleTimedMessages() {
-		if (!Settings.Messages.TIMED_RANDOM_ORDER) {
-			indexes = new HashMap<String, Integer>();
+		final HashMap<String, Integer> broadcasterIndexes = new HashMap<String, Integer>();
+		final HashMap<String, List<String>> broadcasterCache = new HashMap<>();
+		Random rand = new Random();
 
+		if (!Settings.Messages.TIMED_RANDOM_ORDER)
 			for (String world : Settings.Messages.TIMED.keySet())
-				indexes.put(world, 0);
-		}
+				broadcasterIndexes.put(world, 0);
 
-		if (Settings.Messages.TIMED_RANDOM_NO_REPEAT) {
-			cache = new HashMap<>();
-
+		if (Settings.Messages.TIMED_RANDOM_NO_REPEAT)
 			for (String world : Settings.Messages.TIMED.keySet())
-				cache.put(world, new ArrayList<String>(Settings.Messages.TIMED.get(world)));
+				broadcasterCache.put(world, new ArrayList<String>(Settings.Messages.TIMED.get(world)));
+
+		for (String world : Settings.Messages.TIMED.keySet()) {
+			Common.Log("&fMessages for: " + world);
+
+			for (String msg : Settings.Messages.TIMED.get(world))
+				Common.Log(" - " + msg);
 		}
-
-			for (String world : Settings.Messages.TIMED.keySet()) {
-				Common.Log("&fMessages for: " + world);
-
-				for (String msg : Settings.Messages.TIMED.get(world))
-					Common.Log(" - " + msg);
-			}
 
 		new BukkitRunnable() {
+
 			@Override
-			public void run() {				
+			public void run() {
 				for (String world : Settings.Messages.TIMED.keySet()) {
 					List<String> msgs = Settings.Messages.TIMED.get(world);
 					if (msgs.size() == 0)
@@ -203,29 +206,29 @@ public class ChatControl extends JavaPlugin {
 
 					if (Settings.Messages.TIMED_RANDOM_ORDER) {
 						if (Settings.Messages.TIMED_RANDOM_NO_REPEAT) {
-							List<String> worldCache = cache.get(world);
+							List<String> worldCache = broadcasterCache.get(world);
 
 							if (worldCache.size() == 0)
 								worldCache.addAll(msgs);
 
 							int cacheRand = rand.nextInt(worldCache.size());
 
-							msg+= worldCache.get(cacheRand);
+							msg += worldCache.get(cacheRand);
 							worldCache.remove(cacheRand);
 						} else
-							msg+= msgs.get(rand.nextInt(msgs.size()));
+							msg += msgs.get(rand.nextInt(msgs.size()));
 					} else {
-						int last = indexes.get(world);
+						int last = broadcasterIndexes.get(world);
 
 						if (msgs.size() < last + 1)
 							last = 0;
 
 						msg = Settings.Messages.TIMED_PREFIX + " " + msgs.get(last);
 
-						indexes.put(world, last + 1);
+						broadcasterIndexes.put(world, last + 1);
 					}
 
-					if (msg.equals(Settings.Messages.TIMED_PREFIX + " "))
+					if (msg.equals(Settings.Messages.TIMED_PREFIX + " ")) // is empty
 						continue;
 
 					if (world.equalsIgnoreCase("global")) {
@@ -282,16 +285,29 @@ public class ChatControl extends JavaPlugin {
 		return formatter.replacePlayerVariables(pl, message);
 	}
 
-	public static void createDataIfNotExistFor(String pl) {
-		playerData.putIfAbsent(pl, new PlayerCache());
+	public boolean doesPluginExist(String pluginName) {
+		Plugin plugin = getServer().getPluginManager().getPlugin(pluginName);
+
+		if (plugin != null && plugin.isEnabled()) {
+			Common.Log("&fHooked with: " + pluginName);
+			return true;
+		}
+		return false;
 	}
+
+	// ------------------------ static ------------------------
 
 	public static PlayerCache getDataFor(Player pl) {
 		return getDataFor(pl.getName());
 	}
 
 	public static PlayerCache getDataFor(String pl) {
-		createDataIfNotExistFor(pl);
+		PlayerCache cache = playerData.get(pl);
+
+		if (cache == null) {
+			cache = new PlayerCache();
+			playerData.put(pl, cache);
+		}
 
 		return playerData.get(pl);
 	}

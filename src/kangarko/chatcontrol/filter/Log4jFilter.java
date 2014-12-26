@@ -12,8 +12,10 @@ import org.apache.logging.log4j.message.Message;
 
 public class Log4jFilter implements Filter {
 
-	public void init() {
-		((Logger) LogManager.getRootLogger()).addFilter(this);
+	private Log4jFilter() {}
+	
+	public static void init() {
+		((Logger) LogManager.getRootLogger()).addFilter(new Log4jFilter());
 	}
 
 	@Override

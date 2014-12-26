@@ -1,0 +1,43 @@
+# -------------------------------------------------------------------------------
+# This is the very first implementation of ChatControl's
+# new custom rule engine codenamed ChatCeaser By Kangarko
+#
+# Accepts following arguments (without <>)
+# match <regex> (A valid regular expression string to match the message.)
+# strip <regex> (A valid regular expression used to strip specified characters before the message is checked.)
+# then replace <replacement> (A string that replaces the part of the checked message that matches the match.)
+# then rewrite <message> (A message that replaces the entire checked message.)
+# then deny (Cancel the player's message from appearing in the chat.)
+# then console <command> (A command to execute as the server console. Use %player to get the player name.)
+# then warn <message> (A message that is displayed to the player.)
+# handle as <advertisement/swear> (Launch actions specified in main configuration.)
+#
+# Supports color codes with '&' character.
+# Accepts unicode characters when saved in UTF-8 encoding (tested on Notepad++).
+# -------------------------------------------------------------------------------
+
+# IP filter. Notice the operator strip which removes specified characters BEFORE the message is checked.
+match \b[0-9]{1,3}(\.|dot|\(dot\)|-|;|:|,|(\W|\d|_)*\s)+[0-9]{1,3}(\.|dot|\(dot\)|-|;|:|,|(\W|\d|_)*\s)+[0-9]{1,3}(\.|dot|\(dot\)|-|;|:|,|(\W|\d|_)*\s)+[0-9]{1,3}\b
+strip [\(\[\]\)]
+handle as advertisement
+
+match [a-zA-Z0-9\-\.]+\s?(\.|dot|\(dot\)|-|;|:|,)\s?(com|org|net|cz|co|uk|sk|biz|mobi|xxx|eu)\b
+strip [\(\[\]\)]
+handle as advertisement
+
+match fuck
+handle as swear
+
+match \bass\b|\basshole
+handle as swear
+
+match This server (suck|is crappy|is shitty)
+then rewrite I love this filter!
+then console kick %player &cYour rating will be processed by our staff soon. \nThanks and welcome back!
+
+match \byolo\b
+then replace apple
+
+match staff suck
+then console kick %player &cI don't think so.
+then deny

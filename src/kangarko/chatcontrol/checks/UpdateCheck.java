@@ -14,13 +14,15 @@ import java.nio.file.StandardCopyOption;
 import kangarko.chatcontrol.ChatControl;
 import kangarko.chatcontrol.model.Localization;
 import kangarko.chatcontrol.model.Settings;
-import kangarko.chatcontrol.model.Variables;
 import kangarko.chatcontrol.utils.Common;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public class UpdateCheck implements Runnable {
+
+	public static boolean needsUpdate = false;
+	public static String newVersion;
 
 	private String fileurl;
 
@@ -77,8 +79,8 @@ public class UpdateCheck implements Runnable {
 						ex.printStackTrace();
 					}
 				} else {
-					Variables.needsUpdate = true;
-					Variables.newVersion = newversion;
+					needsUpdate = true;
+					newVersion = newversion;
 					
 					String[] msgs = Localization.UPDATE_AVAILABLE.replace("%current", oldversion).replace("%new", newversion).split("\n");
 					for (String part : msgs)

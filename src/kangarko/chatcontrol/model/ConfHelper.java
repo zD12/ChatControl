@@ -2,12 +2,8 @@ package kangarko.chatcontrol.model;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +32,7 @@ public class ConfHelper {
 		// Order matters.
 		Settings.load();
 		SettingsConsole.load();
-		SettingsChat.load();
+		SettingsRemap.load();
 		Localization.load();
 	}
 
@@ -86,16 +82,16 @@ public class ConfHelper {
 		if (!dataFolder.exists())
 			dataFolder.mkdirs();
 
-		if (!file.exists())
-			try {
-				InputStream is = ConfHelper.class.getResourceAsStream("/resources/" + FILE_NAME);
-				if (is == null)
-					throw new MissingResourceException("Inbuilt resource %file not found!", FILE_NAME);
+		Objects.requireNonNull(FILE_NAME, "File name cannot be null!");
+		file = new File(ChatControl.instance().getDataFolder(), FILE_NAME);
 
-				Files.copy(is, Paths.get(file.toURI()), StandardCopyOption.REPLACE_EXISTING);
-			} catch (IOException ex) {
-				ex.printStackTrace();
+		if (!file.exists()) {
+			try {
+				ChatControl.instance().saveResource(FILE_NAME, false);
+			} catch (IllegalArgumentException ex) {
+				throw new MissingResourceException("Inbuilt resource %file not found!", FILE_NAME);
 			}
+		}
 
 		cfg = new YamlConfiguration();
 		cfg.load(file);
@@ -228,7 +224,7 @@ public class ConfHelper {
 
 	private static <T> void validate(String path, T def) {
 		Common.Log("&eWriting in path \"" + path + "\" value: \"" + def + "\"");
-		
+
 		if (file == null)
 			throw new RuntimeException("Inbuilt config doesn't contains " + def.getClass().getTypeName() + " at \"" + path + "\". Is it outdated?");
 	}

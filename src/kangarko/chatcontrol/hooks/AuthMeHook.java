@@ -6,10 +6,10 @@ import fr.xephi.authme.api.API;
 
 public class AuthMeHook {
 
-	public static boolean hooked = false;
+	public static boolean enabled = false;
 
 	public static String getCountryCode(Player pl) {
-		if (!hooked)
+		if (!enabled)
 			return "";
 			
 		String ip = pl.getAddress().toString().replace("/", "");
@@ -17,7 +17,7 @@ public class AuthMeHook {
 	}
 
 	public static String getCountryName(Player pl) {
-		if (!hooked)
+		if (!enabled)
 			return "";
 			
 		String ip = pl.getAddress().toString().replace("/", "");

@@ -15,7 +15,7 @@ public class TimedCharSequence implements CharSequence {
     @Override
     public char charAt(int index) {
         if (System.currentTimeMillis() > timeoutTime)
-            throw new RuntimeException("String checking timed out after " + timeoutLimit + " ms");
+            throw new RuntimeException("\'" + message + "\' timed out after " + timeoutLimit + " ms! (malformed regex?)");
         
         return message.charAt(index);
     }
