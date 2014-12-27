@@ -202,7 +202,7 @@ public class Handler {
 				Common.customAction(pl, commandToExecute, msg);
 		
 		if (writeToFileName != null)
-			Writer.zapisatDo(writeToFileName, pl.getName(), msg);
+			Writer.zapisatDo(writeToFileName, pl.getName(), replaceVariables("[Handler=%handler, Rule ID=%ruleID] ") + msg);
 
 		if (blockMessage)
 			e.setCancelled(true);
@@ -220,6 +220,14 @@ public class Handler {
 		return str.replace("%ruleID", ruleID).replace("%handler", name);
 	}
 	
+	private String printCommands() {
+		String commands = "(" + commandsToExecute.size() + ")";
+		for (String command : commandsToExecute)
+			commands+= command;
+
+		return commands;
+	}
+	
 	@Override
 	public String toString() {
 		return "    Handler{\n"
@@ -235,13 +243,5 @@ public class Handler {
 				+ (msgReplacement != null ? "        Replace Part With: \'" + msgReplacement + "\'\n" : "")
 				+ (rewriteTo != null ? "        Replace Whole With: \'" + rewriteTo + "\'\n" : "")
 				+ "    }";
-	}
-
-	private String printCommands() {
-		String commands = "(" + commandsToExecute.size() + ")";
-		for (String command : commandsToExecute)
-			commands+= command;
-
-		return commands;
 	}
 }

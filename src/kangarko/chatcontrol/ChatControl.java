@@ -38,6 +38,7 @@ import com.earth2me.essentials.Essentials;
 
 // TODO implement death messages
 // TODO replace remap
+// TODO implement lag checked - how much time takes to proceed for instance chat event etc
 // TODO Chat after X time since login
 public class ChatControl extends JavaPlugin {
 

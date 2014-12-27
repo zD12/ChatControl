@@ -15,7 +15,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 public class Handlers {
 
 	private final static File file;
-	private final static YamlConfiguration c;
+	
+	private static YamlConfiguration cfg;	
 	private static String sectionName;
 
 	static {
@@ -26,16 +27,16 @@ public class Handlers {
 			Common.Log("&fCreated default handlers file: " + file.getName());
 		}
 
-		c = YamlConfiguration.loadConfiguration(file);		
-
 	}
 
-	public static Handler getByName(String name, String ruleID) {
-		if (!c.isConfigurationSection(name))
+	public static Handler loadHandler(String name, String ruleID) {
+		cfg = YamlConfiguration.loadConfiguration(file);
+		
+		if (!cfg.isConfigurationSection(name))
 			throw new NullPointerException("Unknown handler: " + name);
 
-		sectionName = c.getConfigurationSection(name).getName();
-		System.out.println("Conf section name: " + sectionName);
+		sectionName = cfg.getConfigurationSection(name).getName();
+		System.out.println("Conf section name: " + sectionName); // TODO Why duplicate?
 
 		Handler handler = new Handler(sectionName, ruleID);
 		String message;
@@ -68,7 +69,7 @@ public class Handlers {
 		if (isValid(message))
 			handler.setWriteToFileName(message);
 
-		Boolean block = c.getBoolean(sectionName + ".Block_Message");
+		Boolean block = cfg.getBoolean(sectionName + ".Block_Message");
 		if (block != null && block)
 			handler.setBlockMessage();
 
@@ -80,8 +81,8 @@ public class Handlers {
 		if (isValid(message))
 			handler.setRewriteTo(message);
 
-		if (c.isSet(sectionName + ".Execute_Commands")) {
-			List<String> commands = c.getStringList(sectionName + ".Execute_Commands");
+		if (cfg.isSet(sectionName + ".Execute_Commands")) {
+			List<String> commands = cfg.getStringList(sectionName + ".Execute_Commands");
 			handler.setCommandsToExecute(commands);
 		}
 		
@@ -95,7 +96,7 @@ public class Handlers {
 	}
 
 	public static String getString(String path) {
-		String msg = c.getString(sectionName + "." + path);
+		String msg = cfg.getString(sectionName + "." + path);
 
 		return msg != null && !msg.isEmpty() && !msg.equalsIgnoreCase("none") ? msg : null;
 	}

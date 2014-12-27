@@ -6,8 +6,6 @@ import java.util.HashMap;
 import kangarko.chatcontrol.ChatControl;
 import kangarko.chatcontrol.utils.Common;
 
-import org.bukkit.configuration.file.YamlConfiguration;
-
 @SuppressWarnings("unused")
 public class SettingsRemap extends ConfHelper {
 

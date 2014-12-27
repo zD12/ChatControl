@@ -293,6 +293,7 @@ public class Settings extends ConfHelper {
 
 	public static class Writer {
 		public static boolean ENABLED;
+		public static boolean STRIP_COLORS;
 		public static HashSet<String> WHITELIST_PLAYERS;
 		public static HashSet<String> INCLUDE_COMMANDS;
 
@@ -300,6 +301,7 @@ public class Settings extends ConfHelper {
 			pathPrefix("Writer");
 
 			ENABLED = getBoolean("Write_Chat_Communication", true);
+			STRIP_COLORS = getBoolean("Strip_Colors", true);
 			WHITELIST_PLAYERS = new HashSet<>(getStringList("Ignore_Players", Arrays.asList("ignoredAdmin")));
 			INCLUDE_COMMANDS = new HashSet<>(getStringList("Write_Commands", Arrays.asList("tell")));
 		}

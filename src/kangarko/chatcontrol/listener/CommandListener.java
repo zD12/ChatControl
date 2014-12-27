@@ -7,7 +7,6 @@ import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.utils.Common;
 import kangarko.chatcontrol.utils.Permissions;
 import kangarko.chatcontrol.utils.Writer;
-import kangarko.chatcontrol.utils.Writer.FileType;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -93,7 +92,7 @@ public class CommandListener implements Listener {
 		if (Settings.Writer.ENABLED && !Settings.Writer.WHITELIST_PLAYERS.contains(pl.getName().toLowerCase())) {
 			for (String prikaz : Settings.Writer.INCLUDE_COMMANDS)
 				if (message.toLowerCase().startsWith("/" + prikaz.toLowerCase()))
-					Writer.zapisatDo(FileType.CHAT_LOG, "[CMD] " + pl.getName(), message);
+					Writer.zapisatDo(Writer.CHAT_FILE_PATH, "[CMD] " + pl.getName(), message);
 		}
 
 		if (Settings.SoundNotify.ENABLED_IN_FOLLOWING_COMMANDS.contains(args[0].replaceFirst("/", ""))) {

@@ -10,8 +10,6 @@ import kangarko.chatcontrol.utils.IllegalLocaleException;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import com.sun.xml.internal.bind.api.impl.NameConverter.Standard;
-
 @SuppressWarnings("unused")
 public class Localization extends ConfHelper {
 

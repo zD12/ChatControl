@@ -9,7 +9,6 @@ import kangarko.chatcontrol.ChatControl;
 import kangarko.chatcontrol.model.Localization;
 import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.model.SettingsRemap;
-import kangarko.chatcontrol.utils.Writer.FileType;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -311,7 +310,7 @@ public class Common {
 		try {
 			return matcher.find();
 		} catch (RuntimeException ex) {
-			Writer.zapisatDo(FileType.ERROR_LOG, null, "Regex check timed out (bad regex?) (plugin ver. " + ChatControl.instance().getDescription().getVersion() + ")! \nString checked: " + timedMsg + "\nRegex: " + regex + "");
+			Writer.zapisatDo(Writer.ERROR_FILE_PATH, null, "Regex check timed out (bad regex?) (plugin ver. " + ChatControl.instance().getDescription().getVersion() + ")! \nString checked: " + timedMsg + "\nRegex: " + regex + "");
 			throw new RuntimeException("RegEx checking " + ex.getMessage());
 		}
 	}

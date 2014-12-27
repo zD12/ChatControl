@@ -89,8 +89,8 @@ public final class ChatCeaser {
 						else if (line.startsWith("strip "))
 							rule.setStripBefore(line.replaceFirst("strip ", ""));
 						
-						else if (line.startsWith("set id "))
-							rule.setId(line.replaceFirst("set id ", ""));
+						else if (line.startsWith("id "))
+							rule.setId(line.replaceFirst("id ", ""));
 						
 						else if (line.startsWith("then rewrite "))
 							rule.setRewrite(line.replaceFirst("then rewrite ", ""));
@@ -105,7 +105,7 @@ public final class ChatCeaser {
 							rule.setWarnMessage(line.replaceFirst("then warn ", ""));
 						
 						else if (line.startsWith("handle as "))
-							rule.setHandler(Handlers.getByName(line.replaceFirst("handle as ", ""), rule.getId()));
+							rule.setHandler(Handlers.loadHandler(line.replaceFirst("handle as ", ""), rule.getId()));
 						
 						else
 							throw new NullPointerException("Unknown operator: " + line);

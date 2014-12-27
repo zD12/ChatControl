@@ -7,7 +7,6 @@ import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.utils.Common;
 import kangarko.chatcontrol.utils.Permissions;
 import kangarko.chatcontrol.utils.Writer;
-import kangarko.chatcontrol.utils.Writer.FileType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.entity.Player;
@@ -126,7 +125,7 @@ public class ChatListener implements Listener {
 		}
 
 		if (Settings.Writer.ENABLED && !Settings.Writer.WHITELIST_PLAYERS.contains(pl.getName().toLowerCase()))
-			Writer.zapisatDo(FileType.CHAT_LOG, pl.getName(), message);
+			Writer.zapisatDo(Writer.CHAT_FILE_PATH, pl.getName(), message);
 
 		if (Settings.SoundNotify.ENABLED) {
 			if (Settings.SoundNotify.CHAT_PREFIX.equalsIgnoreCase("none")) {
