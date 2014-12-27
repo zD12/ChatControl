@@ -2,6 +2,8 @@ package kangarko.chatcontrol.rules;
 
 import kangarko.chatcontrol.utils.Common;
 
+import org.apache.commons.lang.Validate;
+
 /**
  * Represents a single rule
  * @author kangarko
@@ -11,42 +13,42 @@ public class Rule {
 	/**
 	 * Required regular expression used against the checked message
 	 */
-	public final String match;
+	private final String match;
 	
 	/**
 	 * Required regular expression used before the message is checked to strip characters
 	 */
-	public String stripBefore;
+	private String stripBefore;
 
 	/**
 	 * Replace the part of the checked message that matches {@link #match} with provided string
 	 */
-	public String replace = null;
+	private String replacement = null;
 	
 	/**
 	 * Rewrite the entire message to specified string
 	 */
-	public String rewrite = null;
+	private String rewrite = null;
 
 	/**
 	 * Optional command executed as the server console
 	 */
-	public String executeCommand = null;
+	private String commandToExecute = null;
 	
 	/**
 	 * A message to the player
 	 */
-	public String warnMessage = null;
+	private String warnMessage = null;
 	
 	/**
 	 * A handler that triggers when {@link #match} matches the checked message
 	 */
-	public RuleHandler handler = null;
+	private RuleHandler handler = null;
 
 	/**
 	 * Whenever the message should be cancelled from appearing
 	 */
-	public boolean deny = false;
+	private boolean cancel = false;
 
 	/**
 	 * Creates a new rule with provided regular expression
@@ -68,16 +70,90 @@ public class Rule {
 		return Common.regExMatch(match, message);
 	}
 	
+	public String getMatch() {
+		return match;
+	}
+	
+	public String getStripBefore() {
+		return stripBefore;
+	}
+	
+	public void setStripBefore(String stripBefore) {
+		Validate.isTrue(this.stripBefore == null, "Strip before already set on: " + this);
+		
+		this.stripBefore = stripBefore;
+	}
+	
+	public String getReplacement() {
+		return replacement;
+	}
+	
+	public void setReplacement(String replacement) {
+		Validate.isTrue(this.replacement == null, "Replacement already set on: " + this);
+		
+		this.replacement = replacement;
+	}
+	
+	public String getRewrite() {
+		return rewrite;
+	}
+	
+	public void setRewrite(String rewrite) {
+		Validate.isTrue(this.rewrite == null, "Rewrite message already set on: " + this);
+		
+		this.rewrite = rewrite;
+	}
+
+	public String getCommandToExecute() {
+		return commandToExecute;
+	}
+	
+	public void setCommandToExecute(String commandToExecute) {
+		Validate.isTrue(this.commandToExecute == null, "Command to execute already set on: " + this);
+		
+		this.commandToExecute = commandToExecute;
+	}
+	
+	public String getWarnMessage() {
+		return warnMessage;
+	}
+	
+	public void setWarnMessage(String warnMessage) {
+		Validate.isTrue(this.warnMessage == null, "Warn message already set on: " + this);
+		
+		this.warnMessage = warnMessage;
+	}
+	
+	public RuleHandler getHandler() {
+		return handler;
+	}
+	
+	public void setHandler(RuleHandler handler) {
+		Validate.isTrue(this.handler == null, "Handler already set on: " + this);
+		
+		this.handler = handler;
+	}
+	
+	public boolean cancelEvent() {
+		return cancel;
+	}
+	
+	public void setCancelEvent() {
+		Validate.isTrue(!cancel, "Message already set to be cancelled on: " + this);
+		
+		cancel = true;
+	}
+	
 	@Override
 	public String toString() {
 		return "Rule{\n"
 				+ "    Match = \'" + match + "\',\n"
 				+ "    Strip Before Match = \'" + stripBefore + "\',\n"
 				+ "    Replace With = \'" + rewrite + "\',\n"
-				+ "    Execute Command = \'" + executeCommand + "\',\n"
+				+ "    Execute Command = \'" + commandToExecute + "\',\n"
 				+ "    Handler = \'" + handler + "\',\n"
 				+ "    Warn Message = \'" + warnMessage + "\',\n"
-				+ "    Deny = " + deny + "\n"
+				+ "    Deny = " + cancel + "\n"
 				+ "}";
 	}
 	

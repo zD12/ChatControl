@@ -84,25 +84,25 @@ public final class ChatCeaser {
 						// If a rule is being created then attempt to parse operators.
 						
 						if ("then deny".equals(line))
-							rule.deny = true;
+							rule.setCancelEvent();
 
 						else if (line.startsWith("strip "))
-							rule.stripBefore = line.replaceFirst("strip ", "");
+							rule.setStripBefore(line.replaceFirst("strip ", ""));
 						
 						else if (line.startsWith("then rewrite "))
-							rule.rewrite = line.replaceFirst("then rewrite ", "");
+							rule.setRewrite(line.replaceFirst("then rewrite ", ""));
 
 						else if (line.startsWith("then replace "))
-							rule.replace = line.replaceFirst("then replace ", "");
+							rule.setReplacement(line.replaceFirst("then replace ", ""));
 						
 						else if (line.startsWith("then console "))
-							rule.executeCommand = line.replaceFirst("then console ", "");
+							rule.setCommandToExecute(line.replaceFirst("then console ", ""));
 
 						else if (line.startsWith("then warn "))
-							rule.warnMessage = line.replaceFirst("then warn ", "");
+							rule.setWarnMessage(line.replaceFirst("then warn ", ""));
 						
 						else if (line.startsWith("handle as "))
-							rule.handler = RuleHandler.fromName(line.replaceFirst("handle as ", ""));
+							rule.setHandler(RuleHandler.fromName(line.replaceFirst("handle as ", "")));
 						
 						else
 							throw new NullPointerException("Unknown operator: " + line);
@@ -143,25 +143,25 @@ public final class ChatCeaser {
 			if (rule.matches(msg)) {
 				Common.Log(rule.toShortString() + " &bcatched message: &f" + msg);
 				
-				if (rule.handler != null)
-					msg = rule.handler.handle(e, pl, rule.match, msg, command, sign);
+				if (rule.getHandler() != null)
+					msg = rule.getHandler().handle(e, pl, rule.getMatch(), msg, command, sign);
 				
 				if (e.isCancelled())
 					return msg; // The message will not appear in the chat, no need to continue.
 				
-				if (rule.rewrite != null)
-					msg = Common.colorize(rule.rewrite);
+				if (rule.getRewrite() != null)
+					msg = Common.colorize(rule.getRewrite());
 
-				if (rule.replace != null)
-					msg = msg.replaceAll(rule.match, Common.colorize(rule.replace));
+				if (rule.getReplacement() != null)
+					msg = msg.replaceAll(rule.getMatch(), Common.colorize(rule.getReplacement()));
 				
-				if (rule.executeCommand != null)
-					Common.customAction(pl, rule.executeCommand, msg);
+				if (rule.getCommandToExecute() != null)
+					Common.customAction(pl, rule.getCommandToExecute(), msg);
 				
-				if (rule.warnMessage != null)
-					Common.tell(pl, Common.colorize(rule.warnMessage));
+				if (rule.getWarnMessage() != null)
+					Common.tell(pl, Common.colorize(rule.getWarnMessage()));
 
-				if (rule.deny) {
+				if (rule.cancelEvent()) {
 					e.setCancelled(true);
 					return msg; // The message will not appear in the chat, no need to continue.
 				}

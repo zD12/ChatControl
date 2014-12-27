@@ -13,6 +13,10 @@ import kangarko.chatcontrol.utils.Writer.FileType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 
+/**
+ * 
+ * @deprecated make custom handlers
+ */
 public enum RuleHandler {
 
 	ADVERTISEMENT {
