@@ -25,7 +25,7 @@ public class ChatListener implements Listener {
 
 		Player pl = e.getPlayer();
 		PlayerCache playerData = ChatControl.getDataFor(pl);
-		String rawMessage = e.getMessage();
+		String message = e.getMessage();
 
 		if (!Common.hasPerm(pl, Permissions.Bypasses.GLOBAL_PERM)) {
 			if (Settings.AntiSpam.BLOCK_CHAT_UNTIL_MOVED && pl.getLocation().equals(playerData.loginLocation)) {
@@ -42,20 +42,20 @@ public class ChatListener implements Listener {
 				return;
 			}
 
-			long cas = System.currentTimeMillis() / 1000L;
-			if ((cas - playerData.lastMessageTime) < Settings.AntiSpam.Messages.DELAY) {
+			long now = System.currentTimeMillis() / 1000L;
+			if ((now - playerData.lastMessageTime) < Settings.AntiSpam.Messages.DELAY) {
 				if (!Common.hasPerm(pl, Permissions.Bypasses.DELAY_CHAT)) {
-					long time = Settings.AntiSpam.Messages.DELAY - (cas - playerData.lastMessageTime);
+					long time = Settings.AntiSpam.Messages.DELAY - (now - playerData.lastMessageTime);
 
 					Common.tell(pl, Localization.CHAT_WAIT_MESSAGE.replace("%time", String.valueOf(time)).replace("%seconds", Localization.Parts.SECONDS.formatNumbers(time)));
 					e.setCancelled(true);
 					return;
 				}
 			}
-			playerData.lastMessageTime = cas;
+			playerData.lastMessageTime = now;
 
 			if (Settings.AntiSpam.Messages.SIMILARITY > 0 && Settings.AntiSpam.Messages.SIMILARITY < 100) {
-				String strippedMsg = Common.prepareForSimilarityCheck(rawMessage);
+				String strippedMsg = Common.prepareForSimilarityCheck(message);
 
 				if (Common.similarity(strippedMsg, playerData.lastMessage) > Settings.AntiSpam.Messages.SIMILARITY) {
 					if (!Common.hasPerm(pl, Permissions.Bypasses.SIMILAR_CHAT)) {
@@ -68,20 +68,20 @@ public class ChatListener implements Listener {
 			}
 
 			if (!Common.hasPerm(pl, Permissions.Bypasses.CHARACTER_REPLACE))
-				rawMessage = Common.replaceCharacters(pl, rawMessage);
+				message = Common.replaceCharacters(pl, message);
 
-			rawMessage = ChatControl.instance().chatCeaser.handleRules(e, pl, rawMessage);
+			message = ChatControl.instance().chatCeaser.handleRules(e, pl, message);
 			
 			if (e.isCancelled()) // cancelled from chat ceaser
 				return;
 
 			if (Settings.AntiCaps.ENABLED && !Common.hasPerm(pl, Permissions.Bypasses.CAPS)) {
-				if (rawMessage.length() >= Settings.AntiCaps.MIN_MESSAGE_LENGTH) {
+				if (message.length() >= Settings.AntiCaps.MIN_MESSAGE_LENGTH) {
 
-					int[] newMessage = Common.checkCaps(rawMessage);
-					if ((Common.percentageCaps(newMessage) >= Settings.AntiCaps.MIN_CAPS_PERCENTAGE) || (Common.checkCapsInRow(newMessage) >= Settings.AntiCaps.MIN_CAPS_IN_A_ROW)) {
+					int[] newMessage = Common.checkCaps(message);
+					if (Common.percentageCaps(newMessage) >= Settings.AntiCaps.MIN_CAPS_PERCENTAGE || Common.checkCapsInRow(newMessage) >= Settings.AntiCaps.MIN_CAPS_IN_A_ROW) {
 
-						String[] parts = rawMessage.split(" ");
+						String[] parts = message.split(" ");
 						boolean capsAllowed = false;
 						boolean whitelisted = false;
 
@@ -97,16 +97,15 @@ public class ChatListener implements Listener {
 							if (!whitelisted) {
 								if (!capsAllowed) {
 									char firstChar = parts[i].charAt(0);
-									parts[i] = (firstChar + parts[i].toLowerCase().substring(1));
-								} else {
+									parts[i] = firstChar + parts[i].toLowerCase().substring(1);
+								} else
 									parts[i] = parts[i].toLowerCase();
-								}
 
-								capsAllowed = (!parts[i].endsWith(".")) && (!parts[i].endsWith("!"));
+								capsAllowed = !parts[i].endsWith(".") && !parts[i].endsWith("!");
 							}
 						}
 
-						rawMessage = StringUtils.join(parts, " ");
+						message = StringUtils.join(parts, " ");
 
 						if (Settings.AntiCaps.WARN_PLAYER)
 							Common.tell(pl, Localization.ANTISPAM_CAPS_MESSAGE);
@@ -116,25 +115,28 @@ public class ChatListener implements Listener {
 		}
 
 		if (!Common.hasPerm(pl, Permissions.Bypasses.CAPITALIZE))
-			rawMessage = Common.capitalize(rawMessage);
+			message = Common.capitalize(message);
 		if (!Common.hasPerm(pl, Permissions.Bypasses.PUNCTUATE))
-			rawMessage = Common.insertDot(rawMessage);
+			message = Common.insertDot(message);
 
-		if (!rawMessage.equals(e.getMessage()))
-			e.setMessage(rawMessage);
+		if (!message.equals(e.getMessage())) {
+			Common.Log("&8[&cOriginal&8]&f " + e.getMessage());
+			Common.Log("&8[&cEdited&8]&f " + message);
+			e.setMessage(message);
+		}
 
 		if (Settings.Writer.ENABLED && !Settings.Writer.WHITELIST_PLAYERS.contains(pl.getName().toLowerCase()))
-			Writer.zapisatDo(FileType.CHAT_LOG, pl.getName(), rawMessage);
+			Writer.zapisatDo(FileType.CHAT_LOG, pl.getName(), message);
 
 		if (Settings.SoundNotify.ENABLED) {
 			if (Settings.SoundNotify.CHAT_PREFIX.equalsIgnoreCase("none")) {
 				for (Player online : ChatControl.getOnlinePlayers())
-					if (rawMessage.toLowerCase().contains(online.getName().toLowerCase()) && ChatControl.instance().canSoundNotify(online.getName()) && Common.hasPerm(online, Permissions.Notify.WHEN_MENTIONED))
+					if (message.toLowerCase().contains(online.getName().toLowerCase()) && ChatControl.instance().canSoundNotify(online.getName()) && Common.hasPerm(online, Permissions.Notify.WHEN_MENTIONED))
 						online.playSound(online.getLocation(), Settings.SoundNotify.SOUND.sound, Settings.SoundNotify.SOUND.volume, Settings.SoundNotify.SOUND.pitch);
 
 			} else {
 				for (Player online : ChatControl.getOnlinePlayers())
-					if (rawMessage.toLowerCase().contains(Settings.SoundNotify.CHAT_PREFIX + online.getName().toLowerCase()) && ChatControl.instance().canSoundNotify(online.getName()) && Common.hasPerm(online, Permissions.Notify.WHEN_MENTIONED))
+					if (message.toLowerCase().contains(Settings.SoundNotify.CHAT_PREFIX + online.getName().toLowerCase()) && ChatControl.instance().canSoundNotify(online.getName()) && Common.hasPerm(online, Permissions.Notify.WHEN_MENTIONED))
 						online.playSound(online.getLocation(), Settings.SoundNotify.SOUND.sound, Settings.SoundNotify.SOUND.volume, Settings.SoundNotify.SOUND.pitch);
 			}
 		}

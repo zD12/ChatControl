@@ -16,6 +16,11 @@ public class Rule {
 	private final String match;
 	
 	/**
+	 * A name/id of the rule. Used in some messages.
+	 */
+	private String id;
+	
+	/**
 	 * Required regular expression used before the message is checked to strip characters
 	 */
 	private String stripBefore;
@@ -43,7 +48,7 @@ public class Rule {
 	/**
 	 * A handler that triggers when {@link #match} matches the checked message
 	 */
-	private RuleHandler handler = null;
+	private Handler handler = null;
 
 	/**
 	 * Whenever the message should be cancelled from appearing
@@ -72,6 +77,16 @@ public class Rule {
 	
 	public String getMatch() {
 		return match;
+	}
+	
+	public String getId() {
+		return id;
+	}
+	
+	public void setId(String id) {
+		Validate.isTrue(this.id == null, "ID already set on: " + this);
+		
+		this.id = id;
 	}
 	
 	public String getStripBefore() {
@@ -124,11 +139,11 @@ public class Rule {
 		this.warnMessage = warnMessage;
 	}
 	
-	public RuleHandler getHandler() {
+	public Handler getHandler() {
 		return handler;
 	}
 	
-	public void setHandler(RuleHandler handler) {
+	public void setHandler(Handler handler) {
 		Validate.isTrue(this.handler == null, "Handler already set on: " + this);
 		
 		this.handler = handler;
@@ -148,12 +163,13 @@ public class Rule {
 	public String toString() {
 		return "Rule{\n"
 				+ "    Match = \'" + match + "\',\n"
-				+ "    Strip Before Match = \'" + stripBefore + "\',\n"
-				+ "    Replace With = \'" + rewrite + "\',\n"
-				+ "    Execute Command = \'" + commandToExecute + "\',\n"
-				+ "    Handler = \'" + handler + "\',\n"
-				+ "    Warn Message = \'" + warnMessage + "\',\n"
-				+ "    Deny = " + cancel + "\n"
+				+ (stripBefore != null ? "    Strip Before Match = \'" + stripBefore + "\',\n" : "")
+				+ (replacement != null ? "    Replace With = \'" + replacement + "\',\n"  : "")
+				+ (rewrite != null ? "    Rewrite = \'" + rewrite + "\',\n"  : "")
+				+ (commandToExecute != null ? "    Execute Command = \'" + commandToExecute + "\',\n"  : "")
+				+ (handler != null ? "    Handler = \'" + handler + "\',\n"  : "")
+				+ (warnMessage != null ? "    Warn Message = \'" + warnMessage + "\',\n"  : "")
+				+ (cancel ? "    Deny = " + cancel + "\n"  : "")
 				+ "}";
 	}
 	

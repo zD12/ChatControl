@@ -41,10 +41,10 @@ public class ChatFormatter implements Listener {
 	private Chat chatHook;
     
 	public ChatFormatter() {
-		RegisteredServiceProvider<Chat> chatProvider = Bukkit.getServicesManager().getRegistration(net.milkbowl.vault.chat.Chat.class);
-		Objects.requireNonNull(chatProvider, "Unable to hook with Vault");
+		RegisteredServiceProvider<Chat> chatHook = Bukkit.getServicesManager().getRegistration(Chat.class);
+		Objects.requireNonNull(chatHook, "Unable to hook with Vault");
 
-		chatHook = chatProvider.getProvider();
+		this.chatHook = chatHook.getProvider();
 		
 		Common.Log("&fHooked with Vault (ChatFormatter)!");
 		
@@ -193,7 +193,7 @@ public class ChatFormatter implements Listener {
 		if (string == null)
 			return "";
 
-		String str = string;
+		String str = string;		
 		if (Common.hasPerm(pl, Permissions.Formatter.COLOR))
 			str = COLOR_REGEX.matcher(str).replaceAll("\u00A7$1");
 

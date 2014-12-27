@@ -26,7 +26,7 @@ public class Common {
 	private static final ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
 	private static String INTERNAL_PREFIX = "";
 
-	public static void addLogPrefix() {
+	public static void addLoggingPrefix() {
 		INTERNAL_PREFIX = "[ChatControl] ";
 	}
 
@@ -76,7 +76,7 @@ public class Common {
 			broadcastWithPlayer(msg + (reason.equals("") ? "" : " " + Localization.Parts.REASON.replace("%reason", reason)), plReplace == null ? "" : resolvedSender(plReplace));
 	}
 
-	public static boolean hasPerm(CommandSender sender, String str) {
+	public static boolean hasPerm(CommandSender sender, String str) {	
 		if (sender.hasPermission(str) && sender.isOp() && !Settings.General.OP_HAS_PERMISSIONS)
 			return false;
 		if (sender.isOp() && Settings.General.OP_HAS_PERMISSIONS)
@@ -99,34 +99,30 @@ public class Common {
 	}
 
 	public static String insertDot(String msg) {
-		if (!Settings.Chat.Grammar.INSERT_DOT)
-			return msg;
-		if (msg.length() < Settings.Chat.Grammar.INSERT_DOT_MSG_LENGTH)
+		if (!Settings.Chat.Grammar.INSERT_DOT || msg.length() < Settings.Chat.Grammar.INSERT_DOT_MSG_LENGTH)
 			return msg;
 
 		String lastChar = msg.substring(msg.length() - 1);
 		String[] words = msg.split("\\s");
 		String lastWord = words[(words.length - 1)];
 
-		if ((lastChar.matches("(?i)[a-z]")) && (!isDomain(lastWord)))
+		if (!isDomain(lastWord) && lastChar.matches("(?i)[a-z]"))
 			msg = msg + ".";
 
 		return msg;
 	}
 
 	public static String capitalize(String msg) {
-		if (!Settings.Chat.Grammar.CAPITALIZE)
-			return msg;
-		if (msg.length() < Settings.Chat.Grammar.CAPITALIYE_MSG_LENGTH)
+		if (!Settings.Chat.Grammar.CAPITALIZE || msg.length() < Settings.Chat.Grammar.CAPITALIZE_MSG_LENGTH)
 			return msg;
 
 		String[] sentences = msg.split("(?<=[!?\\.])\\s");
 		String tempMessage = "";
 
 		for (String sentence : sentences) {
-			String slovo = msg.split("\\s")[0];
+			String word = msg.split("\\s")[0];
 
-			if (!isDomain(slovo))
+			if (!isDomain(word))
 				sentence = sentence.substring(0, 1).toUpperCase() + sentence.substring(1);
 
 			tempMessage = tempMessage + sentence + " ";
@@ -145,7 +141,7 @@ public class Common {
 			for (String character : SettingsRemap.REPLACE_REGEX_MAP.keySet())
 				finalMsg = finalMsg.replaceAll(colorize(character), SettingsRemap.REPLACE_REGEX_MAP.get(character));
 
-		return colorize(finalMsg);
+		return finalMsg;
 	}
 
 	// ---------------------------- PRIVATE --------------------------------------
@@ -236,11 +232,11 @@ public class Common {
 
 		String msg = StringUtils.join(parts, " ");
 
-		for (int j = 0; j < msg.length(); j++) {
-			if (Character.isUpperCase(msg.charAt(j)) && Character.isLetter(msg.charAt(j)))
-				editedMsg[j] = 1;
+		for (int i = 0; i < msg.length(); i++) {
+			if (Character.isUpperCase(msg.charAt(i)) && Character.isLetter(msg.charAt(i)))
+				editedMsg[i] = 1;
 			else
-				editedMsg[j] = 0;
+				editedMsg[i] = 0;
 		}
 		return editedMsg;
 	}
@@ -250,9 +246,9 @@ public class Common {
 		for (int i = 0; i < caps.length; i++)
 			sum += caps[i];
 
-		double ratioCaps = sum / caps.length;
-		int percentCaps = (int) (100.0D * ratioCaps);
-		return percentCaps;
+		double ratio = sum / caps.length;
+		int percent = (int) (100.0D * ratio);
+		return percent;
 	}
 
 	public static int checkCapsInRow(int[] caps) {

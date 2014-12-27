@@ -25,7 +25,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 public final class ChatCeaser {
 
 	/**
-	 * Stored rules. Can only be modified in {@link #load()} method
+	 * Stored rules. Can only be modified in {@link #load()} method.
 	 */
 	private final List<Rule> rules = new ArrayList<>();
 
@@ -89,6 +89,9 @@ public final class ChatCeaser {
 						else if (line.startsWith("strip "))
 							rule.setStripBefore(line.replaceFirst("strip ", ""));
 						
+						else if (line.startsWith("set id "))
+							rule.setId(line.replaceFirst("set id ", ""));
+						
 						else if (line.startsWith("then rewrite "))
 							rule.setRewrite(line.replaceFirst("then rewrite ", ""));
 
@@ -102,7 +105,7 @@ public final class ChatCeaser {
 							rule.setWarnMessage(line.replaceFirst("then warn ", ""));
 						
 						else if (line.startsWith("handle as "))
-							rule.setHandler(RuleHandler.fromName(line.replaceFirst("handle as ", "")));
+							rule.setHandler(Handlers.getByName(line.replaceFirst("handle as ", ""), rule.getId()));
 						
 						else
 							throw new NullPointerException("Unknown operator: " + line);
@@ -119,7 +122,7 @@ public final class ChatCeaser {
 		for (Rule rule : rules) // TODO Remove debug.
 			System.out.print("Loaded rule:\n" + rule);
 		
-		Common.Log("&f" + rules.size() + " Rules loaded.");
+		Common.Log("&fLoaded " + rules.size() + " Rules.");
 	}
 	
 	/**

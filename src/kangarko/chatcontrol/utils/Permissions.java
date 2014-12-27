@@ -58,12 +58,6 @@ public class Permissions {
 		// Allow a player to send duplicate/similar messages.
 		public static final String SIMILAR_CHAT = "chatcontrol.bypass.dupe.chat";
 		
-		// Bypass the advertising check.
-		public static final String ADVERTISING = "chatcontrol.bypass.ad";
-		
-		// Bypass the swear check.
-		public static final String SWEARING = "chatcontrol.bypass.swear";
-		
 		// Allow player to chat even when they did not moved since joining the server. Not recommended due to spam bots.
 		public static final String MOVE = "chatcontrol.bypass.move";
 		
@@ -104,10 +98,10 @@ public class Permissions {
 	}
 	
 	public class Formatter {
-		// Permission to use colors 1-9 and a-f with the '&' character.
-		public static final String COLOR = "chatcontrol.chat.color";
+		 // TODO NB: Permissions related to formatting/coloring chat changed in v5.0.0. Now with ".format." in between.
 		
-		 // TODO NB: Permissions changed in v5.0.0. Now with ".format." in between.
+		// Permission to use colors 1-9 and a-f with the '&' character.
+		public static final String COLOR = "chatcontrol.chat.format.color";
 		
 		// Permission to use '&k' magic character.
 		public static final String MAGIC = "chatcontrol.chat.format.magic";

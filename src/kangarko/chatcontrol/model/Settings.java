@@ -134,7 +134,7 @@ public class Settings extends ConfHelper {
 			public static int INSERT_DOT_MSG_LENGTH;
 
 			public static boolean CAPITALIZE;			
-			public static int CAPITALIYE_MSG_LENGTH;
+			public static int CAPITALIZE_MSG_LENGTH;
 
 			private static void init() {
 				pathPrefix("Chat.Grammar.Insert_Dot");
@@ -145,7 +145,7 @@ public class Settings extends ConfHelper {
 				pathPrefix("Chat.Grammar.Capitalize");
 
 				CAPITALIZE = getBoolean("Enabled", true);
-				CAPITALIYE_MSG_LENGTH = getInteger("Min_Message_Length", 5);
+				CAPITALIZE_MSG_LENGTH = getInteger("Min_Message_Length", 5);
 			}
 		}
 	}
@@ -241,57 +241,6 @@ public class Settings extends ConfHelper {
 			BROADCAST = getBoolean("Broadcast", true);
 			IGNORE_STAFF = getBoolean("Do_Not_Clear_For_Staff", true);
 			CONSOLE_LINES = getInteger("Console_Lines_To_Clear", 300);				
-		}
-	}
-
-	public static class Handlers {
-		public static class Ad {
-			public static boolean ENABLED_IN_COMMANDS;
-
-			public static boolean ALERT_STAFF;
-			public static boolean ALERT_CONSOLE;
-			public static boolean WARN_PLAYER;
-			public static boolean BROADCAST_BLOCK;
-			public static boolean WRITE_TO_FILE;
-			public static String DISPATCH_COMMAND;
-
-			private static void init() {
-				pathPrefix("Handlers.Ad");
-
-				ENABLED_IN_COMMANDS = getBoolean("Enabled_In_Commands", true);
-
-				ALERT_STAFF = getBoolean("Alert_Staff", true);
-				ALERT_CONSOLE = getBoolean("Alert_Console", true);
-				WARN_PLAYER = getBoolean("Warn_Player", true);
-				BROADCAST_BLOCK = getBoolean("Broadcast", false);
-				WRITE_TO_FILE = getBoolean("Write_To_File", true);
-				DISPATCH_COMMAND = getString("Dispatch_Command", "none");
-			}
-		}
-
-
-		public static class Swear {
-
-			public static boolean ENABLED_IN_COMMANDS;
-			public static boolean ALERT_STAFF;
-			public static boolean WARN_PLAYER;
-			public static String DISPATCH_COMMAND;
-
-			public static boolean BLOCK_MESSAGE;
-			public static boolean REPLACE_MESSAGE;
-			public static String REPLACEMENT;
-
-			private static void init() {
-				pathPrefix("Handlers.Swear");
-
-				ENABLED_IN_COMMANDS = getBoolean("Enabled_In_Commands", true);
-				ALERT_STAFF = getBoolean("Alert_Staff", true);
-				WARN_PLAYER = getBoolean("Warn_Player", true);
-				DISPATCH_COMMAND = getString("Dispatch_Command", "none");
-				BLOCK_MESSAGE = getBoolean("Block_Message", false);
-				REPLACE_MESSAGE = getBoolean("Replace_Word", true);
-				REPLACEMENT = getString("Replacement", "*****");
-			}
 		}
 	}
 

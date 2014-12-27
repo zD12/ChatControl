@@ -38,6 +38,7 @@ import com.earth2me.essentials.Essentials;
 
 // TODO implement death messages
 // TODO replace remap
+// TODO Chat after X time since login
 public class ChatControl extends JavaPlugin {
 
 	private static ChatControl instance;
@@ -127,7 +128,7 @@ public class ChatControl extends JavaPlugin {
 			if (Settings.Updater.ENABLED)
 				getServer().getScheduler().runTaskAsynchronously(this, new UpdateCheck("https://raw.github.com/kangarko/ChatControl/master/plugin.yml"));
 
-			Common.addLogPrefix();
+			Common.addLoggingPrefix();
 			Common.LogInFrame(false, "&aThis is a beta version, it might contains bugs!");
 
 		} catch (Throwable t) {

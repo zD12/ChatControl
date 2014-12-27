@@ -81,13 +81,6 @@ public class Localization extends ConfHelper {
 	public static String CANNOT_COMMAND_WHILE_MUTED;
 	public static String CANNOT_CHAT_UNTIL_MOVED;
 
-	public static String ANTISWEAR_STAFF_ALERT;
-	public static String ANTISWEAR_PLAYER_WARN;
-	public static String ANTIAD_PLAYER_WARN;
-	public static String ANTIAD_STAFF_ALERT;
-	public static String ANTIAD_BROADCAST_ALERT;
-	public static String ANTIAD_CONSOLE_ALERT;
-
 	public static String ANTISPAM_SIMILAR_MESSAGE;
 	public static String ANTISPAM_SIMILAR_COMMAND;
 	public static String ANTISPAM_CAPS_MESSAGE;
@@ -123,18 +116,8 @@ public class Localization extends ConfHelper {
 		CANNOT_COMMAND_WHILE_MUTED = getString("Command_While_Muted", "&7You cannot use this command while the chat is muted!");
 		CANNOT_CHAT_UNTIL_MOVED = getString("Chat_Until_Moved", "&7You cannot chat until you move!"); // TODO radius?
 
-		pathPrefix("Anti Swear");
-		ANTISWEAR_PLAYER_WARN = getString("Player_Warn", "&cPlease do not swear, otherwise an action will be taken!");
-		ANTISWEAR_STAFF_ALERT = getString("Staff_Alert", "%prefix &c%player has sworn:&f %message");
-
 		pathPrefix("Anti Bot");
 		ANTIBOT_REJOIN_TOO_QUICKLY = getString("Rejoin_Message", "%prefix\\n\\n&6Please wait &7%time second(s)&6 before logging in again.");
-
-		pathPrefix("Anti Ad");
-		ANTIAD_PLAYER_WARN = getString("Player_Warn", "&7Please do not advertise other websites or IP adresses.");
-		ANTIAD_STAFF_ALERT = getString("Staff_Alert", "&c%player might have advertised: &f%message");
-		ANTIAD_BROADCAST_ALERT = getString("Broadcast_Alert", "&c%player might have advertised, alert admins!");
-		ANTIAD_CONSOLE_ALERT = getString("Console_Alert", "&c%player might have advertised: &f%message");
 
 		pathPrefix("Anti Spam");
 		ANTISPAM_SIMILAR_MESSAGE = getString("Similar_Message", "&cPlease do not repeat the same (or similar) message.");
