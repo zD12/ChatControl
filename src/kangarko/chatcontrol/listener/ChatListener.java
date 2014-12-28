@@ -19,7 +19,7 @@ public class ChatListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onPlayerChat(AsyncPlayerChatEvent e) {
-		if (ChatControl.getOnlinePlayers().length < Settings.General.MIN_PLAYERS_TO_ENABLE)
+		if (ChatControl.getOnlinePlayers().length < Settings.MIN_PLAYERS_TO_ENABLE)
 			return;
 
 		Player pl = e.getPlayer();
@@ -69,8 +69,9 @@ public class ChatListener implements Listener {
 			if (!Common.hasPerm(pl, Permissions.Bypasses.CHARACTER_REPLACE))
 				message = Common.replaceCharacters(pl, message);
 
-			message = ChatControl.instance().chatCeaser.handleRules(e, pl, message);
-			
+			if (Settings.Rules.CHECK_CHAT)
+				message = ChatControl.instance().chatCeaser.parseRules(e, pl, message);
+
 			if (e.isCancelled()) // cancelled from chat ceaser
 				return;
 
@@ -107,7 +108,7 @@ public class ChatListener implements Listener {
 						message = StringUtils.join(parts, " ");
 
 						if (Settings.AntiCaps.WARN_PLAYER)
-							Common.tell(pl, Localization.ANTISPAM_CAPS_MESSAGE);
+							Common.tellLater(pl, 1, Localization.ANTISPAM_CAPS_MESSAGE);
 					}
 				}
 			}
@@ -118,14 +119,11 @@ public class ChatListener implements Listener {
 		if (!Common.hasPerm(pl, Permissions.Bypasses.PUNCTUATE))
 			message = Common.insertDot(message);
 
-		if (!message.equals(e.getMessage())) {
-			Common.Log("&8[&cOriginal&8]&f " + e.getMessage());
-			Common.Log("&8[&cEdited&8]&f " + message);
+		if (!message.equals(e.getMessage()))
 			e.setMessage(message);
-		}
 
 		if (Settings.Writer.ENABLED && !Settings.Writer.WHITELIST_PLAYERS.contains(pl.getName().toLowerCase()))
-			Writer.zapisatDo(Writer.CHAT_FILE_PATH, pl.getName(), message);
+			Writer.writeToFile(Writer.CHAT_FILE_PATH, pl.getName(), message);
 
 		if (Settings.SoundNotify.ENABLED) {
 			if (Settings.SoundNotify.CHAT_PREFIX.equalsIgnoreCase("none")) {

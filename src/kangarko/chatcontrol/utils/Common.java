@@ -13,6 +13,7 @@ import kangarko.chatcontrol.model.SettingsRemap;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -76,9 +77,9 @@ public class Common {
 	}
 
 	public static boolean hasPerm(CommandSender sender, String str) {	
-		if (sender.hasPermission(str) && sender.isOp() && !Settings.General.OP_HAS_PERMISSIONS)
+		if (sender.hasPermission(str) && sender.isOp() && !Settings.OP_HAS_PERMISSIONS)
 			return false;
-		if (sender.isOp() && Settings.General.OP_HAS_PERMISSIONS)
+		if (sender.isOp() && Settings.OP_HAS_PERMISSIONS)
 			return true;
 
 		return sender.hasPermission(str);
@@ -156,7 +157,7 @@ public class Common {
 	// -------------------------------------------------------------------
 
 	public static void Log(String str) {
-		console.sendMessage(colorize(INTERNAL_PREFIX + str));
+		console.sendMessage(colorize(INTERNAL_PREFIX + str.replace("\n", "\n&r")));
 	}
 
 	public static void Warn(String str) {
@@ -164,8 +165,8 @@ public class Common {
 	}
 
 	public static void Debug(String str) {
-		if (Settings.General.DEBUG)
-			console.sendMessage(colorize(INTERNAL_PREFIX + "[Debug] " + str));
+		if (Settings.DEBUG)
+			console.sendMessage(colorize("[ChatControl Debug] " + str));
 	}
 
 	public static void Error(String str, Throwable ex) {
@@ -293,7 +294,7 @@ public class Common {
 
 	public static boolean regExMatch(String regex, String plain_msg) {
 		Pattern pattern = null;
-		TimedCharSequence timedMsg = new TimedCharSequence(plain_msg.toLowerCase(), Settings.General.REGEX_TIMEOUT);
+		TimedCharSequence timedMsg = new TimedCharSequence(plain_msg.toLowerCase(), Settings.REGEX_TIMEOUT);
 
 		Debug("Checking " + timedMsg + " against " + regex);
 
@@ -310,7 +311,7 @@ public class Common {
 		try {
 			return matcher.find();
 		} catch (RuntimeException ex) {
-			Writer.zapisatDo(Writer.ERROR_FILE_PATH, null, "Regex check timed out (bad regex?) (plugin ver. " + ChatControl.instance().getDescription().getVersion() + ")! \nString checked: " + timedMsg + "\nRegex: " + regex + "");
+			Writer.writeToFile(Writer.ERROR_FILE_PATH, null, "Regex check timed out (bad regex?) (plugin ver. " + ChatControl.instance().getDescription().getVersion() + ")! \nString checked: " + timedMsg + "\nRegex: " + regex + "");
 			throw new RuntimeException("RegEx checking " + ex.getMessage());
 		}
 	}
@@ -367,5 +368,9 @@ public class Common {
 	
 	public static String consoleLine() {
 		return "&6*----------------------------------------------*";
+	}
+	
+	public static String shortLocation(Location loc) {
+		return loc.getWorld().getName() + " x:" + (int) loc.getX() + " y:" + (int) loc.getY() + " z:" + (int) loc.getZ();
 	}
 }

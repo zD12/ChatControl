@@ -1,0 +1,253 @@
+# ---------------------------------------------------------
+# This is the main configuration for ChatControl plugin
+# 
+# For general support and updates visit:
+# http://www.spigotmc.org/resources/chatcontrol.271
+# 
+# For configuration help visit:
+# https://github.com/kangarko/ChatControl/blob/master/config.yml
+# 
+# SLOVAK DEVELOPER FTW
+# Supports color codes with the '&' character.
+#
+# Most of the messages (warning messages, etc) are found
+# in localization. To customize it, make a new file in
+# localization/messages_LOCALENAME.yml and it will be filled
+# with all the default values.
+# ---------------------------------------------------------
+
+Anti_Bot:
+  # Delay between player logging in again in seconds.
+  Rejoin_Delay_Seconds: 4
+
+Anti_Caps:
+  Enabled: true
+  Warn_Player: true
+  Min_Message_Length: 5
+  Min_Caps_Percentage: 50
+  Min_Caps_In_A_Row: 5
+  Whitelist:
+  - OMG
+  - LOL
+  - WTF
+  - WOW
+  - ROFL
+
+Anti_Spam:
+  # Useful against bots. Player needs to move upon joining to chat.
+  Block_Chat_Until_Moved: true
+
+  Similarity_Check:
+    Ignore_Special_Characters: true
+    Ignore_Duplicate_Characters: false
+
+  Commands:
+    # Delay in seconds. Set to 0 to disable.
+    Delay_Between_Commands: 2
+    
+    # If a message is similar (in percents) to the previous one, block it.
+    # Set to 0 or 100 to disable.
+    Similar_Percentage_Block: 80
+ 
+    # Commands ignored from the delay check.
+    Whitelist_Delay:
+    - tell
+    - pm
+    - t
+    - w
+    - r
+ 
+    # Commands ignored from the similarity check.
+    Whitelist_Similarity:
+    - spawn
+    - home
+
+  Chat:
+    # Delay in seconds. Set to 0 to disable.
+    Delay_Between_Messages: 1
+
+    # If a command is similar (in percents) to the previous one, block it.
+    # Set to 0 or 100 to disable.
+    # We keep in mind that commands like /tell includes always name, making the check less annonying.
+    Similar_Percentage_Block: 80
+
+Chat:
+  # You need Vault to enable the formatter.
+  Formatter:
+    Enabled: false
+
+    # Normal chat message format.
+    Message_Format: '%prefix%player:%suffix %message'
+
+    # Do not touch this unless you have enabled the Ranged_Mode
+    Global_Message_Format: '%prefix%player:%suffix %message'
+
+    # If enabled and a players write a message, it will only be sent to players
+    # within distance of the player specified in Range
+    Ranged_Mode: false
+    Range: 100.0
+
+  Grammar:
+    # Punctualize every sentence. Ignores URLs.
+    Insert_Dot:
+      Enabled: true
+      Min_Message_Length: 5
+
+    # Make the first letter of a sentence big. Ignores URLs.
+    Capitalize:
+      Enabled: true
+      Min_Message_Length: 5
+
+Clear:
+  # Broadcast that the chat was wiped?
+  Broadcast: true
+
+  # Send only one message to staff instead of a bunch of blank lines.
+  Do_Not_Clear_For_Staff: true
+
+  # Amount of blank lines that will be printed in the console when it is cleared.
+  Console_Lines_To_Clear: 300
+
+Messages:
+  # Use 'default' to not modify, 'hide' to not display or write a custom message
+  # Variables: %player %suffix %prefix (when Vault is installed)
+  # %countrycode and %countryname when AuthMe is installed
+  Join: default
+  Quit: default
+  Kick: default
+
+  # Automatic message broadcaster.
+  Timed:
+    Enabled: false
+    Random_Order: false
+    # If random order is enabled, the messages will be put in a cache and not repeat until the cache is empty,
+    # then it will be filled again and so on.
+    Random_No_Repeat: true
+    Prefix: '&8[&2Tip&8]&2'
+    Delay_Seconds: 180
+
+    # Timed messages per worlds.
+    # By default every world includes global messages.
+    Message_List:
+      
+      # Messages displayed in all worlds.
+      global:
+      - Hey, %player, did you know that this server is running ChatControl?
+      - 'Visit developer website: &awww.rushmine.6f.sk'
+      
+      # In this world will be displayed both global messages and these specified below.
+      hardcore:
+      - Grief is not permitted what-so-ever and every griefer will be banned.
+      - Can you survive the night on hardcore world?
+      
+      # No messages will be broadcasted in this world.
+      ignored-world:
+      - excludeGlobal
+      
+      # Global messages will no be displayed in this world.
+      creative:
+      - excludeGlobal
+      - Welcome on Creative world. Enjoy your gamemode :)
+
+Mute:
+  # Broadcast that the chat was mute?
+  Broadcast: true
+
+  # Hide the following messages when the chat is muted
+  Silence:
+    Join_Messages: true
+    Quit_Messages: true
+    Kick_Messages: true
+    Death_Messages: true
+
+  Disabled_Commands_During_Mute:
+  - me
+  - tell
+  - msg
+  - r
+  - w
+
+Packets:
+  # Prevent tab complete in certain cases where it can reveal server info. 
+  # For more advanced configuration use Spigot and configure the function in spigot.yml
+  Disable_Tab_Complete: false
+
+# Custom rules are found in rules/ folder inside your plugins folder.
+Rules:
+  # Enabled in chat?
+  Check_Chat: true
+  
+  # Enabled in commands?
+  Check_Commands: true
+
+  # Enabled on signs?
+  Check_Signs: true
+
+Signs:
+  Duplication:
+    # Player will be unable to place two signs with the same text.
+    Deny_Signs_With_Same_Text: false
+    Alert_Staff: true
+
+    # Block the sign (cancel event) when a custom rule matches the text on it.
+    # NOT related to duplication check but to the custom rules.
+    Block_When_Violates_A_Rule: true
+
+    # Drop sign as an item?
+    Drop_Sign: true
+
+# Plays a sound to a player that is mentioned.
+Sound_Notify:
+  Enabled: true
+  
+  # Play a sound to player only when their are afk? Checked from Essentials plugin.
+  Notify_Only_When_Afk: true
+
+  # Play a sound to player only when someone writes following characters before
+  # their name: Set to none to play a sound when the players name is mentioned in the chat.
+  Notify_Only_If_Prefixed_With: '@'
+  
+  # Format: bukkit_sound_name, volume (float), pitch (float)
+  Sound: CHICKEN_EGG_POP, 1F, 1.5F
+  Enabled_In_Commands:
+  - msg
+  - tell
+  - t
+  - w
+  - r
+
+Updater:
+  Enabled: true
+  Notify: true
+  Download: true
+
+Writer:
+
+  # Save chat to file?
+  Write_Chat_Communication: true
+  Strip_Colors: true
+
+  # Messages of following players will not get writed.
+  Ignore_Players:
+  - ignoredAdmin
+
+  # Commands that will be saved along with chat messages.
+  Write_Commands:
+  - tell
+
+Minimum_Players_To_Enable_Checks: 0
+Op_Has_Permissions: true
+Regex_Timeout_Milis: 100
+
+# To customize a locale, make file in localization/messages_LOCALENAME.yml
+# It will be filled with all the values.
+Locale: en
+
+# Print important info in the console on plugin startup/reload.
+Verbose_On_Startup: true
+
+# Enable if you are having issues, will tell you detailed info in the console.
+Debug: false
+
+# Do not edit unless you want to loose your settings!
+Version: 1

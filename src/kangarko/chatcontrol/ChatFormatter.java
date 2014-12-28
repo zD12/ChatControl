@@ -3,16 +3,15 @@ package kangarko.chatcontrol;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 import kangarko.chatcontrol.hooks.AuthMeHook;
 import kangarko.chatcontrol.hooks.MultiverseHook;
 import kangarko.chatcontrol.hooks.TownyHook;
+import kangarko.chatcontrol.hooks.VaultHook;
 import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.utils.Common;
 import kangarko.chatcontrol.utils.Permissions;
-import net.milkbowl.vault.chat.Chat;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,10 +23,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.plugin.RegisteredServiceProvider;
 
 public class ChatFormatter implements Listener {
-	
+
 	private final Pattern COLOR_REGEX = Pattern.compile("(?i)&([0-9A-F])");
 	private final Pattern MAGIC_REGEN = Pattern.compile("(?i)&([K])");
 	private final Pattern BOLD_REGEX = Pattern.compile("(?i)&([L])");
@@ -38,16 +36,8 @@ public class ChatFormatter implements Listener {
 
 	private MultiverseHook mvHook;
 	private TownyHook townyHook;
-	private Chat chatHook;
-    
-	public ChatFormatter() {
-		RegisteredServiceProvider<Chat> chatHook = Bukkit.getServicesManager().getRegistration(Chat.class);
-		Objects.requireNonNull(chatHook, "Unable to hook with Vault");
 
-		this.chatHook = chatHook.getProvider();
-		
-		Common.Log("&fHooked with Vault (ChatFormatter)!");
-		
+	public ChatFormatter() {
 		if (Bukkit.getPluginManager().getPlugin("Multiverse-Core") != null) {
 			mvHook = new MultiverseHook();
 			Common.Log("&fHooked with Multiverse 2 (World Alias)!");
@@ -96,20 +86,15 @@ public class ChatFormatter implements Listener {
 
 	public String replacePlayerVariables(Player pl, String format) {
 		String world = pl.getWorld().getName();
-
-		return format.replace("%prefix", formatColor(chatHook.getPlayerPrefix(pl)))
-				.replace("%suffix", formatColor(chatHook.getPlayerSuffix(pl)))
-				
-				.replace("%world", getWorldAlias(world))
-				.replace("%health", formatHealth(pl) + ChatColor.RESET)
-				
+		VaultHook vault = ChatControl.instance().getVaultHook();
+		AuthMeHook authMe = ChatControl.instance().getAuthMeHook();
+		
+		return format
+				.replace("%prefix", formatColor(vault.getPlayerPrefix(pl))).replace("%suffix", formatColor(vault.getPlayerSuffix(pl)))
+				.replace("%world", getWorldAlias(world)).replace("%health", formatHealth(pl) + ChatColor.RESET)
 				.replace("%player", pl.getDisplayName())
-				
-				.replace("%countrycode", AuthMeHook.getCountryCode(pl))
-				.replace("%countryname", AuthMeHook.getCountryName(pl))
-				
-				.replace("%town", getTown(pl))
-				.replace("%nation", getNation(pl));
+				.replace("%countrycode", authMe.getCountryCode(pl)).replace("%countryname", authMe.getCountryName(pl))
+				.replace("%town", getTown(pl)).replace("%nation", getNation(pl));
 	}
 
 	private List<Player> getLocalRecipients(Player pl, String message, double range) {
@@ -193,7 +178,7 @@ public class ChatFormatter implements Listener {
 		if (string == null)
 			return "";
 
-		String str = string;		
+		String str = string;
 		if (Common.hasPerm(pl, Permissions.Formatter.COLOR))
 			str = COLOR_REGEX.matcher(str).replaceAll("\u00A7$1");
 
@@ -215,10 +200,10 @@ public class ChatFormatter implements Listener {
 		str = RESET_REGEX.matcher(str).replaceAll("\u00A7$1");
 		return str;
 	}
-	
+
 	private String formatHealth(Player pl) {
-		int health = (int) ((Damageable)pl).getHealth();
-		
+		int health = (int) ((Damageable) pl).getHealth();
+
 		if (health > 10)
 			return ChatColor.DARK_GREEN + "" + health;
 		if (health > 5)
@@ -232,7 +217,7 @@ public class ChatFormatter implements Listener {
 
 		return mvHook.getColoredAlias(world);
 	}
-	
+
 	private String getNation(Player pl) {
 		if (townyHook == null)
 			return "";

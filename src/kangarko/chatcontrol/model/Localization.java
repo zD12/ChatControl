@@ -6,7 +6,6 @@ import java.nio.charset.StandardCharsets;
 
 import kangarko.chatcontrol.ChatControl;
 import kangarko.chatcontrol.utils.Common;
-import kangarko.chatcontrol.utils.IllegalLocaleException;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -20,26 +19,28 @@ public class Localization extends ConfHelper {
 				+ "\n"
 				+ "If you want to customize the localization, simply\n"
 				+ "copy this file to plugin folder and start editing.\n"
-				+ "It will still be updated with new values in future releases.";
+				+ "It will still be updated with new values in future releases."
+				+ "\n"
+				+ "To not display a message, set it to \'none\'";
 		
 		// try if the user has his modified version of localization inside the plugin folder		
-		file = new File(ChatControl.instance().getDataFolder(), "localization/" + Settings.General.LOCALIZATION);
+		file = new File(ChatControl.instance().getDataFolder(), "localization/" + Settings.LOCALIZATION);
 
 		if (file.exists())
 			cfg = YamlConfiguration.loadConfiguration(file);
 		else {
 			file = null;
 			try {
-				cfg = YamlConfiguration.loadConfiguration(new InputStreamReader(Localization.class.getResourceAsStream("/localization/" + Settings.General.LOCALIZATION), StandardCharsets.UTF_8));
+				cfg = YamlConfiguration.loadConfiguration(new InputStreamReader(Localization.class.getResourceAsStream("/localization/" + Settings.LOCALIZATION), StandardCharsets.UTF_8));
 			} catch (NoSuchMethodError ex) {
-				cfg = YamlConfiguration.loadConfiguration(Localization.class.getResourceAsStream("/localization/" + Settings.General.LOCALIZATION));
+				cfg = YamlConfiguration.loadConfiguration(Localization.class.getResourceAsStream("/localization/" + Settings.LOCALIZATION));
 			} catch (NullPointerException ex) {
 				throw new IllegalLocaleException();
 			}
 		}
 
 		
-		Common.Log("Using locale: " + Settings.General.LOCALIZATION_SUFFIX);
+		Common.Log("Using locale: " + Settings.LOCALIZATION_SUFFIX);
 		loadValues(Localization.class);
 	}
 
@@ -100,7 +101,10 @@ public class Localization extends ConfHelper {
 	public static String CLEAR_CONSOLE;
 	public static String CLEAR_CONSOLE_MSG;
 	public static String CLEAR_STAFF;
-
+	
+	public static String SIGNS_DUPLICATION;
+	public static String SIGNS_BROKE;
+	
 	public static String USAGE_FAKE_CMD;
 	public static String UPDATE_AVAILABLE;
 	public static String NO_PERMISSION;
@@ -140,6 +144,10 @@ public class Localization extends ConfHelper {
 		CLEAR_CONSOLE_MSG = getString("Console_Message", "&7Console was cleared by %player");
 		CLEAR_STAFF = getString("Chat_Staff_Message", "&7^----- [ == &fChat was cleared by %player &7== ] -----^");
 
+		pathPrefix("Signs");
+		SIGNS_DUPLICATION = getString("Duplicate_Text", "%server You cannot make multiple signs with the same text!");
+		SIGNS_BROKE = getString("Broke_When_Violated_A_Rule", "Your sign broke, there must be something wrong with it!");
+		
 		pathPrefix("Usage");
 		USAGE_FAKE_CMD = getString("Fake_Command", "%prefix Usage: /chatcontrol fake <&bjoin&f/&aleave&f>");
 

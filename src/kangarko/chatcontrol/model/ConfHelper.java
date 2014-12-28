@@ -11,7 +11,6 @@ import java.util.Objects;
 
 import kangarko.chatcontrol.ChatControl;
 import kangarko.chatcontrol.utils.Common;
-import kangarko.chatcontrol.utils.MissingResourceException;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Sound;
@@ -89,7 +88,7 @@ public class ConfHelper {
 			try {
 				ChatControl.instance().saveResource(FILE_NAME, false);
 			} catch (IllegalArgumentException ex) {
-				throw new MissingResourceException("Inbuilt resource %file not found!", FILE_NAME);
+				throw new InBuiltFileMissingException("Inbuilt resource %file not found!", FILE_NAME);
 			}
 		}
 
@@ -339,6 +338,20 @@ public class ConfHelper {
 			this.sound = Sound.valueOf(values[0].toUpperCase());
 			this.volume = Float.parseFloat(values[1]);
 			this.pitch = Float.parseFloat(values[2]);
+		}
+	}
+	
+	public static class IllegalLocaleException extends RuntimeException {
+		private static final long serialVersionUID = 1L;
+	}
+	
+	public static class InBuiltFileMissingException extends Exception {
+		private static final long serialVersionUID = 1L;
+		public final String file;
+		
+		public InBuiltFileMissingException(String msg, String file) {
+			super(msg.replace("%file", file));
+			this.file = file;
 		}
 	}
 }

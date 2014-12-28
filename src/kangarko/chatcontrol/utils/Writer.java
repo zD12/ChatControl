@@ -15,7 +15,7 @@ public class Writer {
 
 	private static final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
-	public static void zapisatDo(String filePath, String prefix, String msg) {
+	public static void writeToFile(String filePath, String prefix, String msg) {
 		int lastIndex = filePath.lastIndexOf('/');
 		File dir = new File(ChatControl.instance().getDataFolder(), filePath.substring(0, lastIndex >= 0 ? lastIndex : 0));
 		if (!dir.exists())
@@ -31,7 +31,7 @@ public class Writer {
 				bw.write("[" + getTime() + "] " + (prefix != null ? prefix + ": " : "") + line + System.lineSeparator());
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			Common.LogInFrame(false, "Unable to write to: " + filePath, "Error: " + ex.getMessage());
+			Common.LogInFrame(false, "Error writing to: " + filePath, "Error: " + ex.getMessage());
 		}
 	}
 

@@ -15,17 +15,22 @@ public class Permissions {
 	public class Commands {
 		// Permission muting game chat with "/chc mute" command.
 		public static final String MUTE = "chatcontrol.commands.mute";
+		
 		// Muting without broadcasting any message with "/chc mute -silent" command.
 		public static final String MUTE_SILENT = "chatcontrol.commands.mute.silent";
+		
 		// Muting without broadcasting player who muted the chat with "/chc mute -anonymous" command.
 		public static final String MUTE_ANONYMOUS = "chatcontrol.commands.mute.anonymous";
 		
 		// Clearing game chat with "/chc clear" command.
 		public static final String CLEAR = "chatcontrol.commands.clear";
+		
 		// Chat clear without broadcasting any message with "/chc clear -silent" command.
 		public static final String CLEAR_SILENT = "chatcontrol.commands.clear.silent";
+		
 		// Chat clear without broadcasting player who cleared the chat with "/chc clear -anonymous" command.
 		public static final String CLEAR_ANONYMOUS = "chatcontrol.commands.clear.anonymous";
+		
 		// Clearing the console with "/chc clear -console" command.
 		public static final String CLEAR_CONSOLE = "chatcontrol.commands.clear.console";
 		
@@ -81,14 +86,14 @@ public class Permissions {
 		
 		// No dot will not be inserted after player's messages.
 		public static final String PUNCTUATE = "chatcontrol.bypass.punctuate"; // TODO NB: Permission changed in v5.0.0 from insertdot to punctuate.
+		
+		// TODO New in 5.0.0 Allow player to make multiple signs with same text.
+		public static final String SIGN_DUPLICATION = "chatcontrol.bypass.signduplication";
 	}
 
-	public class Notify {
-		// Receive a warning when a message is caught by swear check.
-		public static final String SWEAR = "chatcontrol.notify.swear";
-		
-		// Receive a warning when a message is caught by advertising check.
-		public static final String ADVERTISE = "chatcontrol.notify.ad";
+	public class Notify {		
+		// TODO New in 5.0.0 Receive a warning when a player makes multiple signs with the same text.
+		public static final String SIGN_DUPLICATION = "chatcontrol.notify.signduplication";
 		
 		// Receive a warning when a new version of plugin is available.
 		public static final String UPDATE_AVAILABLE = "chatcontrol.notify.update";
@@ -125,6 +130,6 @@ public class Permissions {
 		public static final String OVERRIDE_RANGED = "chatcontrol.chat.overrideranged";
 	}
 	
-	// Permission to view timed message from broadcaster. (true by default, needs to be explicitly denied)
+	// TODO New in 5.0.0 Permission to view timed message from broadcaster. (true by default, needs to be explicitly denied)
 	public static final String VIEW_TIMED_MESSAGES = "chatcontrol.broadcaster.view";
 }

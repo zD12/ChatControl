@@ -12,7 +12,7 @@ public class ConsoleFilter implements Filter {
 		String msg = record.getMessage();
 
 		if (SettingsConsole.FILTER_ENABLED)
-			for(String str : SettingsConsole.FILTER_REPLACE_MAP.keySet())
+			for (String str : SettingsConsole.FILTER_REPLACE_MAP.keySet())
 				msg = msg.replaceAll(".*" + str.replace("<dot>", "\\.") + ".*", SettingsConsole.FILTER_REPLACE_MAP.get(str));
 
 		if (SettingsConsole.FILTER_ENABLED && SettingsConsole.FILTER_COLORS_TO_ANSI)

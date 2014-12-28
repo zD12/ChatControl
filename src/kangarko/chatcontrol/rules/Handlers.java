@@ -8,10 +8,6 @@ import kangarko.chatcontrol.utils.Common;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 
-/**
- * 
- * @deprecated duplicate messages on strings like ass fucker asshole
- */
 public class Handlers {
 
 	private final static File file;
@@ -26,17 +22,15 @@ public class Handlers {
 			ChatControl.instance().saveResource("handlers.yml", false);
 			Common.Log("&fCreated default handlers file: " + file.getName());
 		}
-
 	}
 
-	public static Handler loadHandler(String name, String ruleID) {
+	public static Handler loadHandler(String name, String ruleID) {		
 		cfg = YamlConfiguration.loadConfiguration(file);
 		
 		if (!cfg.isConfigurationSection(name))
 			throw new NullPointerException("Unknown handler: " + name);
 
 		sectionName = cfg.getConfigurationSection(name).getName();
-		System.out.println("Conf section name: " + sectionName); // TODO Why duplicate?
 
 		Handler handler = new Handler(sectionName, ruleID);
 		String message;
@@ -81,9 +75,15 @@ public class Handlers {
 		if (isValid(message))
 			handler.setRewriteTo(message);
 
+		List<String> list;
 		if (cfg.isSet(sectionName + ".Execute_Commands")) {
-			List<String> commands = cfg.getStringList(sectionName + ".Execute_Commands");
-			handler.setCommandsToExecute(commands);
+			list = cfg.getStringList(sectionName + ".Execute_Commands");
+			handler.setCommandsToExecute(list);
+		}
+		
+		if (cfg.isSet(sectionName + ".Ignored_In_Commands")) {
+			list = cfg.getStringList(sectionName + ".Ignored_In_Commands");
+			handler.setIgnoredInCommands(list);
 		}
 		
 		sectionName = null;

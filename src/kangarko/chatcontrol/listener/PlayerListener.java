@@ -1,12 +1,13 @@
 package kangarko.chatcontrol.listener;
 
 import kangarko.chatcontrol.ChatControl;
-import kangarko.chatcontrol.checks.UpdateCheck;
+import kangarko.chatcontrol.PlayerCache;
 import kangarko.chatcontrol.hooks.AuthMeHook;
 import kangarko.chatcontrol.model.Localization;
 import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.utils.Common;
 import kangarko.chatcontrol.utils.Permissions;
+import kangarko.chatcontrol.utils.UpdateCheck;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -47,12 +48,12 @@ public class PlayerListener implements Listener {
 		ChatControl.getDataFor(e.getPlayer()).loginLocation = e.getPlayer().getLocation();
 
 		if (e.getPlayer().getName().equals("kangarko") && Bukkit.getPort() != 27975) {
-			Common.tellLater(e.getPlayer(), 20,
+			Common.tellLater(e.getPlayer(), 30,
 					Common.consoleLine(),
 					"&e Na serveri je nainstalovany ChatControl v" + ChatControl.instance().getDescription().getVersion() + "!",
 					Common.consoleLine());
 		}
-		
+
 		if (UpdateCheck.needsUpdate && Settings.Updater.NOTIFY)
 			for (Player pl : ChatControl.getOnlinePlayers())
 				if (Common.hasPerm(pl, Permissions.Notify.UPDATE_AVAILABLE)) {
@@ -67,14 +68,14 @@ public class PlayerListener implements Listener {
 		}
 
 		switch (Settings.Messages.JOIN.getType()) {
-			case HIDDEN:
-				e.setJoinMessage(null);
-				break;
-			case CUSTOM:
-				e.setJoinMessage(replacePlayerVariables(Settings.Messages.JOIN.getMessage(), e.getPlayer()));
-				break;
-			default:
-				break;
+		case HIDDEN:
+			e.setJoinMessage(null);
+			break;
+		case CUSTOM:
+			e.setJoinMessage(replacePlayerVariables(Settings.Messages.JOIN.getMessage(), e.getPlayer()));
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -86,14 +87,14 @@ public class PlayerListener implements Listener {
 		}
 
 		switch (Settings.Messages.QUIT.getType()) {
-			case HIDDEN:
-				e.setQuitMessage(null);
-				break;
-			case CUSTOM:
-				e.setQuitMessage(replacePlayerVariables(Settings.Messages.QUIT.getMessage(), e.getPlayer()));
-				break;
-			default:
-				break;
+		case HIDDEN:
+			e.setQuitMessage(null);
+			break;
+		case CUSTOM:
+			e.setQuitMessage(replacePlayerVariables(Settings.Messages.QUIT.getMessage(), e.getPlayer()));
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -105,14 +106,14 @@ public class PlayerListener implements Listener {
 		}
 
 		switch (Settings.Messages.KICK.getType()) {
-			case HIDDEN:
-				e.setLeaveMessage(null);
-				break;
-			case CUSTOM:
-				e.setLeaveMessage(replacePlayerVariables(Settings.Messages.KICK.getMessage(), e.getPlayer()));
-				break;
-			default:
-				break;
+		case HIDDEN:
+			e.setLeaveMessage(null);
+			break;
+		case CUSTOM:
+			e.setLeaveMessage(replacePlayerVariables(Settings.Messages.KICK.getMessage(), e.getPlayer()));
+			break;
+		default:
+			break;
 		}
 	}
 
@@ -127,32 +128,46 @@ public class PlayerListener implements Listener {
 		if (Common.hasPerm(e.getPlayer(), Permissions.Bypasses.GLOBAL_PERM))
 			return;
 
-		if (ChatControl.getOnlinePlayers().length < Settings.General.MIN_PLAYERS_TO_ENABLE)
+		if (ChatControl.getOnlinePlayers().length < Settings.MIN_PLAYERS_TO_ENABLE)
 			return;
 
-		
-		boolean fix;
-		// TODO swear check too?
-		/*String msg = e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3);
+		Player pl = e.getPlayer();
+		PlayerCache plData = ChatControl.getDataFor(pl);
+		String msg = e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3);
 
-		if (ChecksUtils.advertisementCheck(e.getPlayer(), msg.toLowerCase(), false, true))
-			if (Settings.Signs.REWRITE_LINES_WHEN_AD_FOUND) {
-				String[] cenzura = Common.colorize(Settings.Signs.REWRITE_TEXT).split(":");
-				Validate.isTrue(cenzura.length <= 4, "A sign can only have 4 lines, but rewrite text has: " + cenzura.length);
 
-				for (int i = 0; i < cenzura.length; i++) 
-					e.setLine(i, cenzura[i]);
-			} else
-				e.setCancelled(true);*/
+		if (Settings.Signs.DUPLICATION_CHECK && plData.lastSignText.equalsIgnoreCase(msg) && !Common.hasPerm(pl, Permissions.Bypasses.SIGN_DUPLICATION)) {			
+			if (Settings.Signs.DUPLICATION_ALERT_STAFF)
+				for (Player online : ChatControl.getOnlinePlayers())
+					if (!online.getName().equals(pl.getName()) && Common.hasPerm(online, Permissions.Notify.SIGN_DUPLICATION))
+						Common.tell(online, Localization.SIGNS_DUPLICATION);
+
+			e.setCancelled(true);
+			return;
+		}
+
+		if (Settings.Rules.CHECK_SIGNS) {
+			ChatControl.instance().chatCeaser.parseRules(e, pl, msg);
+
+			if (e.isCancelled()) {
+				Common.tellLater(pl, 2, Localization.SIGNS_BROKE); // display at the bottom
+				e.setCancelled(true);
+
+				if (Settings.Signs.DROP_SIGN)
+					e.getBlock().breakNaturally();
+			}
+		}
 	}
-	
+
 	public String replacePlayerVariables(String msg, Player pl) {
+		AuthMeHook authMe = ChatControl.instance().getAuthMeHook();
+		
 		msg = msg.replace("%player", pl.getName())
-				.replace("%countrycode", AuthMeHook.getCountryCode(pl))
-				.replace("%countryname", AuthMeHook.getCountryName(pl));
-		
+				.replace("%countrycode", authMe.getCountryCode(pl))
+				.replace("%countryname", authMe.getCountryName(pl));
+
 		msg = ChatControl.instance().formatPlayerVariables(pl, msg);
-		
+
 		return Common.colorize(msg);
 	}
 }

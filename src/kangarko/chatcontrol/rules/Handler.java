@@ -3,13 +3,7 @@ package kangarko.chatcontrol.rules;
 import java.util.List;
 import java.util.Objects;
 
-import kangarko.chatcontrol.ChatControl;
-import kangarko.chatcontrol.utils.Common;
-import kangarko.chatcontrol.utils.Writer;
-
 import org.apache.commons.lang3.Validate;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Cancellable;
 
 /**
  * Custom handler that handles message caught by {@link Rule}
@@ -18,13 +12,18 @@ import org.bukkit.event.Cancellable;
 public class Handler {
 
 	/**
+	 * Flags
+	 */
+	public static final int CHAT = 0, COMMAND = 1, SIGN = 2;
+	
+	/**
 	 * The name of the handler.
 	 * It's automatically set from the handler name in handlers file.
 	 */
 	private final String name;
 	
 	/**
-	 * The name/id of the rule associated with this handler.
+	 * The id/name of the rule associated with this handler.
 	 */
 	private String ruleID = "UNSET";
 	
@@ -32,6 +31,11 @@ public class Handler {
 	 * A permission that makes player bypass the checks.
 	 */
 	private String bypassPermission;
+	
+	/**
+	 * List of commands that will be ignored from the check.
+	 */
+	private List<String> ignoredInCommands;
 
 	/**
 	 * A message displayed to the player that triggered the handler.
@@ -107,11 +111,29 @@ public class Handler {
 	public String getName() {
 		return name;
 	}
-
+	
+	public String getRuleID() {
+		return ruleID;
+	}
+	
 	public void setBypassPermission(String bypassPermission) {
 		Validate.isTrue(this.bypassPermission == null, "Bypass permission already set for: " + this);
 		
 		this.bypassPermission = bypassPermission;
+	}
+	
+	public String getBypassPermission() {
+		return bypassPermission;
+	}
+	
+	public List<String> getIgnoredInCommands() {
+		return ignoredInCommands;
+	}
+	
+	public void setIgnoredInCommands(List<String> ignoredInCommands) {
+		Validate.isTrue(this.ignoredInCommands == null, "Ignored commands already set for: " + this);
+		
+		this.ignoredInCommands = ignoredInCommands;
 	}
 
 	public void setPlayerWarnMsg(String playerWarnMsg) {
@@ -119,11 +141,19 @@ public class Handler {
 
 		this.playerWarnMsg = playerWarnMsg;
 	}
+	
+	public String getPlayerWarnMsg() {
+		return playerWarnMsg;
+	}
 
 	public void setBroadcastMsg(String broadcastMsg) {
 		Validate.isTrue(this.broadcastMsg == null, "Broadcast message already set for: " + this);
 
 		this.broadcastMsg = broadcastMsg;
+	}
+	
+	public String getBroadcastMsg() {
+		return broadcastMsg;
 	}
 
 	public void setStaffAlertMsg(String staffAlertMsg) {
@@ -132,10 +162,18 @@ public class Handler {
 		this.staffAlertMsg = staffAlertMsg;
 	}
 
+	public String getStaffAlertMsg() {
+		return staffAlertMsg;
+	}
+	
 	public void setStaffAlertPermission(String staffAlertPermission)  {
 		Objects.requireNonNull(staffAlertMsg, "Staff alert message is null, cannot get staff permission! Handler: " + this);
 
 		this.staffAlertPermission = staffAlertPermission;
+	}
+	
+	public String getStaffAlertPermission() {
+		return staffAlertPermission;
 	}
 
 	public void setConsoleMsg(String consoleMsg) {
@@ -144,10 +182,18 @@ public class Handler {
 		this.consoleMsg = consoleMsg;
 	}
 
+	public String getConsoleMsg() {
+		return consoleMsg;
+	}
+	
 	public void setCommandsToExecute(List<String> commandsToExecute) {
 		Validate.isTrue(this.commandsToExecute == null, "Commands to execute already set for: " + this);
 		
 		this.commandsToExecute = commandsToExecute;
+	}
+	
+	public List<String> getCommandsToExecute() {
+		return commandsToExecute;
 	}
 
 	public void setWriteToFileName(String writeToFileName) {
@@ -156,10 +202,18 @@ public class Handler {
 		this.writeToFileName = writeToFileName;
 	}
 	
+	public String getWriteToFileName() {
+		return writeToFileName;
+	}
+	
 	public void setBlockMessage() {
 		Validate.isTrue(!this.blockMessage, "Message is already blocked for: " + this);
 		
 		this.blockMessage = true;
+	}
+	
+	public boolean blockMessage() {
+		return blockMessage;
 	}
 	
 	public void setMsgReplacement(String msgReplacement) {
@@ -167,6 +221,10 @@ public class Handler {
 		Validate.isTrue(this.rewriteTo == null, "Whole message replacement already defined for: " + this);
 		
 		this.msgReplacement = msgReplacement;
+	}
+	
+	public String getMsgReplacement() {
+		return msgReplacement;
 	}
 
 	public void setRewriteTo(String wholeMsgReplacement) {
@@ -176,48 +234,8 @@ public class Handler {
 		this.rewriteTo = wholeMsgReplacement;
 	}
 	
-	public <T extends Cancellable> String handle(T e, Player pl, String match, String msg, boolean command, boolean sign) {
-		if (bypassPermission != null && Common.hasPerm(pl, bypassPermission))
-			return msg;
-
-		if (playerWarnMsg != null)
-			Common.tell(pl, replaceVariables(playerWarnMsg));
-
-		if (broadcastMsg != null)
-			Common.broadcastWithPlayer(replaceVariables(broadcastMsg).replace("%message", msg), pl.getName());
-		
-		if (staffAlertMsg != null) {
-			Objects.requireNonNull(staffAlertPermission, "Staff alert permission is null for: " + this);
-			
-			for (Player online : ChatControl.getOnlinePlayers())
-				if (Common.hasPerm(online, staffAlertPermission))
-					Common.tell(online, replaceVariables(staffAlertMsg).replace("%message", msg), pl.getName());
-		}
-			
-		if (consoleMsg != null)
-			Common.Log(replaceVariables(consoleMsg).replace("%player", pl.getName()).replace("%message", msg));
-		
-		if (commandsToExecute != null)
-			for (String commandToExecute : commandsToExecute)
-				Common.customAction(pl, commandToExecute, msg);
-		
-		if (writeToFileName != null)
-			Writer.zapisatDo(writeToFileName, pl.getName(), replaceVariables("[Handler=%handler, Rule ID=%ruleID] ") + msg);
-
-		if (blockMessage)
-			e.setCancelled(true);
-		else {
-			if (msgReplacement != null)
-				return msg.replaceAll(match, Common.colorize(msgReplacement));
-			else if (rewriteTo != null)
-				return Common.colorize(replaceVariables(rewriteTo).replace("%player", pl.getName()).replace("%message", msg));
-		}
-		
-		return msg;
-	}
-
-	private String replaceVariables(String str) {
-		return str.replace("%ruleID", ruleID).replace("%handler", name);
+	public String getRewriteTo() {
+		return rewriteTo;
 	}
 	
 	private String printCommands() {
@@ -232,6 +250,9 @@ public class Handler {
 	public String toString() {
 		return "    Handler{\n"
 				+ "        Name: \'" + name + "\'\n"
+				+ (ruleID != null ? "        Rule ID: " + ruleID + "\n" : "")
+				+ (ignoredInCommands != null ? "        Ignored In Commands: " + ignoredInCommands + "\n" : "")
+				+ (bypassPermission != null ? "        Bypass Permission: \'" + bypassPermission + "\'\n" : "")
 				+ (playerWarnMsg != null ? "        Player Warn Msg: \'" + playerWarnMsg + "\'\n" : "")
 				+ (broadcastMsg != null ? "        Broadcast Msg: \'" + broadcastMsg + "\'" : "")
 				+ (staffAlertPermission != null ? "        Staff Alert Permission: \'" + staffAlertPermission + "\'\n" : "")

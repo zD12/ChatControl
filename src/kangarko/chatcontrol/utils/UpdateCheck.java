@@ -1,4 +1,4 @@
-package kangarko.chatcontrol.checks;
+package kangarko.chatcontrol.utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,7 +14,6 @@ import java.nio.file.StandardCopyOption;
 import kangarko.chatcontrol.ChatControl;
 import kangarko.chatcontrol.model.Localization;
 import kangarko.chatcontrol.model.Settings;
-import kangarko.chatcontrol.utils.Common;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -91,7 +90,7 @@ public class UpdateCheck implements Runnable {
 		} catch (UnknownHostException | MalformedURLException ex) {
 			Common.Warn("Update check failed, could not connect to: " + fileurl);
 
-			if (Settings.General.DEBUG)
+			if (Settings.DEBUG)
 				ex.printStackTrace();
 		} catch (NumberFormatException ex) {
 			Common.Warn("Update check failed, malformed version string: " + ex.getMessage());

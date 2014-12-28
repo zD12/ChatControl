@@ -1,0 +1,28 @@
+# ---------------------------------------------------------
+# This file manages remapping messages with the help of packets
+# 
+# It supports unicode characters, such as smileys
+# but the file must be saved with UTF-8 encoding. Tested on Notepad++
+# WordPad or Notepad on Windows are known to cause issues!
+# You need to have ProtocolLib to enable these features!
+# You can replace plugin or server messages, too.
+# ---------------------------------------------------------
+
+# Replace only parts of the messages, for example unicode.
+Replace_UTF-8:
+  ':square:': "\u25a8"
+  ':rect:': "\u2588"
+  :-(: "\u2639"
+  :-): "\u263a"
+  ;-): "\u32e1"
+  <3: "\u2665"
+  :(: "\u2639"
+  ;): "\u32e1"
+  :): "\u263a"
+
+# This supports regular expressions.
+Replace_Parts:
+  \bgonna\b: going
+  \bdis\b: this
+  \bbwanna\b: want
+  (can|may|would you like if) i (have|be|become|get|has) (op|admin|mod|builder): can i has weepcraft?

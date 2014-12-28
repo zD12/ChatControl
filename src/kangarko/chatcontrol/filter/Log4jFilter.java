@@ -54,7 +54,7 @@ public class Log4jFilter implements Filter {
 				return Result.DENY;
 			else if (filter.toLowerCase().contains(message.toLowerCase()))
 				return Result.DENY;
-			//else if (Common.regExMatch(filter, message)) // Temporary disabled. Causes server to silently crash if a message is printed inside the match method.
+			//else if (Common.regExMatch(filter, message)) // TODO Temporary disabled. Causes server to silently crash if a message is printed inside the match method.
 			//	return Result.DENY;
 		}
 		return Result.NEUTRAL;

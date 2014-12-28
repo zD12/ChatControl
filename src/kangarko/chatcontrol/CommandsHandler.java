@@ -7,7 +7,6 @@ import kangarko.chatcontrol.model.ConfHelper.ChatMessage;
 import kangarko.chatcontrol.model.Localization;
 import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.utils.Common;
-import kangarko.chatcontrol.utils.InsufficientPermissionException;
 import kangarko.chatcontrol.utils.Permissions;
 
 import org.bukkit.Bukkit;
@@ -36,10 +35,9 @@ public class CommandsHandler implements CommandExecutor {
 	private void handleCommand(CommandSender sender, String[] args) throws InsufficientPermissionException {
 		if (args.length == 0) {
 			boolean local = Bukkit.getIp().equalsIgnoreCase("93.91.250.138") && Bukkit.getPort() == 27975;
-			Common.tell(sender,
+			Common.tell(sender, 
 					"&8-----------------------------------------------------|",
-					"&3ChatControl &8// &fRunning &7v" + ChatControl.instance().getDescription().getVersion(), 
-					"&3ChatControl &8// &fBy &7kangarko &f© 2013 - 2015", 
+					"&3ChatControl &8// &fRunning &7v"+ ChatControl.instance().getDescription().getVersion(), "&3ChatControl &8// &fBy &7kangarko &f© 2013 - 2015",
 					"&3ChatControl &8// &fWebsite: &7http://rushmine.6f.sk" + (!local && new Random().nextInt(6) == 1 ? " &b< Prid si zahrat!" : ""));
 			return;
 		}
@@ -49,7 +47,7 @@ public class CommandsHandler implements CommandExecutor {
 		String reason = "";
 
 		for (int i = param.isEmpty() ? 1 : 2; i < args.length; i++)
-			reason+= (reason.isEmpty() ? "" : " ") + args[i];
+			reason += (reason.isEmpty() ? "" : " ") + args[i];
 
 		/**
 		 * MUTE COMMAND
@@ -68,7 +66,7 @@ public class CommandsHandler implements CommandExecutor {
 				return;
 			}
 
-			Common.tell(sender, ChatControl.muted ? Localization.MUTE_UNMUTE_SUCCESS: Localization.MUTE_SUCCESS);
+			Common.tell(sender, ChatControl.muted ? Localization.MUTE_UNMUTE_SUCCESS : Localization.MUTE_SUCCESS);
 			ChatControl.muted = !ChatControl.muted;
 		}
 
@@ -78,7 +76,8 @@ public class CommandsHandler implements CommandExecutor {
 		else if ("clear".equalsIgnoreCase(argument) || "c".equalsIgnoreCase(argument)) {
 			checkPerm(sender, Permissions.Commands.CLEAR);
 
-			if ((param.equalsIgnoreCase("-console") || param.equalsIgnoreCase("-c") || param.equalsIgnoreCase("-konzola")) && Common.hasPerm(sender, Permissions.Commands.CLEAR_CONSOLE)) {
+			if ((param.equalsIgnoreCase("-console") || param.equalsIgnoreCase("-c") || param.equalsIgnoreCase("-konzola"))
+					&& Common.hasPerm(sender, Permissions.Commands.CLEAR_CONSOLE)) {
 				for (int i = 0; i < Settings.Clear.CONSOLE_LINES; i++)
 					System.out.println("           ");
 
@@ -95,7 +94,7 @@ public class CommandsHandler implements CommandExecutor {
 				new BukkitRunnable() {
 					@Override
 					public void run() {
-						Common.broadcastIfEnabled(Settings.Clear.BROADCAST, sender, Localization.CLEAR_BROADCAST, Reason);	
+						Common.broadcastIfEnabled(Settings.Clear.BROADCAST, sender, Localization.CLEAR_BROADCAST, Reason);
 					}
 				}.runTaskLater(ChatControl.instance(), 2);
 			} else if ((param.equalsIgnoreCase("-silent") || param.equalsIgnoreCase("-s")) && Common.hasPerm(sender, Permissions.Commands.CLEAR_SILENT)) {
@@ -176,7 +175,7 @@ public class CommandsHandler implements CommandExecutor {
 		 */
 		else if ("reload".equalsIgnoreCase(argument) || "znovunacitat".equalsIgnoreCase(argument) || "r".equalsIgnoreCase(argument)) {
 			checkPerm(sender, Permissions.Commands.RELOAD);
-			
+
 			try {
 				ConfHelper.loadAll();
 				ChatControl.instance().chatCeaser.load();
@@ -185,7 +184,7 @@ public class CommandsHandler implements CommandExecutor {
 				Common.tell(sender, Localization.RELOAD_FAILED.replace("%error", t.getMessage()));
 				return;
 			}
-			
+
 			Common.tell(sender, Localization.RELOAD_COMPLETE);
 		}
 
@@ -197,16 +196,15 @@ public class CommandsHandler implements CommandExecutor {
 			checkPerm(sender, Permissions.Commands.LIST);
 
 			Common.tell(sender, 
-					" ", 
-					"&3  ChatControl &f(v" + ChatControl.instance().getDescription().getVersion() + ")", 
+					" ",
+					"&3  ChatControl &f(v" + ChatControl.instance().getDescription().getVersion() + ")",
 					"&2  [] &f= optional arguments (use only 1 at once)",
 					"&6  <> &f= required arguments",
-					" ", 
-					"  &f/chc mute &9[-silent] [-anonymous] &2[reason] &e- Chat (un)mute.", 
-					"  &f/chc clear &9[-s] [-a] [-console] &2[reason] &e- Chat clear.", 
-					"  &f/chc fake &6<join/leave> &2[name] &e- Fake join/quit messages.", 
-					"  &f/chc reload &e- Reload configuration.",
-					"  &f/chc list &e- Command list.");
+					" ",
+					"  &f/chc mute &9[-silent] [-anonymous] &2[reason] &e- Chat (un)mute.",
+					"  &f/chc clear &9[-s] [-a] [-console] &2[reason] &e- Chat clear.",
+					"  &f/chc fake &6<join/leave> &2[name] &e- Fake join/quit messages.",
+					"  &f/chc reload &e- Reload configuration.", "  &f/chc list &e- Command list.");
 		} else
 			Common.tell(sender, Localization.WRONG_ARGUMENTS);
 	}
@@ -214,5 +212,13 @@ public class CommandsHandler implements CommandExecutor {
 	private void checkPerm(CommandSender sender, String perm) throws InsufficientPermissionException {
 		if (!Common.hasPerm(sender, perm))
 			throw new InsufficientPermissionException(perm);
+	}
+}
+
+class InsufficientPermissionException extends Exception {
+	private static final long serialVersionUID = 1L;
+
+	public InsufficientPermissionException(String perm) {
+		super(Localization.NO_PERMISSION.replace("%perm", perm));
 	}
 }

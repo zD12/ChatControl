@@ -26,6 +26,11 @@ public class Settings extends ConfHelper {
 				"\n" +
 				"SLOVAK DEVELOPER FTW\n" +
 				"Supports color codes with the '&' character.\n" +
+				"\n" +
+				"Most of the messages (warning messages, etc) are found\n" +
+				"in localization. To customize it, make a new file in\n" +
+				"localization/messages_LOCALENAME.yml and it will be filled\n" +
+				"with all the default values.\n" +
 				"---------------------------------------------------------\n";		
 		FILE_NAME = "settings.yml";
 
@@ -53,7 +58,7 @@ public class Settings extends ConfHelper {
 	public static class SoundNotify {
 		public static boolean ENABLED;
 		public static boolean ONLY_WHEN_AFK;
-		public static HashSet<String> ENABLED_IN_FOLLOWING_COMMANDS;
+		public static HashSet<String> ENABLED_IN_COMMANDS;
 		public static SoundHelper SOUND;
 		public static String CHAT_PREFIX;
 
@@ -64,7 +69,7 @@ public class Settings extends ConfHelper {
 			ONLY_WHEN_AFK = getBoolean("Notify_Only_When_Afk", true);
 			CHAT_PREFIX = getString("Notify_Only_If_Prefixed_With", "@");
 			SOUND = new SoundHelper(getString("Sound", "CHICKEN_EGG_POP, 1F, 1.5F"));
-			ENABLED_IN_FOLLOWING_COMMANDS = new HashSet<>(getStringList("Enabled_In_Commands", Arrays.asList("msg", "tell", "t", "w", "r")));
+			ENABLED_IN_COMMANDS = new HashSet<>(getStringList("Enabled_In_Commands", Arrays.asList("msg", "tell", "t", "w", "r")));
 		}
 	}
 
@@ -77,13 +82,14 @@ public class Settings extends ConfHelper {
 				pathPrefix("Anti_Spam.Chat");
 
 				DELAY = getInteger("Delay_Between_Messages", 1);
-				SIMILARITY = getInteger("Block_Similar_Over", 80);
+				SIMILARITY = getInteger("Similar_Percentage_Block", 80);
 			}
 		}
 
 		public static class Commands {
 			public static HashSet<String> WHITELIST_DELAY;
 			public static HashSet<String> WHITELIST_SIMILARITY;
+			
 			public static int DELAY;
 			public static int SIMILARITY;
 
@@ -91,7 +97,7 @@ public class Settings extends ConfHelper {
 				pathPrefix("Anti_Spam.Commands");
 
 				DELAY = getInteger("Delay_Between_Commands", 2);
-				SIMILARITY = getInteger("Block_Similar_Over", 80);
+				SIMILARITY = getInteger("Similar_Percentage_Block", 80);
 				WHITELIST_DELAY = new HashSet<>(getStringList("Whitelist_Delay", Arrays.asList("tell", "pm", "t", "w", "r")));
 				WHITELIST_SIMILARITY = new HashSet<>(getStringList("Whitelist_Similarity", Arrays.asList("spawn", "home")));
 			}
@@ -138,27 +144,15 @@ public class Settings extends ConfHelper {
 
 			private static void init() {
 				pathPrefix("Chat.Grammar.Insert_Dot");
-
+				
 				INSERT_DOT = getBoolean("Enabled", true);
 				INSERT_DOT_MSG_LENGTH = getInteger("Min_Message_Length", 5);
 
 				pathPrefix("Chat.Grammar.Capitalize");
-
+				
 				CAPITALIZE = getBoolean("Enabled", true);
 				CAPITALIZE_MSG_LENGTH = getInteger("Min_Message_Length", 5);
 			}
-		}
-	}
-
-	public static class Commands {
-		public static HashSet<String> WHITELIST_ADS;
-		public static HashSet<String> WHITELIST_SWEAR;
-
-
-		private static void init() {
-			pathPrefix("Commands");
-			WHITELIST_ADS = new HashSet<>(getStringList("Whitelist_Ads_In", Arrays.asList("/auction", "//")));
-			WHITELIST_SWEAR = new HashSet<>(getStringList("Whitelist_Swears_In", Arrays.asList("/register", "/login", "/l"))); 
 		}
 	}
 
@@ -181,7 +175,7 @@ public class Settings extends ConfHelper {
 			KICK = getMessage("Kick", new ChatMessage(Type.DEFAULT));
 
 			pathPrefix("Messages.Timed");
-			TIMED_ENABLED = getBoolean("Enabled", true);
+			TIMED_ENABLED = getBoolean("Enabled", false);
 			TIMED_RANDOM_ORDER = getBoolean("Random_Order", false);
 			TIMED_RANDOM_NO_REPEAT = getBoolean("Random_No_Repeat", true);
 			TIMED_PREFIX = getString("Prefix", "&8[&2Tip&8]&2");
@@ -276,18 +270,30 @@ public class Settings extends ConfHelper {
 	}
 
 	public static class Signs {
-		public static boolean CHECK_FOR_ADS;
-		public static boolean CHECK_FOR_DUPLICATION;
-		public static boolean REWRITE_LINES_WHEN_AD_FOUND;
-		public static String REWRITE_TEXT;
+		public static boolean DUPLICATION_CHECK;
+		public static boolean DUPLICATION_ALERT_STAFF;
+		public static boolean BLOCK_WHEN_VIOLATES_RULE;
+		public static boolean DROP_SIGN;
 
 		private static void init() {
-			pathPrefix("Signs");
+			pathPrefix("Signs.Duplication");
+			DUPLICATION_CHECK = getBoolean("Deny_Signs_With_Same_Text", false);
+			DUPLICATION_ALERT_STAFF = getBoolean("Alert_Staff", true);
+			BLOCK_WHEN_VIOLATES_RULE = getBoolean("Block_When_Violates_A_Rule", true);
+			DROP_SIGN = getBoolean("Drop_Sign", true);
+		}
+	}
 
-			CHECK_FOR_ADS = getBoolean("Check_For_Ads", true);
-			CHECK_FOR_DUPLICATION = getBoolean("Check_For_Duplication", false);
-			REWRITE_LINES_WHEN_AD_FOUND = getBoolean("Rewrite_Lines_When_Ad_Found", true);
-			REWRITE_TEXT = getString("Rewrite_Text", "&4Advertising:&4is not:&4permitted on:&4this server");
+	public static class Rules {
+		public static boolean CHECK_CHAT, CHECK_COMMANDS, CHECK_SIGNS;
+
+
+		private static void init() {
+			pathPrefix("Rules");
+
+			CHECK_CHAT = getBoolean("Check_Chat", true);
+			CHECK_COMMANDS = getBoolean("Check_Commands", true);
+			CHECK_SIGNS = getBoolean("Check_Signs", true);
 		}
 	}
 
@@ -321,26 +327,24 @@ public class Settings extends ConfHelper {
 		}
 	}
 
-	public static class General {
-		public static boolean OP_HAS_PERMISSIONS;
-		@Deprecated // TODO further inspection of that thing
-		public static boolean STRIP_UNICODE_IN_CHECKS;
-		public static int REGEX_TIMEOUT;
-		public static int MIN_PLAYERS_TO_ENABLE;
-		public static String LOCALIZATION_SUFFIX;
-		public static String LOCALIZATION;
-		public static boolean DEBUG;
 
-		private static void init() {
-			pathPrefix("General");
+	public static boolean OP_HAS_PERMISSIONS;
+	public static int REGEX_TIMEOUT;
+	public static int MIN_PLAYERS_TO_ENABLE;
+	public static String LOCALIZATION_SUFFIX;
+	protected static String LOCALIZATION;
+	public static boolean VERBOSE;
+	public static boolean DEBUG;
+	public static int VERSION;
 
-			MIN_PLAYERS_TO_ENABLE = getInteger("Minimum_Players_To_Enable_Checks", 0);
-			STRIP_UNICODE_IN_CHECKS = getBoolean("Ignore_Unicode_In_Checks", true);
-			OP_HAS_PERMISSIONS = getBoolean("Op_Has_Permissions", true);
-			REGEX_TIMEOUT = getInteger("Regex_Timeout_Milis", 100);
-			LOCALIZATION_SUFFIX = getString("Locale", "en");
-			LOCALIZATION = "messages_" + LOCALIZATION_SUFFIX + ".yml";
-			DEBUG = getBoolean("Debug", false);
-		}
+	private static void init() {
+		MIN_PLAYERS_TO_ENABLE = getInteger("Minimum_Players_To_Enable_Checks", 0);
+		OP_HAS_PERMISSIONS = getBoolean("Op_Has_Permissions", true);
+		REGEX_TIMEOUT = getInteger("Regex_Timeout_Milis", 100);
+		LOCALIZATION_SUFFIX = getString("Locale", "en");
+		LOCALIZATION = "messages_" + LOCALIZATION_SUFFIX + ".yml";
+		VERBOSE = getBoolean("Verbose_On_Startup", true);
+		DEBUG = getBoolean("Debug", false);
+		VERSION = getInteger("Version", 1);
 	}
 }

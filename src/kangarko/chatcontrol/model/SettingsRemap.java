@@ -36,7 +36,7 @@ public class SettingsRemap extends ConfHelper {
 
 	public static HashMap<String, String> REPLACE_UTF_MAP;
 	public static HashMap<String, String> REPLACE_REGEX_MAP;
-	public static HashMap<String, String> REPLACE_WHOLE_MAP;
+	//public static HashMap<String, String> REPLACE_WHOLE_MAP;
 
 	private static final void init() {		
 		HashMap<String, String> utf = new HashMap<>();
@@ -56,12 +56,12 @@ public class SettingsRemap extends ConfHelper {
 		part.put(whole("gonna"), "going");
 		part.put("(can|may|would you like if) i (have|be|become|get|has) (op|admin|mod|builder)", "can i has weepcraft?");
 
-		HashMap<String, String> whole = new HashMap<>();
-		whole.put("test", "nonono");
+		//HashMap<String, String> whole = new HashMap<>();
+		//whole.put("test", "nonono");
 
 		REPLACE_UTF_MAP = getValuesAndKeys("Replace_UTF-8", utf, false);
 		REPLACE_REGEX_MAP = getValuesAndKeys("Replace_Parts", part, false);
-		REPLACE_WHOLE_MAP = getValuesAndKeys("Replace_Whole", whole, false);
+		//REPLACE_WHOLE_MAP = getValuesAndKeys("Replace_Whole", whole, false);
 	}
 
 	private static String whole(String str) {

@@ -7,23 +7,24 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Filter;
 
-import kangarko.chatcontrol.checks.UpdateCheck;
 import kangarko.chatcontrol.filter.ConsoleFilter;
 import kangarko.chatcontrol.filter.Log4jFilter;
 import kangarko.chatcontrol.hooks.AuthMeHook;
+import kangarko.chatcontrol.hooks.EssentialsHook;
 import kangarko.chatcontrol.hooks.ProtocolLibHook;
+import kangarko.chatcontrol.hooks.VaultHook;
 import kangarko.chatcontrol.listener.ChatListener;
 import kangarko.chatcontrol.listener.CommandListener;
 import kangarko.chatcontrol.listener.PlayerListener;
 import kangarko.chatcontrol.model.ConfHelper;
+import kangarko.chatcontrol.model.ConfHelper.IllegalLocaleException;
+import kangarko.chatcontrol.model.ConfHelper.InBuiltFileMissingException;
 import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.model.SettingsConsole;
 import kangarko.chatcontrol.rules.ChatCeaser;
 import kangarko.chatcontrol.utils.Common;
-import kangarko.chatcontrol.utils.IllegalLocaleException;
-import kangarko.chatcontrol.utils.MissingResourceException;
 import kangarko.chatcontrol.utils.Permissions;
-import kangarko.chatcontrol.utils.safety.SafeMap;
+import kangarko.chatcontrol.utils.UpdateCheck;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -33,26 +34,26 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.earth2me.essentials.CommandSource;
-import com.earth2me.essentials.Essentials;
-
 // TODO implement death messages
 // TODO replace remap
-// TODO implement lag checked - how much time takes to proceed for instance chat event etc
-// TODO Chat after X time since login
+// TODO implement lag checker
+// FIXME disappearing comments from settings
 public class ChatControl extends JavaPlugin {
 
 	private static ChatControl instance;
 
 	// Player IP, Time
-	public static SafeMap<String, Long> ipLastLogin = new SafeMap<>();
+	public static HashMap<String, Long> ipLastLogin = new HashMap<>();
 
 	// Player Name, Player Cache
-	private static SafeMap<String, PlayerCache> playerData = new SafeMap<>();
+	private static HashMap<String, PlayerCache> playerData = new HashMap<>();
 
 	public static boolean muted = false;
+
+	private EssentialsHook ess;
+	private VaultHook vault;
+	private AuthMeHook authMe;
 	
-	private Essentials ess;
 	private ChatFormatter formatter;
 	public ChatCeaser chatCeaser;
 
@@ -61,23 +62,21 @@ public class ChatControl extends JavaPlugin {
 			instance = this;
 
 			ConfHelper.loadAll();
-			
+
 			chatCeaser = new ChatCeaser("rules.txt");
 			chatCeaser.load();
-
-			if (Settings.General.DEBUG) {
-				ipLastLogin.displayWarnings();
-				playerData.displayWarnings();
-			}
 
 			for (Player pl : getOnlinePlayers())
 				getDataFor(pl);
 
 			if (doesPluginExist("Essentials"))
-				ess = (Essentials) Bukkit.getPluginManager().getPlugin("Essentials");
+				ess = new EssentialsHook();
 
+			if (doesPluginExist("Vault"))
+				vault = new VaultHook();
+			
 			if (doesPluginExist("AuthMe"))
-				AuthMeHook.enabled = true;
+				authMe = new AuthMeHook();
 
 			getServer().getPluginManager().registerEvents(new ChatListener(), this);
 			getServer().getPluginManager().registerEvents(new PlayerListener(), this);
@@ -102,7 +101,8 @@ public class ChatControl extends JavaPlugin {
 			if (Settings.Packets.DISABLE_TAB_COMPLETE) {
 				if (doesPluginExist("ProtocolLib")) {
 					if (new File("spigot.yml").exists())
-						Common.LogInFrame(false, "&aIf you want to disable tab complete, set", "&bcommands.tab-complete &ato 0 in &fspigot.yml &afile.", "&aFunction in ChatControl was disabled.");
+						Common.LogInFrame(false, "&aIf you want to disable tab complete, set", "&bcommands.tab-complete &ato 0 in &fspigot.yml &afile.",
+								"&aFunction in ChatControl was disabled.");
 					else
 						ProtocolLibHook.init();
 				} else
@@ -110,7 +110,7 @@ public class ChatControl extends JavaPlugin {
 			}
 
 			if (Settings.Chat.Formatter.ENABLED) {
-				if (doesPluginExist("Vault")) {
+				if (vault != null) {
 					if (doesPluginExist("ChatManager"))
 						Common.LogInFrame(true, "Detected &fChatManager&c! Please copy", "settings from it to ChatControl", "and disable the plugin afterwards!");
 					else {
@@ -137,23 +137,23 @@ public class ChatControl extends JavaPlugin {
 			Common.Log("&4!----------------------------------------------!");
 			Common.Log(" &cError loading ChatControl, plugin is disabled!");
 			Common.Log("&4!----------------------------------------------!");
-			
+
 			if (t instanceof InvalidConfigurationException) {
 				Common.Log(" &cIt seems like your config is not a valid YAML.");
 				Common.Log(" &cUse online services like");
 				Common.Log(" &chttp://yaml-online-parser.appspot.com/");
 				Common.Log(" &cto check for syntax errors!");
-			
+
 			} else if (t instanceof IllegalLocaleException) {
-				Common.Log(" &cChatControl doesn't have the locale: " + Settings.General.LOCALIZATION_SUFFIX);
-			
-			} else if (t instanceof MissingResourceException) {
+				Common.Log(" &cChatControl doesn't have the locale: " + Settings.LOCALIZATION_SUFFIX);
+
+			} else if (t instanceof InBuiltFileMissingException) {
 				Common.Log(" &c" + t.getMessage());
 				Common.Log(" &cTo fix it, create a blank file with");
-				Common.Log(" &cthe name &f" + ((MissingResourceException) t).file + " &cin plugin folder.");
+				Common.Log(" &cthe name &f" + ((InBuiltFileMissingException) t).file + " &cin plugin folder.");
 				Common.Log(" &cIt will be filled with default values.");
 				Common.Log(" &ePlease inform the developer about this error.");
-			
+
 			} else
 				Common.Log(" &cThe error was: " + t.getMessage());
 			Common.Log("&4!----------------------------------------------!");
@@ -170,10 +170,8 @@ public class ChatControl extends JavaPlugin {
 		instance = null;
 
 		UpdateCheck.needsUpdate = false;
-		AuthMeHook.enabled = false;
 		getServer().getScheduler().cancelTasks(this);
 	}
-
 
 	private void scheduleTimedMessages() {
 		final HashMap<String, Integer> broadcasterIndexes = new HashMap<String, Integer>();
@@ -188,12 +186,13 @@ public class ChatControl extends JavaPlugin {
 			for (String world : Settings.Messages.TIMED.keySet())
 				broadcasterCache.put(world, new ArrayList<String>(Settings.Messages.TIMED.get(world)));
 
-		for (String world : Settings.Messages.TIMED.keySet()) {
-			Common.Log("&fMessages for: " + world);
+		if (Settings.VERBOSE)
+			for (String world : Settings.Messages.TIMED.keySet()) {
+				Common.Log("&fMessages for: " + world);
 
-			for (String msg : Settings.Messages.TIMED.get(world))
-				Common.Log(" - " + msg);
-		}
+				for (String msg : Settings.Messages.TIMED.get(world))
+					Common.Log(" - " + msg);
+			}
 
 		new BukkitRunnable() {
 
@@ -255,29 +254,18 @@ public class ChatControl extends JavaPlugin {
 		}.runTaskTimer(this, 20, 20 * Settings.Messages.TIMED_DELAY_SECONDS);
 	}
 
-	public boolean canSoundNotify(String name) {
+	public boolean canSoundNotify(String pl) {
 		if (!Settings.SoundNotify.ONLY_WHEN_AFK)
 			return true;
 
-		if (ess == null || ess.getUserMap().getUser(name) == null)
-			return true;
-
-		return ess.getUserMap().getUser(name).isAfk();
+		return ess.isAfk(pl);
 	}
 
 	public Player getReplyTo(Player pl) {
 		if (ess == null)
 			return null;
 
-		CommandSource cmdSource = ess.getUserMap().getUser(pl.getName()).getReplyTo();
-		if (cmdSource == null || !cmdSource.isPlayer())
-			return null;
-
-		Player source = cmdSource.getPlayer();
-		if (source == null || !source.isOnline())
-			return null;
-
-		return source;
+		return ess.getReplyTo(pl.getName());
 	}
 
 	public String formatPlayerVariables(Player pl, String message) {
@@ -295,6 +283,14 @@ public class ChatControl extends JavaPlugin {
 			return true;
 		}
 		return false;
+	}
+	
+	public VaultHook getVaultHook() {
+		return vault;
+	}
+	
+	public AuthMeHook getAuthMeHook() {
+		return authMe;
 	}
 
 	// ------------------------ static ------------------------
@@ -323,7 +319,7 @@ public class ChatControl extends JavaPlugin {
 		if (instance == null) {
 			instance = new ChatControl();
 
-			Common.Warn("ChatControl instance is null! Was the plugin reloaded? Creating new..");
+			Common.Warn("ChatControl instance is null! Was the plugin reloaded? Creating new.");
 		}
 
 		return instance;
