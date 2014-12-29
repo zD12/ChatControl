@@ -2,7 +2,6 @@ package kangarko.chatcontrol.listener;
 
 import kangarko.chatcontrol.ChatControl;
 import kangarko.chatcontrol.PlayerCache;
-import kangarko.chatcontrol.hooks.AuthMeHook;
 import kangarko.chatcontrol.model.Localization;
 import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.utils.Common;
@@ -32,8 +31,10 @@ public class PlayerListener implements Listener {
 			if (Settings.AntiBot.REJOIN_TIME - (now - ChatControl.ipLastLogin.get(ip)) <= 0)
 				return;
 
-			String msg = Common.colorize(Localization.ANTIBOT_REJOIN_TOO_QUICKLY.replace("%time", String.valueOf(Settings.AntiBot.REJOIN_TIME - (now - ChatControl.ipLastLogin.get(ip)))));
+			long time = Settings.AntiBot.REJOIN_TIME - (now - ChatControl.ipLastLogin.get(ip));
+			String msg = Common.colorize(Localization.ANTIBOT_REJOIN_WAIT_MESSAGE.replace("%time", String.valueOf(time)).replace("%seconds", Localization.Parts.SECONDS.formatNumbers(time)));
 			msg.split("\n");
+			
 			e.disallow(Result.KICK_OTHER, msg);
 		}
 	}
@@ -124,9 +125,6 @@ public class PlayerListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onSignChange(SignChangeEvent e) {
-		if (Common.hasPerm(e.getPlayer(), Permissions.Bypasses.GLOBAL_PERM))
-			return;
-
 		if (ChatControl.getOnlinePlayers().length < Settings.MIN_PLAYERS_TO_ENABLE)
 			return;
 
@@ -134,17 +132,23 @@ public class PlayerListener implements Listener {
 		PlayerCache plData = ChatControl.getDataFor(pl);
 		String msg = e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3);
 
+		msg = msg.trim();
+		
 		if (Settings.Signs.DUPLICATION_CHECK && plData.lastSignText.equalsIgnoreCase(msg) && !Common.hasPerm(pl, Permissions.Bypasses.SIGN_DUPLICATION)) {
 			if (Settings.Signs.DUPLICATION_ALERT_STAFF)
 				for (Player online : ChatControl.getOnlinePlayers())
 					if (!online.getName().equals(pl.getName()) && Common.hasPerm(online, Permissions.Notify.SIGN_DUPLICATION))
-						Common.tell(online, Localization.SIGNS_DUPLICATION);
+						Common.tell(online, Localization.SIGNS_DUPLICATION_STAFF.replace("%message", msg), pl.getName());
 
+			Common.tell(pl, Localization.SIGNS_DUPLICATION);
 			e.setCancelled(true);
+			
+			if (Settings.Signs.DROP_SIGN)
+				e.getBlock().breakNaturally();			
 			return;
 		}
-
-		if (Settings.Rules.CHECK_SIGNS) {
+		
+		if (Settings.Rules.CHECK_SIGNS && !Common.hasPerm(e.getPlayer(), Permissions.Bypasses.RULES)) {
 			ChatControl.instance().chatCeaser.parseRules(e, pl, msg);
 
 			if (e.isCancelled()) {
@@ -158,13 +162,10 @@ public class PlayerListener implements Listener {
 	}
 
 	public String replacePlayerVariables(String msg, Player pl) {
-		AuthMeHook authMe = ChatControl.instance().getAuthMeHook();
+		msg = msg.replace("%player", pl.getName());
 
-		msg = msg.replace("%player", pl.getName())
-				.replace("%countrycode", authMe.getCountryCode(pl))
-				.replace("%countryname", authMe.getCountryName(pl));
-
-		msg = ChatControl.instance().formatPlayerVariables(pl, msg);
+		if (ChatControl.instance().formatter != null)
+			msg = ChatControl.instance().formatter.replacePlayerVariables(pl, msg);
 
 		return Common.colorize(msg);
 	}

@@ -1,46 +1,14 @@
 package kangarko.chatcontrol.model;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import kangarko.chatcontrol.ChatControl;
-import kangarko.chatcontrol.utils.Common;
-
-import org.bukkit.configuration.file.YamlConfiguration;
-
 @SuppressWarnings("unused")
 public class SettingsConsole extends ConfHelper {
 
-	public static void load() throws Exception {
-		HEADER = "---------------------------------------------------------\n" +
-				"This is the Console configuration file for ChatControl\n" +
-				"Mainly provides support for hiding and/or replacing \n" +
-				"messages from your server console.\n" +
-				"\n" +
-				"It supports unicode characters when saved in UTF-8\n" +
-				"encoding. Tested on Notepad++\n" +
-				"WordPad or Notepad on Windows are known to cause issues!\n" +
-				"\n" +
-				"To make a dot (.) on the left side, simply type <DOT>\n" +
-				"---------------------------------------------------------\n";
-		FILE_NAME = "console.yml";
-
-		File old = new File(ChatControl.instance().getDataFolder(), "console.yml");
-		if (old.exists()) {
-			cfg = YamlConfiguration.loadConfiguration(old);
-
-			if (cfg.isSet("Console")) {
-				Common.Log("&fDetected old console.yml. This is &cnot &fcompatible with this version, and file renamed to old_console.yml");
-
-				old.renameTo(new File(ChatControl.instance().getDataFolder(), "old_console.yml"));
-				old.delete();
-			}
-		}
-
-		createFileAndLoad();
-		loadValues(SettingsConsole.class);
+	protected static void load() throws Exception {
+		createFileAndLoad("console.yml", SettingsConsole.class);
 	}
 
 	public static boolean FILTER_ENABLED;

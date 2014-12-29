@@ -45,9 +45,6 @@ public class Permissions {
 	}
 
 	public class Bypasses {
-		// Bypass every check, basically equals to OP status.
-		public static final String GLOBAL_PERM = "chatcontrol.bypass.*";
-
 		// Allow player to chat while the chat is muted.
 		public static final String MUTE = "chatcontrol.bypass.mute";
 
@@ -89,6 +86,9 @@ public class Permissions {
 
 		// TODO New in 5.0.0 Allow player to make multiple signs with same text.
 		public static final String SIGN_DUPLICATION = "chatcontrol.bypass.signduplication";
+		
+		// TODO New in 5.0.0 Allow player to bypass custom rules and handlers.
+		public static final String RULES = "chatcontrol.bypass.rules";
 	}
 
 	public class Notify {

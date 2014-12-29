@@ -28,7 +28,7 @@ public class CommandsHandler implements CommandExecutor {
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
-
+		
 		return true;
 	}
 

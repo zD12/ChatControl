@@ -1,5 +1,7 @@
 package kangarko.chatcontrol.utils;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,6 +30,15 @@ public class Common {
 
 	public static void addLoggingPrefix() {
 		INTERNAL_PREFIX = "[ChatControl] ";
+	}
+	
+	private static final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
+	
+	/**
+	 * DAY.MONTH.YEAR HOUR:MINUTES:SECONDS
+	 */
+	public static String getFormattedDate() {
+		return dateFormat.format(System.currentTimeMillis());
 	}
 
 	/**
@@ -170,11 +181,11 @@ public class Common {
 	}
 
 	public static void Error(String str, Throwable ex) {
-		throw new Error("Error in ChatControl v" + ChatControl.instance().getDescription().getVersion() + ": " + colorize(str), ex);
+		Bukkit.getLogger().log(Level.SEVERE, "[" + ChatControl.instance().getDescription().getVersion() + "]" + str, ex);
 	}
 
 	public static void Error(String str) {
-		throw new Error("Error in ChatControl v" + ChatControl.instance().getDescription().getVersion() + ": " + colorize(str));
+		Bukkit.getLogger().log(Level.SEVERE, "[" + ChatControl.instance().getDescription().getVersion() + "]" + str);
 	}
 
 	public static void LogInFrame(boolean disable, String... messages) {
@@ -309,7 +320,7 @@ public class Common {
 		try {
 			return matcher.find();
 		} catch (RuntimeException ex) {
-			Writer.writeToFile(Writer.ERROR_FILE_PATH, null, "Regex check timed out (bad regex?) (plugin ver. " + ChatControl.instance().getDescription().getVersion() + ")! \nString checked: " + timedMsg + "\nRegex: " + regex + "");
+			Writer.Write(Writer.ERROR_FILE_PATH, null, "Regex check timed out (bad regex?) (plugin ver. " + ChatControl.instance().getDescription().getVersion() + ")! \nString checked: " + timedMsg + "\nRegex: " + regex + "");
 			throw new RuntimeException("RegEx checking " + ex.getMessage());
 		}
 	}

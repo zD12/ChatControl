@@ -1,56 +1,27 @@
 package kangarko.chatcontrol.model;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import kangarko.chatcontrol.ChatControl;
 import kangarko.chatcontrol.model.ConfHelper.ChatMessage.Type;
-import kangarko.chatcontrol.utils.Common;
 
 @SuppressWarnings("unused")
 public class Settings extends ConfHelper {
 
-	public static void load() throws Exception {
-		HEADER = "---------------------------------------------------------\n" +
-				"This is the main configuration for ChatControl plugin\n" +
-				"\n" +
-				"For general support and updates visit:\n" +
-				"http://www.spigotmc.org/resources/chatcontrol.271\n" +
-				"\n" +
-				"For configuration help visit:\n" +
-				"https://github.com/kangarko/ChatControl/blob/master/config.yml\n" +
-				"\n" +
-				"SLOVAK DEVELOPER FTW\n" +
-				"Supports color codes with the '&' character.\n" +
-				"\n" +
-				"Most of the messages (warning messages, etc) are found\n" +
-				"in localization. To customize it, make a new file in\n" +
-				"localization/messages_LOCALENAME.yml and it will be filled\n" +
-				"with all the default values.\n" +
-				"---------------------------------------------------------\n";
-		FILE_NAME = "settings.yml";
-
-		File oldFile = new File(ChatControl.instance().getDataFolder(), "config.yml");
-		if (oldFile.exists()) {
-			Common.Log("&fRenaming old config to old_config.yml, as it is not compatible with versions 5.x!");
-
-			oldFile.renameTo(new File(ChatControl.instance().getDataFolder(), "old_config.yml"));
-			oldFile.delete();
-		}
-
-		createFileAndLoad();
-		loadValues(Settings.class);
+	protected static void load() throws Exception {
+		createFileAndLoad("settings.yml", Settings.class);
 	}
 
 	public static class Packets {
+		public static boolean ENABLE_PACKET_FEATURES;
 		public static boolean DISABLE_TAB_COMPLETE;
 
 		private static void init() {
 			pathPrefix("Packets");
+			ENABLE_PACKET_FEATURES = getBoolean("Enable_Packet_Features", true);
 			DISABLE_TAB_COMPLETE = getBoolean("Disable_Tab_Complete", false);
 		}
 	}
@@ -106,13 +77,17 @@ public class Settings extends ConfHelper {
 		public static boolean BLOCK_CHAT_UNTIL_MOVED;
 		public static boolean STRIP_SPECIAL_CHARS;
 		public static boolean STRIP_DUPLICATE_CHARS;
+		public static boolean IGNORE_FIRST_ARGUMENTS_IN_CMDS;
 
 		private static void init() {
 			pathPrefix("Anti_Spam");
 
 			BLOCK_CHAT_UNTIL_MOVED = getBoolean("Block_Chat_Until_Moved", true);
-			STRIP_SPECIAL_CHARS = getBoolean("Similarity_Check.Ignore_Special_Characters", true);
-			STRIP_DUPLICATE_CHARS = getBoolean("Similarity_Check.Ignore_Duplicate_Characters", false);
+			
+			pathPrefix("Anti_Spam.Similarity_Check");
+			STRIP_SPECIAL_CHARS = getBoolean("Ignore_Special_Characters", true);
+			STRIP_DUPLICATE_CHARS = getBoolean("Ignore_Duplicate_Characters", false);
+			STRIP_DUPLICATE_CHARS = getBoolean("Ignore_First_Arguments_In_Commands", true);
 		}
 	}
 
@@ -341,7 +316,7 @@ public class Settings extends ConfHelper {
 		REGEX_TIMEOUT = getInteger("Regex_Timeout_Milis", 100);
 		LOCALIZATION_SUFFIX = getString("Locale", "en");
 		LOCALIZATION = "messages_" + LOCALIZATION_SUFFIX + ".yml";
-		VERBOSE = getBoolean("Verbose_On_Startup", true);
+		VERBOSE = getBoolean("Verbose", false);
 		DEBUG = getBoolean("Debug", false);
 		VERSION = getInteger("Version", 1);
 	}

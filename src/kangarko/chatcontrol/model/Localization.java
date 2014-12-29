@@ -1,8 +1,10 @@
 package kangarko.chatcontrol.model;
 
 import java.io.File;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 import kangarko.chatcontrol.ChatControl;
 import kangarko.chatcontrol.utils.Common;
@@ -13,16 +15,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 public class Localization extends ConfHelper {
 
 	@SuppressWarnings("deprecation")
-	public static void load() {
-		HEADER = "This file contains most of the messages\n"
-				+ "and provides simple way to translate the plugin.\n"
-				+ "\n"
-				+ "If you want to customize the localization, simply\n"
-				+ "copy this file to plugin folder and start editing.\n"
-				+ "It will still be updated with new values in future releases."
-				+ "\n"
-				+ "To not display a message, set it to \'none\'";
-
+	protected static void load() throws Exception {
 		// try if the user has his modified version of localization inside the plugin folder
 		file = new File(ChatControl.instance().getDataFolder(), "localization/" + Settings.LOCALIZATION);
 
@@ -30,16 +23,18 @@ public class Localization extends ConfHelper {
 			cfg = YamlConfiguration.loadConfiguration(file);
 		else {
 			file = null;
+			
+			InputStream is = ChatControl.class.getResourceAsStream("/localization/" + Settings.LOCALIZATION);
+			Objects.requireNonNull(is, "Unknown locale: " + Settings.LOCALIZATION_SUFFIX + " (Possible causes: plugin does not have it or was reloaded)");
+			
 			try {
-				cfg = YamlConfiguration.loadConfiguration(new InputStreamReader(Localization.class.getResourceAsStream("/localization/" + Settings.LOCALIZATION), StandardCharsets.UTF_8));
+				cfg = YamlConfiguration.loadConfiguration(new InputStreamReader(is, StandardCharsets.UTF_8));
 			} catch (NoSuchMethodError ex) {
-				cfg = YamlConfiguration.loadConfiguration(Localization.class.getResourceAsStream("/localization/" + Settings.LOCALIZATION));
+				cfg = YamlConfiguration.loadConfiguration(is);
 			} catch (NullPointerException ex) {
 				throw new IllegalLocaleException();
 			}
 		}
-
-		Common.Log("Using locale: " + Settings.LOCALIZATION_SUFFIX);
 		loadValues(Localization.class);
 	}
 
@@ -86,7 +81,7 @@ public class Localization extends ConfHelper {
 	public static String COMMAND_WAIT_MESSAGE;
 	public static String CHAT_WAIT_MESSAGE;
 
-	public static String ANTIBOT_REJOIN_TOO_QUICKLY;
+	public static String ANTIBOT_REJOIN_WAIT_MESSAGE;
 
 	public static String MUTE_BROADCAST;
 	public static String MUTE_UNMUTE_BROADCAST;
@@ -102,6 +97,7 @@ public class Localization extends ConfHelper {
 	public static String CLEAR_STAFF;
 
 	public static String SIGNS_DUPLICATION;
+	public static String SIGNS_DUPLICATION_STAFF;
 	public static String SIGNS_BROKE;
 
 	public static String USAGE_FAKE_CMD;
@@ -117,17 +113,17 @@ public class Localization extends ConfHelper {
 		CANNOT_COMMAND_WHILE_MUTED = getString("Command_While_Muted", "&7You cannot use this command while the chat is muted!");
 		CANNOT_CHAT_UNTIL_MOVED = getString("Chat_Until_Moved", "&7You cannot chat until you move!"); // TODO radius?
 
-		pathPrefix("Anti Bot");
-		ANTIBOT_REJOIN_TOO_QUICKLY = getString("Rejoin_Message", "%prefix\\n\\n&6Please wait &7%time second(s)&6 before logging in again.");
+		pathPrefix("Anti_Bot");
+		ANTIBOT_REJOIN_WAIT_MESSAGE = getString("Rejoin_Message", "%prefix\\n\\n&6Please wait &7%time second(s)&6 before logging in again.");
 
-		pathPrefix("Anti Spam");
+		pathPrefix("Anti_Spam");
 		ANTISPAM_SIMILAR_MESSAGE = getString("Similar_Message", "&cPlease do not repeat the same (or similar) message.");
 		ANTISPAM_SIMILAR_COMMAND = getString("Similar_Command", "&cPlease do not repeat the same (or similar) command.");
 		ANTISPAM_CAPS_MESSAGE = getString("Too_Much_Caps", "&cDo not use so much CAPS LOCK!");
 		COMMAND_WAIT_MESSAGE = getString("Command_Wait_Message", "&cPlease wait %time %seconds before your next command.");
 		CHAT_WAIT_MESSAGE = getString("Chat_Wait_Message", "&cPlease wait %time %seconds before your next message.");
 
-		pathPrefix("Chat Mute");
+		pathPrefix("Chat_Mute");
 		MUTE_SUCCESS = getString("Mute", "&7Chat was successfully muted.");
 		MUTE_UNMUTE_SUCCESS = getString("Unmute", "&7Chat is no longer muted.");
 
@@ -136,7 +132,7 @@ public class Localization extends ConfHelper {
 		MUTE_ANON_BROADCAST = getString("Anonymous_Mute_Broadcast", "%server Initiated global chat mute.");
 		MUTE_ANON_UNMUTE_BROADCAST = getString("Anonymous_Unmute_Broadcast", "%server Global chat mute cancelled.");
 
-		pathPrefix("Chat Clear");
+		pathPrefix("Chat_Clear");
 		CLEAR_BROADCAST = getString("Broadcast", "%server &6%player cleared the chat.");
 		CLEAR_ANON_BROADCAST = getString("Anonymous_Broadcast", "%server The game chat was cleared.");
 		CLEAR_CONSOLE = getString("Console_Player_Message", "%prefix &7Console was successfully cleared.");
@@ -145,6 +141,7 @@ public class Localization extends ConfHelper {
 
 		pathPrefix("Signs");
 		SIGNS_DUPLICATION = getString("Duplicate_Text", "%server You cannot make multiple signs with the same text!");
+		SIGNS_DUPLICATION_STAFF = getString("Duplicate_Text_Staff", "&c%player created signs with same text: %message");
 		SIGNS_BROKE = getString("Broke_When_Violated_A_Rule", "Your sign broke, there must be something wrong with it!");
 
 		pathPrefix("Usage");

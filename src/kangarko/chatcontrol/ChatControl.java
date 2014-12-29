@@ -1,6 +1,5 @@
 package kangarko.chatcontrol;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,9 +34,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 // TODO implement death messages
-// TODO replace remap
+// TODO fix deprecations, split rules.txt
 // TODO implement lag checker
-// FIXME disappearing comments from settings
 public class ChatControl extends JavaPlugin {
 
 	private static ChatControl instance;
@@ -50,11 +48,10 @@ public class ChatControl extends JavaPlugin {
 
 	public static boolean muted = false;
 
-	private EssentialsHook ess;
-	private VaultHook vault;
-	private AuthMeHook authMe;
-
-	private ChatFormatter formatter;
+	public EssentialsHook ess;
+	public VaultHook vault;
+	public AuthMeHook authMe;
+	public ChatFormatter formatter;	
 	public ChatCeaser chatCeaser;
 
 	@Override
@@ -98,11 +95,8 @@ public class ChatControl extends JavaPlugin {
 					Common.Debug("Console filtering initiated (MC 1.6.4 and lower).");
 				}
 
-			if (Settings.Packets.DISABLE_TAB_COMPLETE)
+			if (Settings.Packets.ENABLE_PACKET_FEATURES || Settings.Packets.DISABLE_TAB_COMPLETE)
 				if (doesPluginExist("ProtocolLib")) {
-					if (new File("spigot.yml").exists())
-						Common.LogInFrame(false, "&aIf you want to disable tab complete, set", "&bcommands.tab-complete &ato 0 in &fspigot.yml &afile.", "&aFunction in ChatControl was disabled.");
-					else
 						ProtocolLibHook.init();
 				} else
 					Common.LogInFrame(false, "Cannot enable packet features!", "Required plugin missing: ProtocolLib");
@@ -131,6 +125,7 @@ public class ChatControl extends JavaPlugin {
 
 		} catch (Throwable t) {
 			t.printStackTrace();
+
 			Common.Log("&4!----------------------------------------------!");
 			Common.Log(" &cError loading ChatControl, plugin is disabled!");
 			Common.Log("&4!----------------------------------------------!");
@@ -153,6 +148,7 @@ public class ChatControl extends JavaPlugin {
 			} else
 				Common.Log(" &cThe error was: " + t.getMessage());
 			Common.Log("&4!----------------------------------------------!");
+
 			getPluginLoader().disablePlugin(this);
 		}
 	}
@@ -163,31 +159,32 @@ public class ChatControl extends JavaPlugin {
 		playerData.clear();
 		ipLastLogin.clear();
 
-		ess = null;
-		instance = null;
-
 		UpdateCheck.needsUpdate = false;
 		getServer().getScheduler().cancelTasks(this);
+		
+		instance = null;
 	}
 
 	private void scheduleTimedMessages() {
-		final HashMap<String, Integer> broadcasterIndexes = new HashMap<String, Integer>();
-		final HashMap<String, List<String>> broadcasterCache = new HashMap<>();
+		HashMap<String, Integer> broadcasterIndexes = new HashMap<String, Integer>();
+		HashMap<String, List<String>> broadcasterCache = new HashMap<>();
 		Random rand = new Random();
 
+		HashMap<String, List<String>> timed = Settings.Messages.TIMED;
+
 		if (!Settings.Messages.TIMED_RANDOM_ORDER)
-			for (String world : Settings.Messages.TIMED.keySet())
+			for (String world : timed.keySet())
 				broadcasterIndexes.put(world, 0);
 
 		if (Settings.Messages.TIMED_RANDOM_NO_REPEAT)
-			for (String world : Settings.Messages.TIMED.keySet())
-				broadcasterCache.put(world, new ArrayList<String>(Settings.Messages.TIMED.get(world)));
+			for (String world : timed.keySet())
+				broadcasterCache.put(world, new ArrayList<String>(timed.get(world)));
 
 		if (Settings.VERBOSE)
-			for (String world : Settings.Messages.TIMED.keySet()) {
+			for (String world : timed.keySet()) {
 				Common.Log("&fMessages for: " + world);
 
-				for (String msg : Settings.Messages.TIMED.get(world))
+				for (String msg : timed.get(world))
 					Common.Log(" - " + msg);
 			}
 
@@ -195,8 +192,8 @@ public class ChatControl extends JavaPlugin {
 
 			@Override
 			public void run() {
-				for (String world : Settings.Messages.TIMED.keySet()) {
-					List<String> msgs = Settings.Messages.TIMED.get(world);
+				for (String world : timed.keySet()) {
+					List<String> msgs = timed.get(world);
 					if (msgs.size() == 0)
 						continue;
 
@@ -229,14 +226,12 @@ public class ChatControl extends JavaPlugin {
 					if (msg.equals(Settings.Messages.TIMED_PREFIX + " ")) // is empty
 						continue;
 
-					if (world.equalsIgnoreCase("global"))
-						for (Player online : getOnlinePlayers()) {
-							if (Settings.Messages.TIMED.keySet().contains(online.getWorld().getName()) || !Common.hasPerm(online, Permissions.VIEW_TIMED_MESSAGES))
-								continue;
+					if (world.equalsIgnoreCase("global")) {
+						for (Player online : getOnlinePlayers())
+							if (!timed.keySet().contains(online.getWorld().getName()) && Common.hasPerm(online, Permissions.VIEW_TIMED_MESSAGES))
+								Common.tell(online, msg);
 
-							Common.tell(online, msg);
-						}
-					else {
+					} else {
 						World bukkitworld = getServer().getWorld(world);
 
 						if (bukkitworld == null)
@@ -251,43 +246,14 @@ public class ChatControl extends JavaPlugin {
 		}.runTaskTimer(this, 20, 20 * Settings.Messages.TIMED_DELAY_SECONDS);
 	}
 
-	public boolean canSoundNotify(String pl) {
-		if (!Settings.SoundNotify.ONLY_WHEN_AFK)
-			return true;
-
-		return ess.isAfk(pl);
-	}
-
-	public Player getReplyTo(Player pl) {
-		if (ess == null)
-			return null;
-
-		return ess.getReplyTo(pl.getName());
-	}
-
-	public String formatPlayerVariables(Player pl, String message) {
-		if (formatter == null)
-			return message;
-
-		return formatter.replacePlayerVariables(pl, message);
-	}
-
 	public boolean doesPluginExist(String pluginName) {
 		Plugin plugin = getServer().getPluginManager().getPlugin(pluginName);
 
-		if (plugin != null && plugin.isEnabled()) {
+		if (plugin != null) {
 			Common.Log("&fHooked with: " + pluginName);
 			return true;
 		}
 		return false;
-	}
-
-	public VaultHook getVaultHook() {
-		return vault;
-	}
-
-	public AuthMeHook getAuthMeHook() {
-		return authMe;
 	}
 
 	// ------------------------ static ------------------------

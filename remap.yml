@@ -26,3 +26,6 @@ Replace_Parts:
   \bdis\b: this
   \bbwanna\b: want
   (can|may|would you like if) i (have|be|become|get|has) (op|admin|mod|builder): can i has weepcraft?
+  
+Replace_Whole:
+  currently broken: an will be moved to separate file

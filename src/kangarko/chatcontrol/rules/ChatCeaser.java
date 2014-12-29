@@ -14,6 +14,7 @@ import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.utils.Common;
 import kangarko.chatcontrol.utils.Writer;
 
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.block.SignChangeEvent;
@@ -23,6 +24,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
  * Custom rule engine. Reads a set of rules from a file
  * @author kangarko
  * @since 5.0.0
+ * @deprecated add support for multiple rules - chat, commands, signs, protocol chat remap
  */
 public final class ChatCeaser {
 
@@ -30,11 +32,6 @@ public final class ChatCeaser {
 	 * Stored rules. Can only be modified in {@link #load()} method.
 	 */
 	private final List<Rule> rules = new ArrayList<>();
-
-	/**
-	 * The name of the file rules are located in.
-	 */
-	private final String fileName;
 
 	/**
 	 * The file with rules.
@@ -47,8 +44,7 @@ public final class ChatCeaser {
 	 * @param fileName file name, which location is automatically set to the plugin's directory
 	 */
 	public ChatCeaser(String fileName) {
-		this.fileName = fileName;
-		file = new File(ChatControl.instance().getDataFolder(), fileName);
+		file = Writer.Extract(fileName);
 	}
 
 	/**
@@ -56,12 +52,6 @@ public final class ChatCeaser {
 	 */
 	public void load() {
 		rules.clear();
-
-		// Copy the provided file with some example values.
-		if (!file.exists()) {
-			ChatControl.instance().saveResource(fileName, false);
-			Common.Log("&fCreated default rules file: " + fileName);
-		}
 
 		try {
 			Rule rule = null; // The rule being created.
@@ -120,7 +110,7 @@ public final class ChatCeaser {
 							rule.setFine(Double.parseDouble(line.replaceFirst("then fine ", "")));
 
 						else if (line.startsWith("handle as "))
-							rule.setHandler(Handlers.loadHandler(line.replaceFirst("handle as ", ""), rule.getId()));
+							rule.setHandler(HandlerLoader.loadHandler(line.replaceFirst("handle as ", ""), rule.getId()));
 
 						else
 							throw new NullPointerException("Unknown operator: " + line);
@@ -166,7 +156,7 @@ public final class ChatCeaser {
 
 				if (rule.log()) {
 					Common.Log(org.bukkit.ChatColor.RED + (flag == Handler.SIGN ? "[SIGN at " + Common.shortLocation(pl.getLocation()) + "] " : "") + pl.getName() + " violated " + rule.toShortString() + " with message: &f" + msg);
-					Writer.writeToFile("logs/rules_log.txt", pl.getName(), (flag == Handler.SIGN ? "[SIGN at " + Common.shortLocation(pl.getLocation()) + "] " : "") + rule.toShortString() + " caught message: " + msg);
+					Writer.Write("logs/rules_log.txt", pl.getName(), (flag == Handler.SIGN ? "[SIGN at " + Common.shortLocation(pl.getLocation()) + "] " : "") + rule.toShortString() + " caught message: " + msg);
 				}
 
 				if (rule.getCustomAlertMessage() != null) {
@@ -195,8 +185,8 @@ public final class ChatCeaser {
 				if (rule.getWarnMessage() != null)
 					Common.tell(pl, Common.colorize(rule.getWarnMessage()));
 
-				if (rule.getFine() != null)
-					ChatControl.instance().getVaultHook().takeMoney(pl.getName(), rule.getFine());
+				if (rule.getFine() != null && ChatControl.instance().vault != null)
+					ChatControl.instance().vault.takeMoney(pl.getName(), rule.getFine());
 
 				if (rule.cancelEvent()) {
 					e.setCancelled(true);
@@ -249,9 +239,9 @@ public final class ChatCeaser {
 				Common.customAction(pl, cmd, msg);
 
 		if (handler.getWriteToFileName() != null)
-			Writer.writeToFile(handler.getWriteToFileName(), pl.getName(), replaceVariables(handler, "[Handler=%handler, Rule ID=%ruleID] ") + msg);
+			Writer.Write(handler.getWriteToFileName(), pl.getName(), replaceVariables(handler, "[Handler=%handler, Rule ID=%ruleID] ") + msg);
 
-		if (handler.blockMessage() || flag == Handler.SIGN && Settings.Signs.BLOCK_WHEN_VIOLATES_RULE)
+		if (handler.blockMessage() || (flag == Handler.SIGN && Settings.Signs.BLOCK_WHEN_VIOLATES_RULE))
 			e.setCancelled(true);
 		else if (handler.getMsgReplacement() != null)
 			return msg.replaceAll(match, Common.colorize(handler.getMsgReplacement()));
@@ -271,18 +261,102 @@ public final class ChatCeaser {
 	private String replaceVariables(Handler handler, String message) {
 		return message.replace("%ruleID", handler.getRuleID()).replace("%handler", handler.getName());
 	}
+}
 
-	/**
-	 * Caches last messages displayed to the player and broadcasted to everyone,
-	 * prevents duplicate displaying when multiple rules are violated at once.
-	 */
-	private static class HandlerCache {
-		private static String lastWarnMsg = "";
-		private static String lastBroadcastMsg = "";
+class HandlerLoader {
 
-		private static void reset() {
-			lastWarnMsg = "";
-			lastBroadcastMsg = "";
+	private static YamlConfiguration cfg;
+	private static String sectionName;
+
+	static Handler loadHandler(String name, String ruleID) {
+		File file = Writer.Extract("handlers.yml");
+		cfg = YamlConfiguration.loadConfiguration(file);
+
+		if (!cfg.isConfigurationSection(name))
+			throw new NullPointerException("Unknown handler: " + name);
+
+		sectionName = cfg.getConfigurationSection(name).getName();
+
+		Handler handler = new Handler(sectionName, ruleID);
+		String message;
+
+		message = getString("Bypass_With_Permission");
+		if (isValid(message))
+			handler.setBypassPermission(message);
+
+		message = getString("Player_Warn_Message");
+		if (isValid(message))
+			handler.setPlayerWarnMsg(message);
+
+		message = getString("Broadcast_Message");
+		if (isValid(message))
+			handler.setBroadcastMsg(message);
+
+		message = getString("Staff_Alert_Message");
+		if (isValid(message))
+			handler.setStaffAlertMsg(message);
+
+		message = getString("Staff_Alert_Permission");
+		if (isValid(message))
+			handler.setStaffAlertPermission(message);
+
+		message = getString("Console_Message");
+		if (isValid(message))
+			handler.setConsoleMsg(message);
+
+		message = getString("Write_To_File");
+		if (isValid(message))
+			handler.setWriteToFileName(message);
+
+		Boolean block = cfg.getBoolean(sectionName + ".Block_Message");
+		if (block != null && block)
+			handler.setBlockMessage();
+
+		message = getString("Replace_Word");
+		if (isValid(message))
+			handler.setMsgReplacement(message);
+
+		message = getString("Replace_Whole");
+		if (isValid(message))
+			handler.setRewriteTo(message);
+
+		List<String> list;
+		if (cfg.isSet(sectionName + ".Execute_Commands")) {
+			list = cfg.getStringList(sectionName + ".Execute_Commands");
+			handler.setCommandsToExecute(list);
 		}
+
+		if (cfg.isSet(sectionName + ".Ignored_In_Commands")) {
+			list = cfg.getStringList(sectionName + ".Ignored_In_Commands");
+			handler.setIgnoredInCommands(list);
+		}
+
+		sectionName = null;
+
+		return handler;
+	}
+
+	private static boolean isValid(String msg) {
+		return msg != null && !msg.isEmpty() && !msg.equalsIgnoreCase("none");
+	}
+
+	private static String getString(String path) {
+		String msg = cfg.getString(sectionName + "." + path);
+
+		return msg != null && !msg.isEmpty() && !msg.equalsIgnoreCase("none") ? msg : null;
+	}
+}
+
+/**
+ * Caches last messages displayed to the player and broadcasted to everyone,
+ * prevents duplicate displaying when multiple rules are violated at once.
+ */
+class HandlerCache {
+	static String lastWarnMsg = "";
+	static String lastBroadcastMsg = "";
+
+	static void reset() {
+		lastWarnMsg = "";
+		lastBroadcastMsg = "";
 	}
 }

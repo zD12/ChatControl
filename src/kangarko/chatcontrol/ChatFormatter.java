@@ -5,10 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import kangarko.chatcontrol.hooks.AuthMeHook;
 import kangarko.chatcontrol.hooks.MultiverseHook;
 import kangarko.chatcontrol.hooks.TownyHook;
-import kangarko.chatcontrol.hooks.VaultHook;
 import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.utils.Common;
 import kangarko.chatcontrol.utils.Permissions;
@@ -86,14 +84,14 @@ public class ChatFormatter implements Listener {
 
 	public String replacePlayerVariables(Player pl, String format) {
 		String world = pl.getWorld().getName();
-		VaultHook vault = ChatControl.instance().getVaultHook();
-		AuthMeHook authMe = ChatControl.instance().getAuthMeHook();
+		
+		if (ChatControl.instance().authMe != null)
+			format = format.replace("%countrycode", ChatControl.instance().authMe.getCountryCode(pl)).replace("%countryname", ChatControl.instance().authMe.getCountryName(pl));
 
 		return format
-				.replace("%prefix", formatColor(vault.getPlayerPrefix(pl))).replace("%suffix", formatColor(vault.getPlayerSuffix(pl)))
+				.replace("%prefix", formatColor(ChatControl.instance().vault.getPlayerPrefix(pl))).replace("%suffix", formatColor(ChatControl.instance().vault.getPlayerSuffix(pl)))
 				.replace("%world", getWorldAlias(world)).replace("%health", formatHealth(pl) + ChatColor.RESET)
 				.replace("%player", pl.getDisplayName())
-				.replace("%countrycode", authMe.getCountryCode(pl)).replace("%countryname", authMe.getCountryName(pl))
 				.replace("%town", getTown(pl)).replace("%nation", getNation(pl));
 	}
 

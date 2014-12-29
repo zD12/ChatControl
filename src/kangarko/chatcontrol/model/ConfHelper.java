@@ -11,23 +11,35 @@ import java.util.Objects;
 
 import kangarko.chatcontrol.ChatControl;
 import kangarko.chatcontrol.utils.Common;
+import kangarko.chatcontrol.utils.Writer;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-// TODO Throw unknown values.
-// TODO Config version.
-// TODO Log newly added values.
 public class ConfHelper {
 
 	protected static YamlConfiguration cfg;
-	protected static String FILE_NAME = null;
-	protected static String HEADER = null;
-	protected static File file;;
-	private static String pathPrefix = null;
+	protected static File file;
 
-	public static void loadAll() throws Exception {
+	private static String pathPrefix = null;
+	private static boolean save = false;
+
+	protected ConfHelper() {
+	}
+
+	public static void loadAll() throws Exception {		
+		File datafolder = ChatControl.instance().getDataFolder();
+		File oldconfig = new File(datafolder, "config.yml");
+
+		if (oldconfig.exists()) {
+			String version = YamlConfiguration.loadConfiguration(oldconfig).getString("Do_Not_Change_Version_Number");
+
+			Common.LogInFrame(false, "&bDetected old &fconfiguration &bfrom version " + version, "&bThis is &cnot &bcompatible with the new version", "&bEntire folder renamed to ChatControl_Old");
+			datafolder.renameTo(new File(datafolder.getParent(), "ChatControl_Old"));
+			datafolder.delete();
+		}
+
 		// Order matters.
 		Settings.load();
 		SettingsConsole.load();
@@ -35,34 +47,29 @@ public class ConfHelper {
 		Localization.load();
 	}
 
-	protected static void loadValues(Class<?> clazz) {
+	protected static void loadValues(Class<?> clazz) throws Exception {
 		Objects.requireNonNull(cfg, "YamlConfiguration is null!");
 		Common.Debug("Setting up config: " + clazz.getSimpleName());
 
-		try {
-			// The class itself.
-			invokeMethods(clazz);
+		// The class itself.
+		invokeMethods(clazz);
 
-			// All sub-classes.
-			for (Class<?> subClazz : clazz.getDeclaredClasses()) {
-				Common.Debug("Setting up config section: " + subClazz.getSimpleName());
-				invokeMethods(subClazz);
+		// All sub-classes.
+		for (Class<?> subClazz : clazz.getDeclaredClasses()) {
+			Common.Debug("Setting up config section: " + subClazz.getSimpleName());
+			invokeMethods(subClazz);
 
-				// And classes in sub-classes.
-				for (Class<?> subSubClazz : subClazz.getDeclaredClasses()) {
-					Common.Debug("Setting up config section: " + subClazz.getSimpleName() + "." + subSubClazz.getSimpleName());
-					invokeMethods(subSubClazz);
-				}
+			// And classes in sub-classes.
+			for (Class<?> subSubClazz : subClazz.getDeclaredClasses()) {
+				Common.Debug("Setting up config section: " + subClazz.getSimpleName() + "." + subSubClazz.getSimpleName());
+				invokeMethods(subSubClazz);
 			}
-
-			save();
-
-		} catch (IOException | ReflectiveOperationException ex) {
-			ex.printStackTrace();
 		}
+
+		save();
 	}
 
-	private static void invokeMethods(Class<?> clazz) throws ReflectiveOperationException {
+	private static void invokeMethods(Class<?> clazz) throws Exception {
 		for (Method m : clazz.getDeclaredMethods()) {
 			int modifier = m.getModifiers();
 
@@ -76,43 +83,40 @@ public class ConfHelper {
 		}
 	}
 
-	protected static void createFileAndLoad() throws Exception {
-		File dataFolder = ChatControl.instance().getDataFolder();
-		if (!dataFolder.exists())
-			dataFolder.mkdirs();
+	private static void save() throws IOException {
+		if (file != null && save) {
+			cfg.options().header("!---------------------------------------------------------!\n" +
+					"! File automatically updated at " + Common.getFormattedDate() + "\n" +
+					"! to plugin version v" + ChatControl.instance().getDescription().getVersion() + "\n" +
+					"!---------------------------------------------------------!\n" +
+					"! Unfortunatelly due to how Bukkit handles YAML\n"+
+					"! configurations, all comments (#) were wiped. \n" +
+					"! For reference values and comments visit\n" +
+					"! https://github.com/kangarko/chatcontrol\n" +
+					"!---------------------------------------------------------!\n");
+			cfg.save(file);
 
-		Objects.requireNonNull(FILE_NAME, "File name cannot be null!");
-		file = new File(ChatControl.instance().getDataFolder(), FILE_NAME);
+			Common.Log("&eSaved updated file: " + file.getName() + " (# Comments removed)");
+			save = false;
+		}
+	}
 
-		if (!file.exists())
-			try {
-				ChatControl.instance().saveResource(FILE_NAME, false);
-			} catch (IllegalArgumentException ex) {
-				throw new InBuiltFileMissingException("Inbuilt resource %file not found!", FILE_NAME);
-			}
+	protected static void createFileAndLoad(String path, Class<?> loadFrom) throws Exception {
+		Objects.requireNonNull(path, "File path cannot be null!");
+
+		file = Writer.Extract(path);
 
 		cfg = new YamlConfiguration();
 		cfg.load(file);
+
+		loadValues(loadFrom);
 	}
 
-	protected static void save() throws IOException {
-		if (file == null)
-			return;
-
-		if (HEADER != null)
-			cfg.options().header(HEADER);
-
-		cfg.options().copyDefaults(true);
-		cfg.save(file);
-	}
+	// --------------- Getters ---------------
 
 	protected static boolean getBoolean(String path, boolean def) {
 		path = addPathPrefix(path);
-
-		if (!cfg.isSet(path)) {
-			validate(path, def);
-			cfg.set(path, def);
-		}
+		addDefault(path, def);
 
 		Validate.isTrue(cfg.isBoolean(path), "Malformed config value, expected boolean at: " + path);
 		return cfg.getBoolean(path);
@@ -120,11 +124,7 @@ public class ConfHelper {
 
 	protected static String getString(String path, String def) {
 		path = addPathPrefix(path);
-
-		if (!cfg.isSet(path)) {
-			validate(path, def);
-			cfg.set(path, def);
-		}
+		addDefault(path, def);
 
 		Validate.isTrue(cfg.isString(path), "Malformed config value, expected string at: " + path);
 		return cfg.getString(path);
@@ -132,11 +132,7 @@ public class ConfHelper {
 
 	protected static int getInteger(String path, int def) {
 		path = addPathPrefix(path);
-
-		if (!cfg.isSet(path)) {
-			validate(path, def);
-			cfg.set(path, def);
-		}
+		addDefault(path, def);
 
 		Validate.isTrue(cfg.isInt(path), "Malformed config value, expected integer at: " + path);
 		return cfg.getInt(path);
@@ -144,11 +140,7 @@ public class ConfHelper {
 
 	protected static double getDouble(String path, double def) {
 		path = addPathPrefix(path);
-
-		if (!cfg.isSet(path)) {
-			validate(path, def);
-			cfg.set(path, def);
-		}
+		addDefault(path, def);
 
 		Validate.isTrue(cfg.isDouble(path), "Malformed config value, expected double at: " + path);
 		return cfg.getDouble(path);
@@ -157,6 +149,7 @@ public class ConfHelper {
 	protected static HashMap<String, List<String>> getValuesAndList(String path, HashMap<String, List<String>> def) {
 		path = addPathPrefix(path);
 
+		// add default
 		if (!cfg.isSet(path)) {
 			validate(path, def);
 
@@ -170,7 +163,6 @@ public class ConfHelper {
 		for (String key : cfg.getConfigurationSection(path).getKeys(true)) {
 			if (keys.containsKey(key))
 				Common.Warn("Duplicate key: " + key + " in " + path);
-
 			keys.put(key, getStringList(path + "." + key, Arrays.asList(""), false));
 		}
 
@@ -180,6 +172,7 @@ public class ConfHelper {
 	protected static HashMap<String, String> getValuesAndKeys(String path, HashMap<String, String> def, boolean deep) {
 		path = addPathPrefix(path);
 
+		// add default
 		if (!cfg.isSet(path)) {
 			validate(path, def);
 
@@ -202,11 +195,7 @@ public class ConfHelper {
 	protected static List<String> getStringList(String path, List<String> def, boolean addPathPrefix) {
 		if (addPathPrefix)
 			path = addPathPrefix(path);
-
-		if (!cfg.isSet(path)) {
-			validate(path, def);
-			cfg.set(path, def);
-		}
+		addDefault(path, def);
 
 		Validate.isTrue(cfg.isList(path), "Malformed config value, expected list at: " + path);
 		return cfg.getStringList(path);
@@ -221,13 +210,21 @@ public class ConfHelper {
 	}
 
 	private static <T> void validate(String path, T def) {
-		Common.Log("&eWriting in path \"" + path + "\" value: \"" + def + "\"");
-
 		if (file == null)
-			throw new RuntimeException("Inbuilt config doesn't contains " + def.getClass().getTypeName() + " at \"" + path + "\". Is it outdated?");
+			throw new IllegalStateException("Inbuilt config doesn't contains " + def.getClass().getTypeName() + " at \"" + path + "\". Is it outdated?");
+
+		save = true;
+		Common.Log("&fUpdating " + file.getName() + " with &b\'&f" + path + "&b\' &f-> &b\'&f" + def + "&b\'&r");
 	}
 
 	// --------------- Lazy helpers ---------------
+
+	private static <T> void addDefault(String path, T def) {
+		if (!cfg.isSet(path)) {
+			validate(path, def);
+			cfg.set(path, def);
+		}
+	}
 
 	private static String addPathPrefix(String path) {
 		return pathPrefix != null ? pathPrefix + "." + path : path;
@@ -288,7 +285,7 @@ public class ConfHelper {
 
 	public static class CasusHelper {
 		private final String nominativPl; // 2 to 4 seconds (slovak case - sekundy)
-		private final String akuzativSg; // 1 second (slovak case - sekundu) - not in english (LOL noobs)
+		private final String akuzativSg; // 1 second (slovak case - sekundu) - not in english
 		private final String genitivePl; // 5 and more seconds (slovak case - sekund)
 
 		protected CasusHelper(String raw) {
@@ -302,7 +299,7 @@ public class ConfHelper {
 			}
 
 			if (values.length != 3)
-				throw new RuntimeException("Malformed type, use format: 'second, seconds' OR 'second, seconds, seconds' (genitive plular) (if your language has it)");
+				throw new RuntimeException("Malformed type, use format: 'second, seconds' OR 'sekundu, sekundy, sekund' (if your language has it)");
 
 			akuzativSg = values[0];
 			nominativPl = values[1];

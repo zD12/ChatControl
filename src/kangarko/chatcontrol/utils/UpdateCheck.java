@@ -99,10 +99,6 @@ public class UpdateCheck implements Runnable {
 	}
 
 	private int toNumber(String s) {
-		try {
-			return Integer.valueOf(s.replace(".", ""));
-		} catch (NumberFormatException ex) {
-			throw new NumberFormatException(ex.getMessage());
-		}
+		return Integer.valueOf(s.replace(".", "").replace("-BETA", "").replace("-ALPHA", ""));
 	}
 }

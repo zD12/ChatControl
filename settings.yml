@@ -40,6 +40,11 @@ Anti_Spam:
   Similarity_Check:
     Ignore_Special_Characters: true
     Ignore_Duplicate_Characters: false
+    
+    # If enabled, the first and second arguments in longer commands will be ignored.
+    # This makes the check less annoying in messages like /tell <player> message
+    # where it ignores /tell and <player> name.
+    Ignore_First_Arguments_In_Commands: true
 
   Commands:
     # Delay in seconds. Set to 0 to disable.
@@ -168,6 +173,9 @@ Mute:
   - w
 
 Packets:
+  # Controls the whole packet related.
+  Enable_Packet_Features: true
+
   # Prevent tab complete in certain cases where it can reveal server info. 
   # For more advanced configuration use Spigot and configure the function in spigot.yml
   Disable_Tab_Complete: false
@@ -244,10 +252,8 @@ Regex_Timeout_Milis: 100
 Locale: en
 
 # Print important info in the console on plugin startup/reload.
-Verbose_On_Startup: true
+Verbose: false
 
 # Enable if you are having issues, will tell you detailed info in the console.
 Debug: false
-
-# Do not edit unless you want to loose your settings!
 Version: 1
