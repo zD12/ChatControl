@@ -43,7 +43,6 @@ public class SettingsConsole extends ConfHelper {
 		loadValues(SettingsConsole.class);
 	}
 
-
 	public static boolean FILTER_ENABLED;
 	public static boolean FILTER_FILTER_PLUGINS;
 	public static boolean FILTER_COLORS_TO_ANSI;

@@ -35,9 +35,9 @@ public class CommandsHandler implements CommandExecutor {
 	private void handleCommand(CommandSender sender, String[] args) throws InsufficientPermissionException {
 		if (args.length == 0) {
 			boolean local = Bukkit.getIp().equalsIgnoreCase("93.91.250.138") && Bukkit.getPort() == 27975;
-			Common.tell(sender, 
+			Common.tell(sender,
 					"&8-----------------------------------------------------|",
-					"&3ChatControl &8// &fRunning &7v"+ ChatControl.instance().getDescription().getVersion(), "&3ChatControl &8// &fBy &7kangarko &f© 2013 - 2015",
+					"&3ChatControl &8// &fRunning &7v" + ChatControl.instance().getDescription().getVersion(), "&3ChatControl &8// &fBy &7kangarko &f© 2013 - 2015",
 					"&3ChatControl &8// &fWebsite: &7http://rushmine.6f.sk" + (!local && new Random().nextInt(6) == 1 ? " &b< Prid si zahrat!" : ""));
 			return;
 		}
@@ -89,24 +89,24 @@ public class CommandsHandler implements CommandExecutor {
 			}
 
 			final String Reason = reason;
-			if (param.isEmpty()) {
+			if (param.isEmpty())
 				// Workaround; delay the message so it's displayed after blank lines.
 				new BukkitRunnable() {
-					@Override
-					public void run() {
-						Common.broadcastIfEnabled(Settings.Clear.BROADCAST, sender, Localization.CLEAR_BROADCAST, Reason);
-					}
-				}.runTaskLater(ChatControl.instance(), 2);
-			} else if ((param.equalsIgnoreCase("-silent") || param.equalsIgnoreCase("-s")) && Common.hasPerm(sender, Permissions.Commands.CLEAR_SILENT)) {
+				@Override
+				public void run() {
+					Common.broadcastIfEnabled(Settings.Clear.BROADCAST, sender, Localization.CLEAR_BROADCAST, Reason);
+				}
+			}.runTaskLater(ChatControl.instance(), 2);
+			else if ((param.equalsIgnoreCase("-silent") || param.equalsIgnoreCase("-s")) && Common.hasPerm(sender, Permissions.Commands.CLEAR_SILENT)) {
 				// broadcast nothing
-			} else if ((param.equalsIgnoreCase("-anonymous") || param.equalsIgnoreCase("-a")) && Common.hasPerm(sender, Permissions.Commands.CLEAR_ANONYMOUS)) {
+			} else if ((param.equalsIgnoreCase("-anonymous") || param.equalsIgnoreCase("-a")) && Common.hasPerm(sender, Permissions.Commands.CLEAR_ANONYMOUS))
 				new BukkitRunnable() {
-					@Override
-					public void run() {
-						Common.broadcastIfEnabled(Settings.Clear.BROADCAST, sender, Localization.CLEAR_ANON_BROADCAST, Reason);
-					}
-				}.runTaskLater(ChatControl.instance(), 2);
-			} else if (param.startsWith("-")) {
+				@Override
+				public void run() {
+					Common.broadcastIfEnabled(Settings.Clear.BROADCAST, sender, Localization.CLEAR_ANON_BROADCAST, Reason);
+				}
+			}.runTaskLater(ChatControl.instance(), 2);
+			else if (param.startsWith("-")) {
 				Common.tell(sender, Localization.WRONG_PARAMETERS);
 				return;
 			}
@@ -195,7 +195,7 @@ public class CommandsHandler implements CommandExecutor {
 
 			checkPerm(sender, Permissions.Commands.LIST);
 
-			Common.tell(sender, 
+			Common.tell(sender,
 					" ",
 					"&3  ChatControl &f(v" + ChatControl.instance().getDescription().getVersion() + ")",
 					"&2  [] &f= optional arguments (use only 1 at once)",

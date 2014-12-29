@@ -39,64 +39,63 @@ public class CommandListener implements Listener {
 				}
 			}
 
-			long cas = System.currentTimeMillis() / 1000L;
+		long cas = System.currentTimeMillis() / 1000L;
 
-			timeCheck: if ((cas - plData.lastCommandTime) < Settings.AntiSpam.Commands.DELAY) {
-				if (Common.hasPerm(pl, Permissions.Bypasses.DELAY_COMMANDS))
-					break timeCheck;
+		timeCheck: if (cas - plData.lastCommandTime < Settings.AntiSpam.Commands.DELAY) {
+			if (Common.hasPerm(pl, Permissions.Bypasses.DELAY_COMMANDS))
+				break timeCheck;
 
-				if (Settings.AntiSpam.Commands.WHITELIST_DELAY.contains(args[0].replaceFirst("/", "")))
-					break timeCheck;
+			if (Settings.AntiSpam.Commands.WHITELIST_DELAY.contains(args[0].replaceFirst("/", "")))
+				break timeCheck;
 
-				long time = Settings.AntiSpam.Commands.DELAY - (cas - plData.lastCommandTime);
+			long time = Settings.AntiSpam.Commands.DELAY - (cas - plData.lastCommandTime);
 
-				Common.tell(pl, Localization.COMMAND_WAIT_MESSAGE.replace("%time", String.valueOf(time)).replace("%seconds", Localization.Parts.SECONDS.formatNumbers(time)));
+			Common.tell(pl, Localization.COMMAND_WAIT_MESSAGE.replace("%time", String.valueOf(time)).replace("%seconds", Localization.Parts.SECONDS.formatNumbers(time)));
+			e.setCancelled(true);
+			return;
+		} else
+			plData.lastCommandTime = cas;
+
+		dupeCheck: if (Settings.AntiSpam.Commands.SIMILARITY > 0 && Settings.AntiSpam.Commands.SIMILARITY < 100) {
+			String strippedMsg = message.toLowerCase();
+			String[] strippedArgs = strippedMsg.split(" ");
+
+			// Strip from messages like /tell <player> <msg> the player name, making the check less less annoying.
+			if (strippedArgs.length > 2 && (strippedArgs[0].equals("/tell") || strippedArgs[0].equals("/msg")))
+				strippedMsg = strippedMsg.replace(strippedArgs[1], "");
+
+			strippedMsg = Common.prepareForSimilarityCheck(strippedMsg);
+
+			if (Common.similarity(strippedMsg, plData.lastCommand) > Settings.AntiSpam.Commands.SIMILARITY) {
+				if (Common.hasPerm(pl, Permissions.Bypasses.SIMILAR_COMMANDS))
+					break dupeCheck;
+
+				if (Settings.AntiSpam.Commands.WHITELIST_SIMILARITY.contains(args[0].replaceFirst("/", "")))
+					break dupeCheck;
+
+				Common.tell(pl, Localization.ANTISPAM_SIMILAR_COMMAND);
 				e.setCancelled(true);
 				return;
-			} else
-				plData.lastCommandTime = cas;
-
-			dupeCheck: if (Settings.AntiSpam.Commands.SIMILARITY > 0 && Settings.AntiSpam.Commands.SIMILARITY < 100) {
-				String strippedMsg = message.toLowerCase();
-				String[] strippedArgs = strippedMsg.split(" ");
-
-				// Strip from messages like /tell <player> <msg> the player name, making the check less less annoying.
-				if (strippedArgs.length > 2 && (strippedArgs[0].equals("/tell") || strippedArgs[0].equals("/msg")))
-					strippedMsg = strippedMsg.replace(strippedArgs[1], "");
-
-				strippedMsg = Common.prepareForSimilarityCheck(strippedMsg);
-
-				if (Common.similarity(strippedMsg, plData.lastCommand) > Settings.AntiSpam.Commands.SIMILARITY) {
-					if (Common.hasPerm(pl, Permissions.Bypasses.SIMILAR_COMMANDS))
-						break dupeCheck;
-
-					if (Settings.AntiSpam.Commands.WHITELIST_SIMILARITY.contains(args[0].replaceFirst("/", "")))
-						break dupeCheck;
-
-					Common.tell(pl, Localization.ANTISPAM_SIMILAR_COMMAND);
-					e.setCancelled(true);
-					return;
-				}
-				plData.lastCommand = strippedMsg;
 			}
+			plData.lastCommand = strippedMsg;
+		}
 
-			if (Settings.Rules.CHECK_COMMANDS)
-				message = ChatControl.instance().chatCeaser.parseRules(e, pl, message);
+		if (Settings.Rules.CHECK_COMMANDS)
+			message = ChatControl.instance().chatCeaser.parseRules(e, pl, message);
 
-			if (e.isCancelled()) // some of the rule or handler has cancelled it
-				return;
+		if (e.isCancelled()) // some of the rule or handler has cancelled it
+			return;
 		}
 
 		if (!message.equals(e.getMessage()))
 			e.setMessage(message);
 
-		if (Settings.Writer.ENABLED && !Settings.Writer.WHITELIST_PLAYERS.contains(pl.getName().toLowerCase())) {
+		if (Settings.Writer.ENABLED && !Settings.Writer.WHITELIST_PLAYERS.contains(pl.getName().toLowerCase()))
 			for (String prikaz : Settings.Writer.INCLUDE_COMMANDS)
 				if (message.toLowerCase().startsWith("/" + prikaz.toLowerCase()))
 					Writer.writeToFile(Writer.CHAT_FILE_PATH, "[CMD] " + pl.getName(), message);
-		}
 
-		if (Settings.SoundNotify.ENABLED_IN_COMMANDS.contains(args[0].replaceFirst("/", ""))) {
+		if (Settings.SoundNotify.ENABLED_IN_COMMANDS.contains(args[0].replaceFirst("/", "")))
 			if (args.length > 2) {
 				Player player = Bukkit.getPlayer(args[1]);
 				if (player == null || !player.isOnline())
@@ -109,6 +108,5 @@ public class CommandListener implements Listener {
 				if (reply != null && Common.hasPerm(reply, Permissions.Notify.WHEN_MENTIONED))
 					reply.playSound(reply.getLocation(), Settings.SoundNotify.SOUND.sound, Settings.SoundNotify.SOUND.volume, Settings.SoundNotify.SOUND.pitch);
 			}
-		}
 	}
 }

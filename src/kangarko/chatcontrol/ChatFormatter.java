@@ -88,7 +88,7 @@ public class ChatFormatter implements Listener {
 		String world = pl.getWorld().getName();
 		VaultHook vault = ChatControl.instance().getVaultHook();
 		AuthMeHook authMe = ChatControl.instance().getAuthMeHook();
-		
+
 		return format
 				.replace("%prefix", formatColor(vault.getPlayerPrefix(pl))).replace("%suffix", formatColor(vault.getPlayerSuffix(pl)))
 				.replace("%world", getWorldAlias(world)).replace("%health", formatHealth(pl) + ChatColor.RESET)
@@ -105,7 +105,7 @@ public class ChatFormatter implements Listener {
 
 			for (Player recipient : ChatControl.getOnlinePlayers())
 				if (recipient.getWorld().equals(pl.getWorld()))
-					if ((playerLocation.distanceSquared(recipient.getLocation()) <= squaredDistance) || (Common.hasPerm(pl, Permissions.Formatter.OVERRIDE_RANGED)))
+					if (playerLocation.distanceSquared(recipient.getLocation()) <= squaredDistance || Common.hasPerm(pl, Permissions.Formatter.OVERRIDE_RANGED))
 						recipients.add(recipient);
 
 			return recipients;
@@ -113,17 +113,15 @@ public class ChatFormatter implements Listener {
 			Common.Debug("(Range Chat) Got " + ex.getMessage() + ", trying backup.");
 
 			if (Common.hasPerm(pl, Permissions.Formatter.OVERRIDE_RANGED)) {
-				for (Player recipient : ChatControl.getOnlinePlayers()) {
+				for (Player recipient : ChatControl.getOnlinePlayers())
 					if (recipient.getWorld().equals(pl.getWorld()))
 						recipients.add(recipient);
-				}
 				return recipients;
 			}
 
-			for (Entity en : pl.getNearbyEntities(range, range, range)) {
+			for (Entity en : pl.getNearbyEntities(range, range, range))
 				if (en.getType() == EntityType.PLAYER)
 					recipients.add((Player) en);
-			}
 
 			return recipients;
 		}

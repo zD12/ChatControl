@@ -12,8 +12,9 @@ import org.apache.logging.log4j.message.Message;
 
 public class Log4jFilter implements Filter {
 
-	private Log4jFilter() {}
-	
+	private Log4jFilter() {
+	}
+
 	public static void init() {
 		((Logger) LogManager.getRootLogger()).addFilter(new Log4jFilter());
 	}
@@ -48,15 +49,14 @@ public class Log4jFilter implements Filter {
 		return Result.NEUTRAL;
 	}
 
-	private Result checkMessage(String message) {		
-		for (String filter : SettingsConsole.FILTER_MESSAGES) {
+	private Result checkMessage(String message) {
+		for (String filter : SettingsConsole.FILTER_MESSAGES)
 			if (filter.equalsIgnoreCase(message))
 				return Result.DENY;
 			else if (filter.toLowerCase().contains(message.toLowerCase()))
 				return Result.DENY;
-			//else if (Common.regExMatch(filter, message)) // TODO Temporary disabled. Causes server to silently crash if a message is printed inside the match method.
-			//	return Result.DENY;
-		}
+		//else if (Common.regExMatch(filter, message)) // TODO Temporary disabled. Causes server to silently crash if a message is printed inside the match method.
+		//	return Result.DENY;
 		return Result.NEUTRAL;
 	}
 }

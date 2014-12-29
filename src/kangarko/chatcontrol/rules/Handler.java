@@ -15,23 +15,23 @@ public class Handler {
 	 * Flags
 	 */
 	public static final int CHAT = 0, COMMAND = 1, SIGN = 2;
-	
+
 	/**
 	 * The name of the handler.
 	 * It's automatically set from the handler name in handlers file.
 	 */
 	private final String name;
-	
+
 	/**
 	 * The id/name of the rule associated with this handler.
 	 */
 	private String ruleID = "UNSET";
-	
+
 	/**
 	 * A permission that makes player bypass the checks.
 	 */
 	private String bypassPermission;
-	
+
 	/**
 	 * List of commands that will be ignored from the check.
 	 */
@@ -103,7 +103,7 @@ public class Handler {
 	 */
 	public Handler(String name, String ruleID) {
 		this.name = name;
-		
+
 		if (ruleID != null)
 			this.ruleID = ruleID;
 	}
@@ -111,28 +111,28 @@ public class Handler {
 	public String getName() {
 		return name;
 	}
-	
+
 	public String getRuleID() {
 		return ruleID;
 	}
-	
+
 	public void setBypassPermission(String bypassPermission) {
 		Validate.isTrue(this.bypassPermission == null, "Bypass permission already set for: " + this);
-		
+
 		this.bypassPermission = bypassPermission;
 	}
-	
+
 	public String getBypassPermission() {
 		return bypassPermission;
 	}
-	
+
 	public List<String> getIgnoredInCommands() {
 		return ignoredInCommands;
 	}
-	
+
 	public void setIgnoredInCommands(List<String> ignoredInCommands) {
 		Validate.isTrue(this.ignoredInCommands == null, "Ignored commands already set for: " + this);
-		
+
 		this.ignoredInCommands = ignoredInCommands;
 	}
 
@@ -141,7 +141,7 @@ public class Handler {
 
 		this.playerWarnMsg = playerWarnMsg;
 	}
-	
+
 	public String getPlayerWarnMsg() {
 		return playerWarnMsg;
 	}
@@ -151,7 +151,7 @@ public class Handler {
 
 		this.broadcastMsg = broadcastMsg;
 	}
-	
+
 	public String getBroadcastMsg() {
 		return broadcastMsg;
 	}
@@ -165,13 +165,13 @@ public class Handler {
 	public String getStaffAlertMsg() {
 		return staffAlertMsg;
 	}
-	
-	public void setStaffAlertPermission(String staffAlertPermission)  {
+
+	public void setStaffAlertPermission(String staffAlertPermission) {
 		Objects.requireNonNull(staffAlertMsg, "Staff alert message is null, cannot get staff permission! Handler: " + this);
 
 		this.staffAlertPermission = staffAlertPermission;
 	}
-	
+
 	public String getStaffAlertPermission() {
 		return staffAlertPermission;
 	}
@@ -185,13 +185,13 @@ public class Handler {
 	public String getConsoleMsg() {
 		return consoleMsg;
 	}
-	
+
 	public void setCommandsToExecute(List<String> commandsToExecute) {
 		Validate.isTrue(this.commandsToExecute == null, "Commands to execute already set for: " + this);
-		
+
 		this.commandsToExecute = commandsToExecute;
 	}
-	
+
 	public List<String> getCommandsToExecute() {
 		return commandsToExecute;
 	}
@@ -201,51 +201,51 @@ public class Handler {
 
 		this.writeToFileName = writeToFileName;
 	}
-	
+
 	public String getWriteToFileName() {
 		return writeToFileName;
 	}
-	
+
 	public void setBlockMessage() {
-		Validate.isTrue(!this.blockMessage, "Message is already blocked for: " + this);
-		
-		this.blockMessage = true;
+		Validate.isTrue(!blockMessage, "Message is already blocked for: " + this);
+
+		blockMessage = true;
 	}
-	
+
 	public boolean blockMessage() {
 		return blockMessage;
 	}
-	
+
 	public void setMsgReplacement(String msgReplacement) {
-		Validate.isTrue(!this.blockMessage, "Replacement cannot be defined when the message is blocked: " + this);
-		Validate.isTrue(this.rewriteTo == null, "Whole message replacement already defined for: " + this);
-		
+		Validate.isTrue(!blockMessage, "Replacement cannot be defined when the message is blocked: " + this);
+		Validate.isTrue(rewriteTo == null, "Whole message replacement already defined for: " + this);
+
 		this.msgReplacement = msgReplacement;
 	}
-	
+
 	public String getMsgReplacement() {
 		return msgReplacement;
 	}
 
 	public void setRewriteTo(String wholeMsgReplacement) {
-		Validate.isTrue(!this.blockMessage, "Whole replacement cannot be defined when the message is blocked: " + this);
-		Validate.isTrue(this.msgReplacement == null, "Part message replacement already defined for: " + this);
-		
-		this.rewriteTo = wholeMsgReplacement;
+		Validate.isTrue(!blockMessage, "Whole replacement cannot be defined when the message is blocked: " + this);
+		Validate.isTrue(msgReplacement == null, "Part message replacement already defined for: " + this);
+
+		rewriteTo = wholeMsgReplacement;
 	}
-	
+
 	public String getRewriteTo() {
 		return rewriteTo;
 	}
-	
+
 	private String printCommands() {
 		String commands = "(" + commandsToExecute.size() + ")";
 		for (String command : commandsToExecute)
-			commands+= command;
+			commands += command;
 
 		return commands;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "    Handler{\n"

@@ -84,13 +84,12 @@ public class ConfHelper {
 		Objects.requireNonNull(FILE_NAME, "File name cannot be null!");
 		file = new File(ChatControl.instance().getDataFolder(), FILE_NAME);
 
-		if (!file.exists()) {
+		if (!file.exists())
 			try {
 				ChatControl.instance().saveResource(FILE_NAME, false);
 			} catch (IllegalArgumentException ex) {
 				throw new InBuiltFileMissingException("Inbuilt resource %file not found!", FILE_NAME);
 			}
-		}
 
 		cfg = new YamlConfiguration();
 		cfg.load(file);
@@ -245,7 +244,7 @@ public class ConfHelper {
 		private final String message;
 
 		public ChatMessage(String message) {
-			this.type = Type.fromValue(message);
+			type = Type.fromValue(message);
 			this.message = message;
 		}
 
@@ -253,7 +252,7 @@ public class ConfHelper {
 			Validate.isTrue(type != Type.CUSTOM, "Type cannot be custom.");
 
 			this.type = type;
-			this.message = type == Type.DEFAULT ? "default" : type == Type.HIDDEN ? "hidden" : null;
+			message = type == Type.DEFAULT ? "default" : type == Type.HIDDEN ? "hidden" : null;
 		}
 
 		public Type getType() {
@@ -261,7 +260,7 @@ public class ConfHelper {
 		}
 
 		public String getMessage() {
-			Objects.requireNonNull(message, "Message cannot be null!");		
+			Objects.requireNonNull(message, "Message cannot be null!");
 			return message;
 		}
 
@@ -272,16 +271,16 @@ public class ConfHelper {
 
 			public static Type fromValue(String raw) {
 				switch (raw.toLowerCase()) {
-					case "default":
-					case "def":
-					case "vanilla":
-						return DEFAULT;
-					case "none":
-					case "hide":
-					case "hidden":
-						return HIDDEN;
-					default:
-						return CUSTOM;
+				case "default":
+				case "def":
+				case "vanilla":
+					return DEFAULT;
+				case "none":
+				case "hide":
+				case "hidden":
+					return HIDDEN;
+				default:
+					return CUSTOM;
 				}
 			}
 		}
@@ -296,24 +295,24 @@ public class ConfHelper {
 			String[] values = raw.split(", ");
 
 			if (values.length == 2) {
-				this.akuzativSg = values[0];
-				this.nominativPl = values[1];
-				this.genitivePl = nominativPl;
+				akuzativSg = values[0];
+				nominativPl = values[1];
+				genitivePl = nominativPl;
 				return;
 			}
 
 			if (values.length != 3)
 				throw new RuntimeException("Malformed type, use format: 'second, seconds' OR 'second, seconds, seconds' (genitive plular) (if your language has it)");
 
-			this.akuzativSg = values[0];
-			this.nominativPl = values[1];
-			this.genitivePl = values[2];
+			akuzativSg = values[0];
+			nominativPl = values[1];
+			genitivePl = values[2];
 		}
 
 		public String formatNumbers(long count) {
-			if(count == 1) 
+			if (count == 1)
 				return akuzativSg;
-			if(count > 1 && count < 5) 
+			if (count > 1 && count < 5)
 				return nominativPl;
 
 			return genitivePl;
@@ -324,31 +323,31 @@ public class ConfHelper {
 		public final Sound sound;
 		public final float volume, pitch;
 
-		public SoundHelper(String raw) {			
+		public SoundHelper(String raw) {
 			String[] values = raw.split(", ");
 
 			if (values.length == 1) {
-				this.sound = Sound.valueOf(values[0].toUpperCase());
-				this.volume = 1F;
-				this.pitch = 1.5F;
+				sound = Sound.valueOf(values[0].toUpperCase());
+				volume = 1F;
+				pitch = 1.5F;
 				return;
 			}
 
 			Validate.isTrue(values.length == 3, "Malformed sound type, use format: 'sound' OR 'sound, volume, pitch'");
-			this.sound = Sound.valueOf(values[0].toUpperCase());
-			this.volume = Float.parseFloat(values[1]);
-			this.pitch = Float.parseFloat(values[2]);
+			sound = Sound.valueOf(values[0].toUpperCase());
+			volume = Float.parseFloat(values[1]);
+			pitch = Float.parseFloat(values[2]);
 		}
 	}
-	
+
 	public static class IllegalLocaleException extends RuntimeException {
 		private static final long serialVersionUID = 1L;
 	}
-	
+
 	public static class InBuiltFileMissingException extends Exception {
 		private static final long serialVersionUID = 1L;
 		public final String file;
-		
+
 		public InBuiltFileMissingException(String msg, String file) {
 			super(msg.replace("%file", file));
 			this.file = file;

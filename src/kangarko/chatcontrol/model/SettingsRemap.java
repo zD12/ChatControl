@@ -36,9 +36,10 @@ public class SettingsRemap extends ConfHelper {
 
 	public static HashMap<String, String> REPLACE_UTF_MAP;
 	public static HashMap<String, String> REPLACE_REGEX_MAP;
+
 	//public static HashMap<String, String> REPLACE_WHOLE_MAP;
 
-	private static final void init() {		
+	private static final void init() {
 		HashMap<String, String> utf = new HashMap<>();
 		utf.put(":)", "\u263a");
 		utf.put(":-)", "\u263a");

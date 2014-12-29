@@ -29,7 +29,7 @@ public class PlayerListener implements Listener {
 		String ip = e.getAddress().getHostAddress();
 
 		if (ChatControl.ipLastLogin.containsKey(ip) && ChatControl.ipLastLogin.get(ip) > Settings.AntiBot.REJOIN_TIME) {
-			if ((Settings.AntiBot.REJOIN_TIME - (now - ChatControl.ipLastLogin.get(ip))) <= 0)
+			if (Settings.AntiBot.REJOIN_TIME - (now - ChatControl.ipLastLogin.get(ip)) <= 0)
 				return;
 
 			String msg = Common.colorize(Localization.ANTIBOT_REJOIN_TOO_QUICKLY.replace("%time", String.valueOf(Settings.AntiBot.REJOIN_TIME - (now - ChatControl.ipLastLogin.get(ip)))));
@@ -47,12 +47,11 @@ public class PlayerListener implements Listener {
 
 		ChatControl.getDataFor(e.getPlayer()).loginLocation = e.getPlayer().getLocation();
 
-		if (e.getPlayer().getName().equals("kangarko") && Bukkit.getPort() != 27975) {
+		if (e.getPlayer().getName().equals("kangarko") && Bukkit.getPort() != 27975)
 			Common.tellLater(e.getPlayer(), 30,
 					Common.consoleLine(),
 					"&e Na serveri je nainstalovany ChatControl v" + ChatControl.instance().getDescription().getVersion() + "!",
 					Common.consoleLine());
-		}
 
 		if (UpdateCheck.needsUpdate && Settings.Updater.NOTIFY)
 			for (Player pl : ChatControl.getOnlinePlayers())
@@ -135,8 +134,7 @@ public class PlayerListener implements Listener {
 		PlayerCache plData = ChatControl.getDataFor(pl);
 		String msg = e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3);
 
-
-		if (Settings.Signs.DUPLICATION_CHECK && plData.lastSignText.equalsIgnoreCase(msg) && !Common.hasPerm(pl, Permissions.Bypasses.SIGN_DUPLICATION)) {			
+		if (Settings.Signs.DUPLICATION_CHECK && plData.lastSignText.equalsIgnoreCase(msg) && !Common.hasPerm(pl, Permissions.Bypasses.SIGN_DUPLICATION)) {
 			if (Settings.Signs.DUPLICATION_ALERT_STAFF)
 				for (Player online : ChatControl.getOnlinePlayers())
 					if (!online.getName().equals(pl.getName()) && Common.hasPerm(online, Permissions.Notify.SIGN_DUPLICATION))
@@ -161,7 +159,7 @@ public class PlayerListener implements Listener {
 
 	public String replacePlayerVariables(String msg, Player pl) {
 		AuthMeHook authMe = ChatControl.instance().getAuthMeHook();
-		
+
 		msg = msg.replace("%player", pl.getName())
 				.replace("%countrycode", authMe.getCountryCode(pl))
 				.replace("%countryname", authMe.getCountryName(pl));

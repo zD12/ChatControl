@@ -54,7 +54,7 @@ public class Rule {
 	 * A message to the player
 	 */
 	private String warnMessage = null;
-	
+
 	/**
 	 * A permission required to get message {@link #customAlertMessage}
 	 */
@@ -64,7 +64,7 @@ public class Rule {
 	 * A message broadcasted to players with {@link #customAlertPermission}
 	 */
 	private String customAlertMessage = null;
-	
+
 	/**
 	 * A handler that triggers when {@link #match} matches the checked message
 	 */
@@ -79,7 +79,7 @@ public class Rule {
 	 * Whenever the message should be logged and saved into a file.
 	 */
 	private boolean log = false;
-	
+
 	/**
 	 * How much money to take from the player (Vault must be loaded)
 	 */
@@ -139,9 +139,9 @@ public class Rule {
 	}
 
 	public void setIgnoreEvent(String ignoreEvent) {
-		Validate.isTrue(this.ignoredEvent == null, "Ignored event already set on: " + this);
+		Validate.isTrue(ignoredEvent == null, "Ignored event already set on: " + this);
 
-		this.ignoredEvent = getEventFromName(ignoreEvent);
+		ignoredEvent = getEventFromName(ignoreEvent);
 	}
 
 	public void setStripBefore(String stripBefore) {
@@ -189,21 +189,21 @@ public class Rule {
 
 		this.warnMessage = warnMessage;
 	}
-	
+
 	public void setCustomAlert(String raw) {
 		String[] parts = raw.split(" ");
 		Validate.isTrue(parts.length > 0, "Malformed then alert - must specify permission and a message.");
-	
+
 		String permission = parts[0];
-		
-		this.customAlertPermission = permission;
-		this.customAlertMessage = raw.replace(permission + " ", "");
+
+		customAlertPermission = permission;
+		customAlertMessage = raw.replace(permission + " ", "");
 	}
-	
+
 	public String getCustomAlertMessage() {
 		return customAlertMessage;
 	}
-	
+
 	public String getCustomAlertPermission() {
 		return customAlertPermission;
 	}
@@ -235,34 +235,34 @@ public class Rule {
 	public void setLog() {
 		Validate.isTrue(!log, "Message already being logged on: " + this);
 
-		this.log = true;
+		log = true;
 	}
 
 	public Double getFine() {
 		return fine;
 	}
-	
+
 	public void setFine(Double fine) {
 		Validate.isTrue(this.fine == null, "Fine already set on: " + this);
-		
+
 		this.fine = fine;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Rule{\n"
 				+ (id != null ? "    Id = " + id + "\n" : "")
 				+ "    Match = \'" + match + "\',\n"
 				+ (stripBefore != null ? "    Strip Before Match = \'" + stripBefore + "\',\n" : "")
-				+ (ignoredMessage != null ? "    Ignore Message = \'" + ignoredMessage + "\',\n"  : "")
-				+ (ignoredEvent != null ? "    Ignore Event = \'" + ignoredEvent + "\',\n"  : "")
-				+ (replacement != null ? "    Replace With = \'" + replacement + "\',\n"  : "")
-				+ (rewrite != null ? "    Rewrite = \'" + rewrite + "\',\n"  : "")
-				+ (commandToExecute != null ? "    Execute Command = \'" + commandToExecute + "\',\n"  : "")
-				+ (handler != null ? "    Handler = \'" + handler + "\',\n"  : "")
-				+ (warnMessage != null ? "    Warn Message = \'" + warnMessage + "\',\n"  : "")
-				+ (cancel ? "    Deny = " + cancel + "\n"  : "")
-				+ (log ? "    Log = " + log + "\n"  : "")
+				+ (ignoredMessage != null ? "    Ignore Message = \'" + ignoredMessage + "\',\n" : "")
+				+ (ignoredEvent != null ? "    Ignore Event = \'" + ignoredEvent + "\',\n" : "")
+				+ (replacement != null ? "    Replace With = \'" + replacement + "\',\n" : "")
+				+ (rewrite != null ? "    Rewrite = \'" + rewrite + "\',\n" : "")
+				+ (commandToExecute != null ? "    Execute Command = \'" + commandToExecute + "\',\n" : "")
+				+ (handler != null ? "    Handler = \'" + handler + "\',\n" : "")
+				+ (warnMessage != null ? "    Warn Message = \'" + warnMessage + "\',\n" : "")
+				+ (cancel ? "    Deny = " + cancel + "\n" : "")
+				+ (log ? "    Log = " + log + "\n" : "")
 				+ "}";
 	}
 
@@ -271,7 +271,7 @@ public class Rule {
 	 * @return rule's regular expression
 	 */
 	public String toShortString() {
-		return "Rule {" + (id != null ? "ID=" + id + ",": "") + "Match=\'" + match + "\'}";
+		return "Rule {" + (id != null ? "ID=" + id + "," : "") + "Match=\'" + match + "\'}";
 	}
 
 	private int getEventFromName(String str) {

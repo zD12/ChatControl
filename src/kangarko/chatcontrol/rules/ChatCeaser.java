@@ -43,14 +43,12 @@ public final class ChatCeaser {
 
 	/**
 	 * Creates new instance which can be used to read rules from a file
-	 * 
+	 *
 	 * @param fileName file name, which location is automatically set to the plugin's directory
 	 */
 	public ChatCeaser(String fileName) {
-		fileName = "rules/" + fileName;
-
 		this.fileName = fileName;
-		this.file = new File(ChatControl.instance().getDataFolder(), fileName);
+		file = new File(ChatControl.instance().getDataFolder(), fileName);
 	}
 
 	/**
@@ -73,8 +71,7 @@ public final class ChatCeaser {
 			for (int i = 0; i < rawLines.size(); i++) {
 				String line = rawLines.get(i).trim();
 
-				if (!line.isEmpty() && !line.startsWith("#")) { // Ignore blank lines and comments.
-
+				if (!line.isEmpty() && !line.startsWith("#"))
 					// If a line starts with 'match ' then assume a new rule is found and start creating it. This makes a new instance of 'rule' variable.
 					if (line.startsWith("match ")) {
 						if (rule != null) // Found another match, assuming previous rule is finished creating.
@@ -115,10 +112,10 @@ public final class ChatCeaser {
 
 						else if (line.startsWith("then warn "))
 							rule.setWarnMessage(line.replaceFirst("then warn ", ""));
-						
+
 						else if (line.startsWith("then alert "))
 							rule.setCustomAlert(line.replaceFirst("then alert ", ""));
-						
+
 						else if (line.startsWith("then fine "))
 							rule.setFine(Double.parseDouble(line.replaceFirst("then fine ", "")));
 
@@ -128,7 +125,6 @@ public final class ChatCeaser {
 						else
 							throw new NullPointerException("Unknown operator: " + line);
 					}
-				}
 
 				if (i + 1 == rawLines.size() && rule != null) // Reached end of the file but a rule is being created, finishing it
 					rules.add(rule);
@@ -147,7 +143,7 @@ public final class ChatCeaser {
 	/**
 	 * Check the message against all rules.
 	 * Can cancel the event or return modified message.
-	 * 
+	 *
 	 * @param e the event - must be cancellable
 	 * @param pl the player that triggered filtering
 	 * @param msg the message that is being checked
@@ -172,10 +168,10 @@ public final class ChatCeaser {
 					Common.Log(org.bukkit.ChatColor.RED + (flag == Handler.SIGN ? "[SIGN at " + Common.shortLocation(pl.getLocation()) + "] " : "") + pl.getName() + " violated " + rule.toShortString() + " with message: &f" + msg);
 					Writer.writeToFile("logs/rules_log.txt", pl.getName(), (flag == Handler.SIGN ? "[SIGN at " + Common.shortLocation(pl.getLocation()) + "] " : "") + rule.toShortString() + " caught message: " + msg);
 				}
-				
+
 				if (rule.getCustomAlertMessage() != null) {
 					Objects.requireNonNull(rule.getCustomAlertPermission(), "Custom alert permission cannot be null!");
-					
+
 					for (Player online : ChatControl.getOnlinePlayers())
 						if (Common.hasPerm(online, rule.getCustomAlertPermission()))
 							Common.tellLater(online, 1, rule.getCustomAlertMessage().replace("%player", pl.getName()).replace("%message", msg).replace("%ruleID", rule.getId()));
@@ -198,7 +194,7 @@ public final class ChatCeaser {
 
 				if (rule.getWarnMessage() != null)
 					Common.tell(pl, Common.colorize(rule.getWarnMessage()));
-				
+
 				if (rule.getFine() != null)
 					ChatControl.instance().getVaultHook().takeMoney(pl.getName(), rule.getFine());
 
@@ -217,7 +213,7 @@ public final class ChatCeaser {
 	public <T extends Cancellable> String handle(T e, Player pl, String match, String msg, Handler handler, int flag) {
 		if (handler.getBypassPermission() != null && Common.hasPerm(pl, handler.getBypassPermission()))
 			return msg;
-		
+
 		if (flag == Handler.COMMAND)
 			for (String ignored : handler.getIgnoredInCommands())
 				if (msg.startsWith(ignored))
@@ -255,21 +251,19 @@ public final class ChatCeaser {
 		if (handler.getWriteToFileName() != null)
 			Writer.writeToFile(handler.getWriteToFileName(), pl.getName(), replaceVariables(handler, "[Handler=%handler, Rule ID=%ruleID] ") + msg);
 
-		if (handler.blockMessage() || (flag == Handler.SIGN && Settings.Signs.BLOCK_WHEN_VIOLATES_RULE))
+		if (handler.blockMessage() || flag == Handler.SIGN && Settings.Signs.BLOCK_WHEN_VIOLATES_RULE)
 			e.setCancelled(true);
-		else {
-			if (handler.getMsgReplacement() != null)
-				return msg.replaceAll(match, Common.colorize(handler.getMsgReplacement()));
-			else if (handler.getRewriteTo() != null)
-				return Common.colorize(replaceVariables(handler, handler.getRewriteTo()).replace("%player", pl.getName()).replace("%message", msg));
-		}
+		else if (handler.getMsgReplacement() != null)
+			return msg.replaceAll(match, Common.colorize(handler.getMsgReplacement()));
+		else if (handler.getRewriteTo() != null)
+			return Common.colorize(replaceVariables(handler, handler.getRewriteTo()).replace("%player", pl.getName()).replace("%message", msg));
 
 		return msg;
 	}
 
 	/**
 	 * Replaces rule ID (if set) and handler name (if set) in the message.
-	 * 
+	 *
 	 * @param handler the handler the variables will be taken from
 	 * @param message the message to replace variables in
 	 * @returns message with modified variables

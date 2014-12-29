@@ -11,8 +11,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 public class Handlers {
 
 	private final static File file;
-	
-	private static YamlConfiguration cfg;	
+
+	private static YamlConfiguration cfg;
 	private static String sectionName;
 
 	static {
@@ -24,9 +24,9 @@ public class Handlers {
 		}
 	}
 
-	public static Handler loadHandler(String name, String ruleID) {		
+	public static Handler loadHandler(String name, String ruleID) {
 		cfg = YamlConfiguration.loadConfiguration(file);
-		
+
 		if (!cfg.isConfigurationSection(name))
 			throw new NullPointerException("Unknown handler: " + name);
 
@@ -38,7 +38,7 @@ public class Handlers {
 		message = getString("Bypass_With_Permission");
 		if (isValid(message))
 			handler.setBypassPermission(message);
-		
+
 		message = getString("Player_Warn_Message");
 		if (isValid(message))
 			handler.setPlayerWarnMsg(message);
@@ -48,7 +48,7 @@ public class Handlers {
 			handler.setBroadcastMsg(message);
 
 		message = getString("Staff_Alert_Message");
-		if (isValid(message))	
+		if (isValid(message))
 			handler.setStaffAlertMsg(message);
 
 		message = getString("Staff_Alert_Permission");
@@ -80,12 +80,12 @@ public class Handlers {
 			list = cfg.getStringList(sectionName + ".Execute_Commands");
 			handler.setCommandsToExecute(list);
 		}
-		
+
 		if (cfg.isSet(sectionName + ".Ignored_In_Commands")) {
 			list = cfg.getStringList(sectionName + ".Ignored_In_Commands");
 			handler.setIgnoredInCommands(list);
 		}
-		
+
 		sectionName = null;
 
 		return handler;

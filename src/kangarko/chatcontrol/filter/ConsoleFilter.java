@@ -8,6 +8,7 @@ import kangarko.chatcontrol.utils.Common;
 
 public class ConsoleFilter implements Filter {
 
+	@Override
 	public boolean isLoggable(LogRecord record) {
 		String msg = record.getMessage();
 
@@ -18,14 +19,13 @@ public class ConsoleFilter implements Filter {
 		if (SettingsConsole.FILTER_ENABLED && SettingsConsole.FILTER_COLORS_TO_ANSI)
 			record.setMessage(Common.toAnsiColors(msg));
 
-		for (String blacklist : SettingsConsole.FILTER_MESSAGES) {
+		for (String blacklist : SettingsConsole.FILTER_MESSAGES)
 			if (msg.equalsIgnoreCase(blacklist))
 				return false;
 			else if (blacklist.contains(msg))
 				return false;
 			else if (Common.regExMatch(blacklist, msg))
 				return false;
-		}
 
 		return true;
 	}

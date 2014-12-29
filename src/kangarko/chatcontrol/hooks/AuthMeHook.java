@@ -8,13 +8,13 @@ public class AuthMeHook {
 
 	public String getCountryCode(Player pl) {
 		String ip = pl.getAddress().toString().replace("/", "");
-		
+
 		return API.instance.getCountryCode(ip);
 	}
 
 	public String getCountryName(Player pl) {
 		String ip = pl.getAddress().toString().replace("/", "");
-		
+
 		return API.instance.getCountryName(ip);
 	}
 }

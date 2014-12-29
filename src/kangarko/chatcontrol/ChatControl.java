@@ -53,17 +53,18 @@ public class ChatControl extends JavaPlugin {
 	private EssentialsHook ess;
 	private VaultHook vault;
 	private AuthMeHook authMe;
-	
+
 	private ChatFormatter formatter;
 	public ChatCeaser chatCeaser;
 
+	@Override
 	public void onEnable() {
 		try {
 			instance = this;
 
 			ConfHelper.loadAll();
 
-			chatCeaser = new ChatCeaser("rules.txt");
+			chatCeaser = new ChatCeaser("rules/rules.txt");
 			chatCeaser.load();
 
 			for (Player pl : getOnlinePlayers())
@@ -74,7 +75,7 @@ public class ChatControl extends JavaPlugin {
 
 			if (doesPluginExist("Vault"))
 				vault = new VaultHook();
-			
+
 			if (doesPluginExist("AuthMe"))
 				authMe = new AuthMeHook();
 
@@ -82,7 +83,7 @@ public class ChatControl extends JavaPlugin {
 			getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 			getServer().getPluginManager().registerEvents(new CommandListener(), this);
 
-			if (SettingsConsole.FILTER_ENABLED || SettingsConsole.FILTER_COLORS_TO_ANSI) {
+			if (SettingsConsole.FILTER_ENABLED || SettingsConsole.FILTER_COLORS_TO_ANSI)
 				try {
 					Log4jFilter.init();
 					Common.Debug("Console filtering now using Log4j Filter.");
@@ -96,20 +97,17 @@ public class ChatControl extends JavaPlugin {
 					Bukkit.getLogger().setFilter(filter);
 					Common.Debug("Console filtering initiated (MC 1.6.4 and lower).");
 				}
-			}
 
-			if (Settings.Packets.DISABLE_TAB_COMPLETE) {
+			if (Settings.Packets.DISABLE_TAB_COMPLETE)
 				if (doesPluginExist("ProtocolLib")) {
 					if (new File("spigot.yml").exists())
-						Common.LogInFrame(false, "&aIf you want to disable tab complete, set", "&bcommands.tab-complete &ato 0 in &fspigot.yml &afile.",
-								"&aFunction in ChatControl was disabled.");
+						Common.LogInFrame(false, "&aIf you want to disable tab complete, set", "&bcommands.tab-complete &ato 0 in &fspigot.yml &afile.", "&aFunction in ChatControl was disabled.");
 					else
 						ProtocolLibHook.init();
 				} else
 					Common.LogInFrame(false, "Cannot enable packet features!", "Required plugin missing: ProtocolLib");
-			}
 
-			if (Settings.Chat.Formatter.ENABLED) {
+			if (Settings.Chat.Formatter.ENABLED)
 				if (vault != null) {
 					if (doesPluginExist("ChatManager"))
 						Common.LogInFrame(true, "Detected &fChatManager&c! Please copy", "settings from it to ChatControl", "and disable the plugin afterwards!");
@@ -119,7 +117,6 @@ public class ChatControl extends JavaPlugin {
 					}
 				} else
 					Common.LogInFrame(false, "You need Vault to enable ChatFormatter.");
-			}
 
 			if (Settings.Messages.TIMED_ENABLED)
 				scheduleTimedMessages();
@@ -144,10 +141,9 @@ public class ChatControl extends JavaPlugin {
 				Common.Log(" &chttp://yaml-online-parser.appspot.com/");
 				Common.Log(" &cto check for syntax errors!");
 
-			} else if (t instanceof IllegalLocaleException) {
+			} else if (t instanceof IllegalLocaleException)
 				Common.Log(" &cChatControl doesn't have the locale: " + Settings.LOCALIZATION_SUFFIX);
-
-			} else if (t instanceof InBuiltFileMissingException) {
+			else if (t instanceof InBuiltFileMissingException) {
 				Common.Log(" &c" + t.getMessage());
 				Common.Log(" &cTo fix it, create a blank file with");
 				Common.Log(" &cthe name &f" + ((InBuiltFileMissingException) t).file + " &cin plugin folder.");
@@ -161,6 +157,7 @@ public class ChatControl extends JavaPlugin {
 		}
 	}
 
+	@Override
 	public void onDisable() {
 		muted = false;
 		playerData.clear();
@@ -232,14 +229,14 @@ public class ChatControl extends JavaPlugin {
 					if (msg.equals(Settings.Messages.TIMED_PREFIX + " ")) // is empty
 						continue;
 
-					if (world.equalsIgnoreCase("global")) {
+					if (world.equalsIgnoreCase("global"))
 						for (Player online : getOnlinePlayers()) {
 							if (Settings.Messages.TIMED.keySet().contains(online.getWorld().getName()) || !Common.hasPerm(online, Permissions.VIEW_TIMED_MESSAGES))
 								continue;
 
 							Common.tell(online, msg);
 						}
-					} else {
+					else {
 						World bukkitworld = getServer().getWorld(world);
 
 						if (bukkitworld == null)
@@ -284,11 +281,11 @@ public class ChatControl extends JavaPlugin {
 		}
 		return false;
 	}
-	
+
 	public VaultHook getVaultHook() {
 		return vault;
 	}
-	
+
 	public AuthMeHook getAuthMeHook() {
 		return authMe;
 	}

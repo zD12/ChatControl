@@ -27,13 +27,12 @@ public class ChatListener implements Listener {
 		String message = e.getMessage();
 
 		if (!Common.hasPerm(pl, Permissions.Bypasses.GLOBAL_PERM)) {
-			if (Settings.AntiSpam.BLOCK_CHAT_UNTIL_MOVED && pl.getLocation().equals(playerData.loginLocation)) {
+			if (Settings.AntiSpam.BLOCK_CHAT_UNTIL_MOVED && pl.getLocation().equals(playerData.loginLocation))
 				if (!Common.hasPerm(pl, Permissions.Bypasses.MOVE)) {
 					Common.tell(pl, Localization.CANNOT_CHAT_UNTIL_MOVED);
 					e.setCancelled(true);
 					return;
 				}
-			}
 
 			if (ChatControl.muted && !Common.hasPerm(pl, Permissions.Bypasses.MUTE)) {
 				Common.tell(pl, Localization.CANNOT_CHAT_WHILE_MUTED);
@@ -42,7 +41,7 @@ public class ChatListener implements Listener {
 			}
 
 			long now = System.currentTimeMillis() / 1000L;
-			if ((now - playerData.lastMessageTime) < Settings.AntiSpam.Messages.DELAY) {
+			if (now - playerData.lastMessageTime < Settings.AntiSpam.Messages.DELAY)
 				if (!Common.hasPerm(pl, Permissions.Bypasses.DELAY_CHAT)) {
 					long time = Settings.AntiSpam.Messages.DELAY - (now - playerData.lastMessageTime);
 
@@ -50,19 +49,17 @@ public class ChatListener implements Listener {
 					e.setCancelled(true);
 					return;
 				}
-			}
 			playerData.lastMessageTime = now;
 
 			if (Settings.AntiSpam.Messages.SIMILARITY > 0 && Settings.AntiSpam.Messages.SIMILARITY < 100) {
 				String strippedMsg = Common.prepareForSimilarityCheck(message);
 
-				if (Common.similarity(strippedMsg, playerData.lastMessage) > Settings.AntiSpam.Messages.SIMILARITY) {
+				if (Common.similarity(strippedMsg, playerData.lastMessage) > Settings.AntiSpam.Messages.SIMILARITY)
 					if (!Common.hasPerm(pl, Permissions.Bypasses.SIMILAR_CHAT)) {
 						Common.tell(pl, Localization.ANTISPAM_SIMILAR_MESSAGE);
 						e.setCancelled(true);
 						return;
 					}
-				}
 				playerData.lastMessage = strippedMsg;
 			}
 
@@ -75,7 +72,7 @@ public class ChatListener implements Listener {
 			if (e.isCancelled()) // cancelled from chat ceaser
 				return;
 
-			if (Settings.AntiCaps.ENABLED && !Common.hasPerm(pl, Permissions.Bypasses.CAPS)) {
+			if (Settings.AntiCaps.ENABLED && !Common.hasPerm(pl, Permissions.Bypasses.CAPS))
 				if (message.length() >= Settings.AntiCaps.MIN_MESSAGE_LENGTH) {
 
 					int[] newMessage = Common.checkCaps(message);
@@ -86,13 +83,12 @@ public class ChatListener implements Listener {
 						boolean whitelisted = false;
 
 						for (int i = 0; i < parts.length; i++) {
-							for (String whitelist : Settings.AntiCaps.WHITELIST) {
+							for (String whitelist : Settings.AntiCaps.WHITELIST)
 								if (whitelist.equalsIgnoreCase(parts[i])) {
 									whitelisted = true;
 									capsAllowed = true;
 									break;
 								}
-							}
 
 							if (!whitelisted) {
 								if (!capsAllowed) {
@@ -111,7 +107,6 @@ public class ChatListener implements Listener {
 							Common.tellLater(pl, 1, Localization.ANTISPAM_CAPS_MESSAGE);
 					}
 				}
-			}
 		}
 
 		if (!Common.hasPerm(pl, Permissions.Bypasses.CAPITALIZE))
@@ -125,17 +120,16 @@ public class ChatListener implements Listener {
 		if (Settings.Writer.ENABLED && !Settings.Writer.WHITELIST_PLAYERS.contains(pl.getName().toLowerCase()))
 			Writer.writeToFile(Writer.CHAT_FILE_PATH, pl.getName(), message);
 
-		if (Settings.SoundNotify.ENABLED) {
+		if (Settings.SoundNotify.ENABLED)
 			if (Settings.SoundNotify.CHAT_PREFIX.equalsIgnoreCase("none")) {
 				for (Player online : ChatControl.getOnlinePlayers())
 					if (message.toLowerCase().contains(online.getName().toLowerCase()) && ChatControl.instance().canSoundNotify(online.getName()) && Common.hasPerm(online, Permissions.Notify.WHEN_MENTIONED))
 						online.playSound(online.getLocation(), Settings.SoundNotify.SOUND.sound, Settings.SoundNotify.SOUND.volume, Settings.SoundNotify.SOUND.pitch);
 
-			} else {
+			} else
 				for (Player online : ChatControl.getOnlinePlayers())
-					if (message.toLowerCase().contains(Settings.SoundNotify.CHAT_PREFIX + online.getName().toLowerCase()) && ChatControl.instance().canSoundNotify(online.getName()) && Common.hasPerm(online, Permissions.Notify.WHEN_MENTIONED))
+					if (message.toLowerCase().contains(Settings.SoundNotify.CHAT_PREFIX + online.getName().toLowerCase()) && ChatControl.instance().canSoundNotify(online.getName())
+							&& Common.hasPerm(online, Permissions.Notify.WHEN_MENTIONED))
 						online.playSound(online.getLocation(), Settings.SoundNotify.SOUND.sound, Settings.SoundNotify.SOUND.volume, Settings.SoundNotify.SOUND.pitch);
-			}
-		}
 	}
 }

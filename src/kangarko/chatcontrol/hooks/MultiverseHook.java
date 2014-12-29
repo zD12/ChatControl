@@ -10,7 +10,7 @@ public class MultiverseHook {
 	private final MultiverseCore multiVerse;
 
 	public MultiverseHook() {
-		this.multiVerse = (MultiverseCore) Bukkit.getPluginManager().getPlugin("Multiverse-Core");
+		multiVerse = (MultiverseCore) Bukkit.getPluginManager().getPlugin("Multiverse-Core");
 	}
 
 	public String getColoredAlias(String world) {

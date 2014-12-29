@@ -30,7 +30,7 @@ public class UpdateCheck implements Runnable {
 	}
 
 	@SuppressWarnings("deprecation")
-	@Override 
+	@Override
 	public void run() {
 		String oldversion = ChatControl.instance().getDescription().getVersion();
 
@@ -52,7 +52,7 @@ public class UpdateCheck implements Runnable {
 			if (newversion.contains("SNAPSHOT") || newversion.contains("DEV"))
 				return;
 
-			if (toNumber(newversion) > toNumber(oldversion)) {
+			if (toNumber(newversion) > toNumber(oldversion))
 				if (Settings.Updater.DOWNLOAD) {
 					URL adresa = null;
 
@@ -61,7 +61,7 @@ public class UpdateCheck implements Runnable {
 
 						adresa = new URL("https://raw.githubusercontent.com/kangarko/ChatControl/master/precompiled/ChatControl_v" + newversion + ".jar");
 
-						Common.Log("Got file of size: " + ((double) adresa.openConnection().getContentLengthLong() / 1000) + " kb");		
+						Common.Log("Got file of size: " + (double) adresa.openConnection().getContentLengthLong() / 1000 + " kb");
 
 						File file = new File(Bukkit.getUpdateFolder(), "ChatControl.jar");
 
@@ -80,12 +80,11 @@ public class UpdateCheck implements Runnable {
 				} else {
 					needsUpdate = true;
 					newVersion = newversion;
-					
+
 					String[] msgs = Localization.UPDATE_AVAILABLE.replace("%current", oldversion).replace("%new", newversion).split("\n");
 					for (String part : msgs)
 						Common.Log(part);
 				}
-			}
 
 		} catch (UnknownHostException | MalformedURLException ex) {
 			Common.Warn("Update check failed, could not connect to: " + fileurl);

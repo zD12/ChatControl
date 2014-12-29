@@ -31,7 +31,7 @@ public class Settings extends ConfHelper {
 				"in localization. To customize it, make a new file in\n" +
 				"localization/messages_LOCALENAME.yml and it will be filled\n" +
 				"with all the default values.\n" +
-				"---------------------------------------------------------\n";		
+				"---------------------------------------------------------\n";
 		FILE_NAME = "settings.yml";
 
 		File oldFile = new File(ChatControl.instance().getDataFolder(), "config.yml");
@@ -89,7 +89,7 @@ public class Settings extends ConfHelper {
 		public static class Commands {
 			public static HashSet<String> WHITELIST_DELAY;
 			public static HashSet<String> WHITELIST_SIMILARITY;
-			
+
 			public static int DELAY;
 			public static int SIMILARITY;
 
@@ -139,17 +139,17 @@ public class Settings extends ConfHelper {
 			public static boolean INSERT_DOT;
 			public static int INSERT_DOT_MSG_LENGTH;
 
-			public static boolean CAPITALIZE;			
+			public static boolean CAPITALIZE;
 			public static int CAPITALIZE_MSG_LENGTH;
 
 			private static void init() {
 				pathPrefix("Chat.Grammar.Insert_Dot");
-				
+
 				INSERT_DOT = getBoolean("Enabled", true);
 				INSERT_DOT_MSG_LENGTH = getInteger("Min_Message_Length", 5);
 
 				pathPrefix("Chat.Grammar.Capitalize");
-				
+
 				CAPITALIZE = getBoolean("Enabled", true);
 				CAPITALIZE_MSG_LENGTH = getInteger("Min_Message_Length", 5);
 			}
@@ -225,16 +225,16 @@ public class Settings extends ConfHelper {
 	}
 
 	public static class Clear {
-		public static boolean BROADCAST;	
+		public static boolean BROADCAST;
 		public static int CONSOLE_LINES;
-		public static boolean IGNORE_STAFF;		
+		public static boolean IGNORE_STAFF;
 
 		private static void init() {
 			pathPrefix("Clear");
 
 			BROADCAST = getBoolean("Broadcast", true);
 			IGNORE_STAFF = getBoolean("Do_Not_Clear_For_Staff", true);
-			CONSOLE_LINES = getInteger("Console_Lines_To_Clear", 300);				
+			CONSOLE_LINES = getInteger("Console_Lines_To_Clear", 300);
 		}
 	}
 
@@ -248,7 +248,7 @@ public class Settings extends ConfHelper {
 		public static int MIN_CAPS_IN_A_ROW;
 
 		private static void init() {
-			pathPrefix("Anti_Caps");	
+			pathPrefix("Anti_Caps");
 			ENABLED = getBoolean("Enabled", true);
 			WARN_PLAYER = getBoolean("Warn_Player", true);
 
@@ -286,7 +286,6 @@ public class Settings extends ConfHelper {
 
 	public static class Rules {
 		public static boolean CHECK_CHAT, CHECK_COMMANDS, CHECK_SIGNS;
-
 
 		private static void init() {
 			pathPrefix("Rules");
@@ -326,7 +325,6 @@ public class Settings extends ConfHelper {
 			DOWNLOAD = getBoolean("Download", true);
 		}
 	}
-
 
 	public static boolean OP_HAS_PERMISSIONS;
 	public static int REGEX_TIMEOUT;

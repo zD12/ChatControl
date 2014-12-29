@@ -22,8 +22,8 @@ public class Localization extends ConfHelper {
 				+ "It will still be updated with new values in future releases."
 				+ "\n"
 				+ "To not display a message, set it to \'none\'";
-		
-		// try if the user has his modified version of localization inside the plugin folder		
+
+		// try if the user has his modified version of localization inside the plugin folder
 		file = new File(ChatControl.instance().getDataFolder(), "localization/" + Settings.LOCALIZATION);
 
 		if (file.exists())
@@ -39,12 +39,11 @@ public class Localization extends ConfHelper {
 			}
 		}
 
-		
 		Common.Log("Using locale: " + Settings.LOCALIZATION_SUFFIX);
 		loadValues(Localization.class);
 	}
 
-	public static class Parts {		
+	public static class Parts {
 		public static String JOIN;
 		public static String QUIT;
 		public static String KICK;
@@ -90,9 +89,9 @@ public class Localization extends ConfHelper {
 	public static String ANTIBOT_REJOIN_TOO_QUICKLY;
 
 	public static String MUTE_BROADCAST;
-	public static String MUTE_UNMUTE_BROADCAST;	
+	public static String MUTE_UNMUTE_BROADCAST;
 	public static String MUTE_ANON_BROADCAST;
-	public static String MUTE_ANON_UNMUTE_BROADCAST;	
+	public static String MUTE_ANON_UNMUTE_BROADCAST;
 	public static String MUTE_SUCCESS;
 	public static String MUTE_UNMUTE_SUCCESS;
 
@@ -101,17 +100,17 @@ public class Localization extends ConfHelper {
 	public static String CLEAR_CONSOLE;
 	public static String CLEAR_CONSOLE_MSG;
 	public static String CLEAR_STAFF;
-	
+
 	public static String SIGNS_DUPLICATION;
 	public static String SIGNS_BROKE;
-	
+
 	public static String USAGE_FAKE_CMD;
 	public static String UPDATE_AVAILABLE;
 	public static String NO_PERMISSION;
 	public static String RELOAD_COMPLETE;
 	public static String RELOAD_FAILED;
 
-	private static final void init() {		
+	private static final void init() {
 		pathPrefix("Cannot");
 		CANNOT_BROADCAST_EMPTY_MESSAGE = getString("Broadcast_Empty_Message", "&cMessage on %event is empty. No broadcast.");
 		CANNOT_CHAT_WHILE_MUTED = getString("Chat_While_Muted", "&7You cannot chat while the chat is muted!");
@@ -147,13 +146,13 @@ public class Localization extends ConfHelper {
 		pathPrefix("Signs");
 		SIGNS_DUPLICATION = getString("Duplicate_Text", "%server You cannot make multiple signs with the same text!");
 		SIGNS_BROKE = getString("Broke_When_Violated_A_Rule", "Your sign broke, there must be something wrong with it!");
-		
+
 		pathPrefix("Usage");
 		USAGE_FAKE_CMD = getString("Fake_Command", "%prefix Usage: /chatcontrol fake <&bjoin&f/&aleave&f>");
 
 		pathPrefix(null);
 		UPDATE_AVAILABLE = getString("Update_Available", "&2A new version of &3ChatControl&2 is available.\\n&2Current version: &f%current&2; New version: &f%new\\n&2You can disable this notification in the config.");
-		NO_PERMISSION = getString("No_Permission",  "&cInsufficient permission (%perm).");
+		NO_PERMISSION = getString("No_Permission", "&cInsufficient permission (%perm).");
 		RELOAD_COMPLETE = getString("Reload_Complete", "%prefix &2Configuration reloaded successfuly.");
 		RELOAD_FAILED = getString("Reload_Failed", "%prefix &cReloading configuration failed, check console. The error was: &4%error");
 

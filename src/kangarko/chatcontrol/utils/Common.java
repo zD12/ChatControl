@@ -76,7 +76,7 @@ public class Common {
 			broadcastWithPlayer(msg + (reason.equals("") ? "" : " " + Localization.Parts.REASON.replace("%reason", reason)), plReplace == null ? "" : resolvedSender(plReplace));
 	}
 
-	public static boolean hasPerm(CommandSender sender, String str) {	
+	public static boolean hasPerm(CommandSender sender, String str) {
 		if (sender.hasPermission(str) && sender.isOp() && !Settings.OP_HAS_PERMISSIONS)
 			return false;
 		if (sender.isOp() && Settings.OP_HAS_PERMISSIONS)
@@ -104,7 +104,7 @@ public class Common {
 
 		String lastChar = msg.substring(msg.length() - 1);
 		String[] words = msg.split("\\s");
-		String lastWord = words[(words.length - 1)];
+		String lastWord = words[words.length - 1];
 
 		if (!isDomain(lastWord) && lastChar.matches("(?i)[a-z]"))
 			msg = msg + ".";
@@ -232,12 +232,11 @@ public class Common {
 
 		String msg = StringUtils.join(parts, " ");
 
-		for (int i = 0; i < msg.length(); i++) {
+		for (int i = 0; i < msg.length(); i++)
 			if (Character.isUpperCase(msg.charAt(i)) && Character.isLetter(msg.charAt(i)))
 				editedMsg[i] = 1;
 			else
 				editedMsg[i] = 0;
-		}
 		return editedMsg;
 	}
 
@@ -255,13 +254,12 @@ public class Common {
 		int sum = 0;
 		int sumTemp = 0;
 
-		for (int i : caps) {
+		for (int i : caps)
 			if (i == 1) {
 				sumTemp++;
 				sum = Math.max(sum, sumTemp);
 			} else
 				sumTemp = 0;
-		}
 		return sum;
 	}
 
@@ -347,29 +345,26 @@ public class Common {
 		int[] costs = new int[s2.length() + 1];
 		for (int i = 0; i <= s1.length(); i++) {
 			int lastValue = i;
-			for (int j = 0; j <= s2.length(); j++) {
+			for (int j = 0; j <= s2.length(); j++)
 				if (i == 0)
 					costs[j] = j;
-				else {
-					if (j > 0) {
-						int newValue = costs[j - 1];
-						if (s1.charAt(i - 1) != s2.charAt(j - 1))
-							newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
-						costs[j - 1] = lastValue;
-						lastValue = newValue;
-					}
+				else if (j > 0) {
+					int newValue = costs[j - 1];
+					if (s1.charAt(i - 1) != s2.charAt(j - 1))
+						newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+					costs[j - 1] = lastValue;
+					lastValue = newValue;
 				}
-			}
 			if (i > 0)
 				costs[s2.length()] = lastValue;
 		}
 		return costs[s2.length()];
 	}
-	
+
 	public static String consoleLine() {
 		return "&6*----------------------------------------------*";
 	}
-	
+
 	public static String shortLocation(Location loc) {
 		return loc.getWorld().getName() + " x:" + (int) loc.getX() + " y:" + (int) loc.getY() + " z:" + (int) loc.getZ();
 	}
