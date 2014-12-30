@@ -5,6 +5,7 @@ import kangarko.chatcontrol.PlayerCache;
 import kangarko.chatcontrol.model.Localization;
 import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.utils.Common;
+import kangarko.chatcontrol.utils.LagCatcher;
 import kangarko.chatcontrol.utils.Permissions;
 import kangarko.chatcontrol.utils.Writer;
 
@@ -21,6 +22,8 @@ public class CommandListener implements Listener {
 		if (ChatControl.getOnlinePlayers().length < Settings.MIN_PLAYERS_TO_ENABLE)
 			return;
 
+		LagCatcher.start("Command event");
+		
 		String command = e.getMessage();
 		String[] args = command.split(" ");
 
@@ -34,6 +37,7 @@ public class CommandListener implements Listener {
 			if (Settings.Mute.DISABLED_CMDS_WHEN_MUTED.contains(args[0].replaceFirst("/", ""))) {
 				Common.tell(pl, Localization.CANNOT_COMMAND_WHILE_MUTED);
 				e.setCancelled(true);
+				LagCatcher.end("Command event");
 				return;
 			}
 		}
@@ -51,6 +55,7 @@ public class CommandListener implements Listener {
 
 			Common.tell(pl, Localization.COMMAND_WAIT_MESSAGE.replace("%time", String.valueOf(time)).replace("%seconds", Localization.Parts.SECONDS.formatNumbers(time)));
 			e.setCancelled(true);
+			LagCatcher.end("Command event");
 			return;
 		} else
 			plData.lastCommandTime = now;
@@ -73,6 +78,7 @@ public class CommandListener implements Listener {
 
 				Common.tell(pl, Localization.ANTISPAM_SIMILAR_COMMAND);
 				e.setCancelled(true);
+				LagCatcher.end("Command event");
 				return;
 			}
 			plData.lastCommand = strippedCmd;
@@ -81,8 +87,10 @@ public class CommandListener implements Listener {
 		if (Settings.Rules.CHECK_COMMANDS && !Common.hasPerm(e.getPlayer(), Permissions.Bypasses.RULES))
 			command = ChatControl.instance().chatCeaser.parseRules(e, pl, command);
 
-		if (e.isCancelled()) // some of the rule or handler has cancelled it
+		if (e.isCancelled()) { // some of the rule or handler has cancelled it
+			LagCatcher.end("Command event");
 			return;
+		}
 
 		if (!command.equals(e.getMessage()))
 			e.setMessage(command);
@@ -92,11 +100,11 @@ public class CommandListener implements Listener {
 				if (command.toLowerCase().startsWith("/" + prikaz.toLowerCase()))
 					Writer.Write(Writer.CHAT_FILE_PATH, "[CMD] " + pl.getName(), command);
 
-		if (Settings.SoundNotify.ENABLED_IN_COMMANDS.contains(args[0].replaceFirst("/", "")))
+		sound: if (Settings.SoundNotify.ENABLED_IN_COMMANDS.contains(args[0].replaceFirst("/", "")))
 			if (args.length > 2) {
 				Player player = Bukkit.getPlayer(args[1]);
 				if (player == null || !player.isOnline())
-					return;
+					break sound;
 
 				player.playSound(player.getLocation(), Settings.SoundNotify.SOUND.sound, Settings.SoundNotify.SOUND.volume, Settings.SoundNotify.SOUND.pitch);
 			} else if (ChatControl.instance().ess != null && (command.startsWith("/r ") || command.startsWith("/reply "))) {
@@ -105,5 +113,7 @@ public class CommandListener implements Listener {
 				if (reply != null && Common.hasPerm(reply, Permissions.Notify.WHEN_MENTIONED))
 					reply.playSound(reply.getLocation(), Settings.SoundNotify.SOUND.sound, Settings.SoundNotify.SOUND.volume, Settings.SoundNotify.SOUND.pitch);
 			}
+		
+		LagCatcher.end("Command event");
 	}
 }

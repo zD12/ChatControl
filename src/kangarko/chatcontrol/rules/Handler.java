@@ -3,6 +3,8 @@ package kangarko.chatcontrol.rules;
 import java.util.List;
 import java.util.Objects;
 
+import kangarko.chatcontrol.utils.Common;
+
 import org.apache.commons.lang3.Validate;
 
 /**
@@ -10,11 +12,6 @@ import org.apache.commons.lang3.Validate;
  * @author kangarko
  */
 public class Handler {
-
-	/**
-	 * Flags
-	 */
-	public static final int CHAT = 0, COMMAND = 1, SIGN = 2;
 
 	/**
 	 * The name of the handler.
@@ -248,7 +245,7 @@ public class Handler {
 
 	@Override
 	public String toString() {
-		return "    Handler{\n"
+		return Common.stripColors("    Handler{\n"
 				+ "        Name: \'" + name + "\'\n"
 				+ (ruleID != null ? "        Rule ID: " + ruleID + "\n" : "")
 				+ (ignoredInCommands != null ? "        Ignored In Commands: " + ignoredInCommands + "\n" : "")
@@ -263,6 +260,6 @@ public class Handler {
 				+ (blockMessage ? "        Block Message: \'" + blockMessage + "\'\n" : "")
 				+ (msgReplacement != null ? "        Replace Part With: \'" + msgReplacement + "\'\n" : "")
 				+ (rewriteTo != null ? "        Replace Whole With: \'" + rewriteTo + "\'\n" : "")
-				+ "    }";
+				+ "    }");
 	}
 }

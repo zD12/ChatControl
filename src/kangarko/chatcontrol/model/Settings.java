@@ -18,11 +18,13 @@ public class Settings extends ConfHelper {
 	public static class Packets {
 		public static boolean ENABLE_PACKET_FEATURES;
 		public static boolean DISABLE_TAB_COMPLETE;
+		public static boolean USE_PACKET_RULES;
 
 		private static void init() {
 			pathPrefix("Packets");
 			ENABLE_PACKET_FEATURES = getBoolean("Enable_Packet_Features", true);
 			DISABLE_TAB_COMPLETE = getBoolean("Disable_Tab_Complete", false);
+			USE_PACKET_RULES = getBoolean("Use_Packet_Rules", true);
 		}
 	}
 
@@ -270,6 +272,39 @@ public class Settings extends ConfHelper {
 			CHECK_SIGNS = getBoolean("Check_Signs", true);
 		}
 	}
+	
+	/*public static class Replace {		
+		public static HashMap<String, String> REPLACE_PART_MAP;
+		public static HashMap<String, String> REPLACE_REGEX_MAP;
+
+		private static final void init() {
+			pathPrefix(null);
+			
+			HashMap<String, String> part = new HashMap<>();
+			part.put(":)", "\u263a");
+			part.put(":-)", "\u263a");
+			part.put(":(", "\u2639");
+			part.put(":-(", "\u2639");
+			part.put(";)", "\u32e1");
+			part.put(";-)", "\u32e1");
+			part.put("<3", "\u2665");
+			part.put(":square:", "\u25a8");
+			part.put(":rect:", "\u2588");
+
+			HashMap<String, String> regex = new HashMap<>();
+			regex.put(whole("dis"), "this");
+			regex.put(whole("bwanna"), "want");
+			regex.put(whole("gonna"), "going");
+			regex.put("(can|may|would you like if) i (have|be|become|get|has) (op|admin|mod|builder)", "can i has weepcraft?");
+
+			REPLACE_PART_MAP = getValuesAndKeys("Replace.Parts", part, false);
+			REPLACE_REGEX_MAP = getValuesAndKeys("Replace.Matches", regex, false);
+		}
+		
+		private static String whole(String str) {
+			return "\\b" + str + "\\b";
+		}
+	}*/
 
 	public static class Writer {
 		public static boolean ENABLED;
@@ -306,7 +341,8 @@ public class Settings extends ConfHelper {
 	public static int MIN_PLAYERS_TO_ENABLE;
 	public static String LOCALIZATION_SUFFIX;
 	protected static String LOCALIZATION;
-	public static boolean VERBOSE;
+	public static boolean VERBOSE_RULES;
+	public static int CATCH_LAG;
 	public static boolean DEBUG;
 	public static int VERSION;
 
@@ -316,7 +352,8 @@ public class Settings extends ConfHelper {
 		REGEX_TIMEOUT = getInteger("Regex_Timeout_Milis", 100);
 		LOCALIZATION_SUFFIX = getString("Locale", "en");
 		LOCALIZATION = "messages_" + LOCALIZATION_SUFFIX + ".yml";
-		VERBOSE = getBoolean("Verbose", false);
+		CATCH_LAG = getInteger("Log_Lag_Over_Milis", 100);
+		VERBOSE_RULES = getBoolean("Verbose_Rules", true);
 		DEBUG = getBoolean("Debug", false);
 		VERSION = getInteger("Version", 1);
 	}

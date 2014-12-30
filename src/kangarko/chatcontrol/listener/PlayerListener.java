@@ -5,6 +5,7 @@ import kangarko.chatcontrol.PlayerCache;
 import kangarko.chatcontrol.model.Localization;
 import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.utils.Common;
+import kangarko.chatcontrol.utils.LagCatcher;
 import kangarko.chatcontrol.utils.Permissions;
 import kangarko.chatcontrol.utils.UpdateCheck;
 
@@ -41,6 +42,8 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
+		LagCatcher.start("Join event");
+		
 		long now = System.currentTimeMillis() / 1000L;
 
 		if (!Common.hasPerm(e.getPlayer(), Permissions.Bypasses.REJOIN))
@@ -62,6 +65,8 @@ public class PlayerListener implements Listener {
 					Common.tellLater(pl, 4 * 20, sprava);
 				}
 
+		LagCatcher.end("Join event");
+		
 		if (ChatControl.muted && Settings.Mute.SILENT_JOIN) {
 			e.setJoinMessage(null);
 			return;
@@ -127,6 +132,8 @@ public class PlayerListener implements Listener {
 	public void onSignChange(SignChangeEvent e) {
 		if (ChatControl.getOnlinePlayers().length < Settings.MIN_PLAYERS_TO_ENABLE)
 			return;
+		
+		LagCatcher.start("Sign event");
 
 		Player pl = e.getPlayer();
 		PlayerCache plData = ChatControl.getDataFor(pl);
@@ -144,7 +151,9 @@ public class PlayerListener implements Listener {
 			e.setCancelled(true);
 			
 			if (Settings.Signs.DROP_SIGN)
-				e.getBlock().breakNaturally();			
+				e.getBlock().breakNaturally();	
+			
+			LagCatcher.end("Sign event");
 			return;
 		}
 		
@@ -159,6 +168,8 @@ public class PlayerListener implements Listener {
 					e.getBlock().breakNaturally();
 			}
 		}
+		
+		LagCatcher.end("Sign event");
 	}
 
 	public String replacePlayerVariables(String msg, Player pl) {

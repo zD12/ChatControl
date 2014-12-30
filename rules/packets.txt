@@ -1,0 +1,24 @@
+# -------------------------------------------------------------------------------
+# This file manages special rules that can overlaps messages sent by other
+# plugins or even the server, with the help of packets.
+#
+# You need ProtocolLib to enable this features.
+# 
+# This uses custom operators above:
+#
+# Valid operators:
+# match <regex> (A valid regular expression to match the checked message.)
+# then replace <message> (A word used to replace only the part of the matched message.)
+# then rewrite <message> (A message used to replace the whole checked message.)
+# then deny (Message will not be shown in the chat - cancels the packet.)
+#
+# Supports color codes with & and unicode characters when saved in UTF-8 encoding.
+# -------------------------------------------------------------------------------
+
+# Hide unknown command message.
+#match ^Unknown command.*
+#then deny
+
+# Rewrite message from Bukkit or Essentials.
+match ^I'm sorry, but you do not have permission to perform this.*|^You do not have access to that command.
+then rewrite &cInsufficient permission.

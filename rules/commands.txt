@@ -1,0 +1,23 @@
+# -------------------------------------------------------------------------------
+# This file manages rules in commands (messages beginning with /)
+# and includes rules from rules.txt.
+#
+# For help, see notes in rules.txt file.
+# -------------------------------------------------------------------------------
+
+# Prevent /op command
+match ^/op
+ignore perm chatcontrol.bypass.rules
+id /op
+then warn &bYes, we are giving away OPs. Seriously, what did you expect?!
+then notify chatcontrol.notify.rulesalert &8[&7ID %ruleID&8] &7%player: &f%message
+then deny
+then log
+
+match ^/(gm|gamemode)
+ignore perm chatcontrol.bypass.rules
+id /gm
+then warn &aThat would be nice, wouldn't it?
+then notify chatcontrol.notify.rulesalert &8[&7ID %ruleID&8] &7%player: &f%message
+then deny
+then log

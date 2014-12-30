@@ -3,12 +3,18 @@ package kangarko.chatcontrol.rules;
 import kangarko.chatcontrol.utils.Common;
 
 import org.apache.commons.lang.Validate;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Represents a single rule
  * @author kangarko
  */
 public class Rule {
+
+	/**
+	 * Flags
+	 */
+	public static final int CHAT = 0, COMMAND = 1, SIGN = 2;
 
 	/**
 	 * Required regular expression used against the checked message
@@ -21,10 +27,15 @@ public class Rule {
 	private String id;
 
 	/**
-	 * Ignore following string/regular expression
+	 * Ignore following string/regular expression.
 	 */
 	private String ignoredMessage;
 
+	/**
+	 * Ignore player if they have specified permission.
+	 */
+	private String bypassPerm;
+	
 	/**
 	 * Ignore events. Currently can be: chat, command or sign
 	 */
@@ -38,37 +49,42 @@ public class Rule {
 	/**
 	 * Replace the part of the checked message that matches {@link #match} with provided string
 	 */
-	private String replacement = null;
+	private String replacement;
 
 	/**
 	 * Rewrite the entire message to specified string
 	 */
-	private String rewrite = null;
+	private String rewrite;
 
 	/**
-	 * Optional command executed as the server console
+	 * Optional commands executed as the server console divided by |
 	 */
-	private String commandToExecute = null;
+	private String[] commandToExecute;
 
 	/**
 	 * A message to the player
 	 */
-	private String warnMessage = null;
+	private String warnMessage;
 
 	/**
-	 * A permission required to get message {@link #customAlertMessage}
+	 * A permission required to get message {@link #customNotifyMessage}
 	 */
-	private String customAlertPermission = null;
+	private String customNotifyPermission;
 
 	/**
-	 * A message broadcasted to players with {@link #customAlertPermission}
+	 * A message broadcasted to players with {@link #customNotifyPermission}
 	 */
-	private String customAlertMessage = null;
+	private String customNotifyMessage;
+	
+	/**
+	 * A kick message.
+	 */
+	private String kickMessage;
 
 	/**
 	 * A handler that triggers when {@link #match} matches the checked message
 	 */
-	private Handler handler = null;
+	private Handler handler;
 
 	/**
 	 * Whenever the message should be cancelled from appearing
@@ -86,6 +102,11 @@ public class Rule {
 	private Double fine;
 
 	/**
+	 * If set the rule is a {@link PacketRule};
+	 */
+	private PacketRule packetRule;
+
+	/**
 	 * Creates a new rule with provided regular expression
 	 * @param match the regular expression used against the checked message
 	 */
@@ -101,9 +122,9 @@ public class Rule {
 	public boolean matches(String message) {
 		if (stripBefore != null)
 			message = message.replaceAll(stripBefore, "");
-
-		if (ignoredMessage != null && Common.regExMatch(ignoredMessage, message)) {
-			Common.Log("&fMessage \'" + message + "\' ignored by \'" + ignoredMessage + "\'");
+		
+		if (ignoredMessage != null && message.matches(ignoredMessage)) {
+			Common.Debug("&fIgnoring \'" + message + "\', ignore rule: " + ignoredMessage);
 			return false;
 		}
 
@@ -144,6 +165,16 @@ public class Rule {
 		ignoredEvent = getEventFromName(ignoreEvent);
 	}
 
+	public String getBypassPerm() {
+		return bypassPerm;
+	}
+	
+	public void setBypassPerm(String bypassPerm) {
+		Validate.isTrue(this.stripBefore == null, "Bypass permission already set on: " + this);
+		
+		this.bypassPerm = bypassPerm;
+	}
+	
 	public void setStripBefore(String stripBefore) {
 		Validate.isTrue(this.stripBefore == null, "Strip before already set on: " + this);
 
@@ -170,14 +201,14 @@ public class Rule {
 		this.rewrite = rewrite;
 	}
 
-	public String getCommandToExecute() {
+	public String[] getCommandsToExecute() {
 		return commandToExecute;
 	}
 
-	public void setCommandToExecute(String commandToExecute) {
+	public void setCommandsToExecute(String line) {
 		Validate.isTrue(this.commandToExecute == null, "Command to execute already set on: " + this);
 
-		this.commandToExecute = commandToExecute;
+		this.commandToExecute = line.split("\\|");
 	}
 
 	public String getWarnMessage() {
@@ -190,24 +221,34 @@ public class Rule {
 		this.warnMessage = warnMessage;
 	}
 
-	public void setCustomAlert(String raw) {
+	public void setCustomNotify(String raw) {
 		String[] parts = raw.split(" ");
-		Validate.isTrue(parts.length > 0, "Malformed then alert - must specify permission and a message.");
+		Validate.isTrue(parts.length > 0, "Malformed then notify - must specify permission and a message.");
 
 		String permission = parts[0];
 
-		customAlertPermission = permission;
-		customAlertMessage = raw.replace(permission + " ", "");
+		customNotifyPermission = permission;
+		customNotifyMessage = raw.replace(permission + " ", "");
 	}
 
-	public String getCustomAlertMessage() {
-		return customAlertMessage;
+	public String getCustomNotifyMessage() {
+		return customNotifyMessage;
 	}
 
-	public String getCustomAlertPermission() {
-		return customAlertPermission;
+	public String getCustomNotifyPermission() {
+		return customNotifyPermission;
 	}
 
+	public String getKickMessage() {
+		return kickMessage;
+	}
+	
+	public void setKickMessage(String kickMessage) {
+		Validate.isTrue(this.kickMessage == null, "Kick message already set on: " + this);
+		
+		this.kickMessage = kickMessage.isEmpty() ? "Kicked from the server" : kickMessage;
+	}
+	
 	public Handler getHandler() {
 		return handler;
 	}
@@ -248,22 +289,31 @@ public class Rule {
 		this.fine = fine;
 	}
 
+	public void setPacketRule() {
+		this.packetRule = new PacketRule();
+	}
+
+	public PacketRule getPacketRule() {
+		return packetRule;
+	}
+
 	@Override
 	public String toString() {
-		return "Rule{\n"
+		return Common.stripColors(getPacketRule() != null ? getPacketRule().toString() : ("Rule{\n"
 				+ (id != null ? "    Id = " + id + "\n" : "")
 				+ "    Match = \'" + match + "\',\n"
 				+ (stripBefore != null ? "    Strip Before Match = \'" + stripBefore + "\',\n" : "")
+				+ (bypassPerm != null ? "    Bypass With Perm = \'" + bypassPerm + "\',\n" : "")
 				+ (ignoredMessage != null ? "    Ignore Message = \'" + ignoredMessage + "\',\n" : "")
 				+ (ignoredEvent != null ? "    Ignore Event = \'" + ignoredEvent + "\',\n" : "")
 				+ (replacement != null ? "    Replace With = \'" + replacement + "\',\n" : "")
 				+ (rewrite != null ? "    Rewrite = \'" + rewrite + "\',\n" : "")
-				+ (commandToExecute != null ? "    Execute Command = \'" + commandToExecute + "\',\n" : "")
+				+ (commandToExecute != null ? "    Execute Command = \'" + StringUtils.join(commandToExecute, ",") + "\',\n" : "")
 				+ (handler != null ? "    Handler = \'" + handler + "\',\n" : "")
 				+ (warnMessage != null ? "    Warn Message = \'" + warnMessage + "\',\n" : "")
 				+ (cancel ? "    Deny = " + cancel + "\n" : "")
 				+ (log ? "    Log = " + log + "\n" : "")
-				+ "}";
+				+ "}"));
 	}
 
 	/**
@@ -271,24 +321,85 @@ public class Rule {
 	 * @return rule's regular expression
 	 */
 	public String toShortString() {
-		return "Rule {" + (id != null ? "ID=" + id + "," : "") + "Match=\'" + match + "\'}";
+		return (getPacketRule() != null ? "PacketRule" : "Rule") + " {" + (id != null ? "ID=" + id + "," : "") + "Match=\'" + match + "\'}";
 	}
 
 	private int getEventFromName(String str) {
 		switch (str.toLowerCase().replace(" ", "")) {
 		case "chat":
 		case "asyncplayerchatevent":
-			return Handler.CHAT;
+			return CHAT;
 		case "command":
 		case "commands":
 		case "playercommandpreprocessevent":
-			return Handler.COMMAND;
+			return COMMAND;
 		case "sign":
 		case "signs":
 		case "signchangeevent":
-			return Handler.SIGN;
+			return SIGN;
 		default:
 			throw new NullPointerException("Unknown ignore event: " + str);
 		}
+	}
+}
+
+/**
+ * A special case rule used against chat packet.
+ * From normal rule uses only {@link #match} 
+ */
+class PacketRule {
+
+	/**
+	 * A string used to replace matched part of the checked message.
+	 */
+	private String replace;
+
+	/** 
+	 * A message to replace the entire checked message.
+	 */
+	private String rewrite;
+
+	/**
+	 * Whenever the message should be cancelled from appearing.
+	 */
+	private boolean deny = false;
+
+	public void setReplacePacket(String replace) {
+		Validate.isTrue(this.replace == null, "Replace already set on: " + this);
+
+		this.replace = replace;
+	}
+
+	public String getReplacePacket() {
+		return replace;
+	}
+
+	public void setRewritePacket(String rewrite) {
+		Validate.isTrue(this.rewrite == null, "Rewrite already set on: " + this);
+
+		this.rewrite = rewrite;
+	}
+
+	public String getRewritePacket() {
+		return rewrite;
+	}
+
+	public void setDenyPacket() {
+		Validate.isTrue(!this.deny, "Packet rule is already denied: " + this);
+
+		this.deny = true;
+	}
+
+	public boolean denyPacket() {
+		return deny;
+	}
+
+	@Override
+	public String toString() {
+		return "PacketRule{\n" +
+				(replace != null ? "    Replace Word: \'" + replace + "\'\n" : "") +
+				(rewrite != null ? "    Rewrite With: \'" + rewrite + "\'\n" : "") +
+				"    Then Deny: " + deny + "\n" +
+				"}";
 	}
 }

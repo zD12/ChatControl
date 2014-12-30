@@ -6,128 +6,167 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
 import kangarko.chatcontrol.ChatControl;
 import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.utils.Common;
+import kangarko.chatcontrol.utils.LagCatcher;
 import kangarko.chatcontrol.utils.Writer;
 
+import org.apache.commons.lang3.Validate;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 /**
  * Custom rule engine. Reads a set of rules from a file
  * @author kangarko
  * @since 5.0.0
- * @deprecated add support for multiple rules - chat, commands, signs, protocol chat remap
  */
 public final class ChatCeaser {
 
 	/**
-	 * Stored rules. Can only be modified in {@link #load()} method.
+	 * Stored rules by file. Can only be modified in {@link #load()} method.
 	 */
-	private final List<Rule> rules = new ArrayList<>();
+	private final HashMap<String, List<Rule>> rulesMap = new HashMap<>();
+
+	private final String RULES = "rules.txt", CHAT = "chat.txt", COMMAND = "commands.txt", SIGN = "sign.txt", PACKET = "packets.txt";
 
 	/**
-	 * The file with rules.
+	 * Clears {@link #rules} and load them .
 	 */
-	private final File file;
+	public void load() {
+		rulesMap.clear();
 
-	/**
-	 * Creates new instance which can be used to read rules from a file
-	 *
-	 * @param fileName file name, which location is automatically set to the plugin's directory
-	 */
-	public ChatCeaser(String fileName) {
-		file = Writer.Extract(fileName);
+		loadRules(RULES, CHAT, COMMAND, SIGN, PACKET);
 	}
 
 	/**
-	 * Clears {@link #rules} and fill them with all rules found in the specified {@link #file}
+	 * Fill {@link #rules} with rules in specified file paths.
+	 * @param filePaths the paths for every rule file
 	 */
-	public void load() {
-		rules.clear();
+	private void loadRules(String... filePaths) {
+		for (String path : filePaths) {
+			File file = Writer.Extract("rules/" + path);
+			List<Rule> createdRules = new ArrayList<>();
 
-		try {
-			Rule rule = null; // The rule being created.
-			String previousRuleName = null;
-			List<String> rawLines = Files.readAllLines(Paths.get(file.toURI()), StandardCharsets.UTF_8);
+			try {
+				Rule rule = null; // The rule being created.
+				String previousRuleName = null;
+				boolean packetRule = path == PACKET;
 
-			for (int i = 0; i < rawLines.size(); i++) {
-				String line = rawLines.get(i).trim();
+				List<String> rawLines = Files.readAllLines(Paths.get(file.toURI()), StandardCharsets.UTF_8);
 
-				if (!line.isEmpty() && !line.startsWith("#"))
-					// If a line starts with 'match ' then assume a new rule is found and start creating it. This makes a new instance of 'rule' variable.
-					if (line.startsWith("match ")) {
-						if (rule != null) // Found another match, assuming previous rule is finished creating.
-							rules.add(rule);
+				for (int i = 0; i < rawLines.size(); i++) {
+					String line = rawLines.get(i).trim();
 
-						rule = new Rule(line.replaceFirst("match ", ""));
-						previousRuleName = rule.toShortString();
-					} else {
-						Objects.requireNonNull(rule, "Cannot define an operator when no rule is being created! Previous rule: \'" + previousRuleName + "\'");
-						// If a rule is being created then attempt to parse operators.
+					if (!line.isEmpty() && !line.startsWith("#"))
+						// If a line starts with 'match ' then assume a new rule is found and start creating it. This makes a new instance of 'rule' variable.
+						if (line.startsWith("match ")) {
+							if (rule != null) { // Found another match, assuming previous rule is finished creating.
+								Validate.isTrue(!createdRules.contains(path), path + " already contains rule where match is: " + line);
+								createdRules.add(rule);
+							}
 
-						if ("then deny".equals(line))
-							rule.setCancelEvent();
+							rule = new Rule(line.replaceFirst("match ", ""));
+							previousRuleName = rule.toShortString();
 
-						else if ("then log".equals(line))
-							rule.setLog();
+							if (packetRule)
+								rule.setPacketRule();
+						} else {
+							Objects.requireNonNull(rule, "Cannot define an operator when no rule is being created! Previous rule: \'" + previousRuleName + "\'");
+							// If a rule is being created then attempt to parse operators.
 
-						else if (line.startsWith("strip "))
-							rule.setStripBefore(line.replaceFirst("strip ", ""));
+							if (packetRule) {
+								if ("then deny".equals(line))
+									rule.getPacketRule().setDenyPacket();
+								else if (line.startsWith("then replace "))
+									rule.getPacketRule().setReplacePacket(line.replaceFirst("then replace ", ""));
+								else if (line.startsWith("then rewrite "))
+									rule.getPacketRule().setRewritePacket(line.replaceFirst("then rewrite ", ""));
+								else
+									throw new NullPointerException("Unknown packet rule operator: " + line);
+							} else {
+								if ("then deny".equals(line))
+									rule.setCancelEvent();
 
-						else if (line.startsWith("id "))
-							rule.setId(line.replaceFirst("id ", ""));
+								else if ("then log".equals(line))
+									rule.setLog();
 
-						else if (line.startsWith("ignore string "))
-							rule.setIgnoredMessage(line.replaceFirst("ignore string ", ""));
+								else if (line.startsWith("strip "))
+									rule.setStripBefore(line.replaceFirst("strip ", ""));
 
-						else if (line.startsWith("ignore event "))
-							rule.setIgnoreEvent(line.replaceFirst("ignore event ", ""));
+								else if (line.startsWith("id "))
+									rule.setId(line.replaceFirst("id ", ""));
 
-						else if (line.startsWith("then rewrite "))
-							rule.setRewrite(line.replaceFirst("then rewrite ", ""));
+								else if (line.startsWith("ignore string "))
+									rule.setIgnoredMessage(line.replaceFirst("ignore string ", ""));
 
-						else if (line.startsWith("then replace "))
-							rule.setReplacement(line.replaceFirst("then replace ", ""));
+								else if (line.startsWith("ignore event "))
+									rule.setIgnoreEvent(line.replaceFirst("ignore event ", ""));
 
-						else if (line.startsWith("then console "))
-							rule.setCommandToExecute(line.replaceFirst("then console ", ""));
+								else if (line.startsWith("ignore perm "))
+									rule.setBypassPerm(line.replaceFirst("ignore perm ", ""));
 
-						else if (line.startsWith("then warn "))
-							rule.setWarnMessage(line.replaceFirst("then warn ", ""));
+								else if (line.startsWith("then rewrite "))
+									rule.setRewrite(line.replaceFirst("then rewrite ", ""));
 
-						else if (line.startsWith("then alert "))
-							rule.setCustomAlert(line.replaceFirst("then alert ", ""));
+								else if (line.startsWith("then replace "))
+									rule.setReplacement(line.replaceFirst("then replace ", ""));
 
-						else if (line.startsWith("then fine "))
-							rule.setFine(Double.parseDouble(line.replaceFirst("then fine ", "")));
+								else if (line.startsWith("then console "))
+									rule.setCommandsToExecute(line.replaceFirst("then console ", ""));
 
-						else if (line.startsWith("handle as "))
-							rule.setHandler(HandlerLoader.loadHandler(line.replaceFirst("handle as ", ""), rule.getId()));
+								else if (line.startsWith("then warn "))
+									rule.setWarnMessage(line.replaceFirst("then warn ", ""));
 
-						else
-							throw new NullPointerException("Unknown operator: " + line);
-					}
+								else if (line.startsWith("then notify "))
+									rule.setCustomNotify(line.replaceFirst("then notify ", ""));
 
-				if (i + 1 == rawLines.size() && rule != null) // Reached end of the file but a rule is being created, finishing it
-					rules.add(rule);
+								else if (line.startsWith("then fine "))
+									rule.setFine(Double.parseDouble(line.replaceFirst("then fine ", "")));
+
+								else if (line.startsWith("then kick "))
+									rule.setKickMessage(line.replaceFirst("then kick ", ""));
+
+								else if (line.startsWith("handle as "))
+									rule.setHandler(HandlerLoader.loadHandler(line.replaceFirst("handle as ", ""), rule.getId()));
+
+								else
+									throw new NullPointerException("Unknown operator: " + line);
+							}
+						}
+
+					if (i + 1 == rawLines.size() && rule != null) // Reached end of the file but a rule is being created, finishing it
+						createdRules.add(rule);
+				}
+			} catch (IOException ex) {
+				ex.printStackTrace();
 			}
-		} catch (IOException ex) {
-			ex.printStackTrace();
+
+			Validate.isTrue(!rulesMap.containsKey(path), "Rules map already contains rules from: " + path + "!");
+			rulesMap.put(path, createdRules);
 		}
 
-		if (Settings.VERBOSE)
-			for (Rule rule : rules)
-				Common.Log("Loaded rule:\n" + rule);
+		if (Settings.DEBUG)
+			for (String file : rulesMap.keySet()) {
+				Common.Debug("&e" + Common.consoleLine());
+				Common.Debug("&eDisplaying rules from: " + file);
 
-		Common.Log("&fLoaded " + rules.size() + " Rules.");
+				for (Rule rule : rulesMap.get(file))
+					Common.Debug("Loaded rule:\n" + rule);
+			}
+
+		for (String file : rulesMap.keySet())
+			Common.Verbose("&fLoaded " + rulesMap.get(file).size() + " Rules in " + file);
 	}
 
 	/**
@@ -140,31 +179,75 @@ public final class ChatCeaser {
 	 * @return the message that was initially put, might be changed
 	 */
 	public <T extends Cancellable> String parseRules(T e, Player pl, String msg) {
-		int flag = Handler.CHAT;
+		int flag = Rule.CHAT;
 
 		if (e instanceof PlayerCommandPreprocessEvent)
-			flag = Handler.COMMAND;
+			flag = Rule.COMMAND;
 		else if (e instanceof SignChangeEvent)
-			flag = Handler.SIGN;
+			flag = Rule.SIGN;
 
+		LagCatcher.start("Rule parse");
+		
+		String origin = msg;
+		
+		// First iterate over all rules.
+		List<Rule> rules = rulesMap.get(RULES);
+		
+		LagCatcher.start("Rule parse: global");
+		msg = iterateStandardRules(rules, e, pl, msg, flag, true);
+		LagCatcher.end("Rule parse: global");
+		
+		if (flag == Rule.CHAT)
+			rules = rulesMap.get(CHAT);
+		else if (flag == Rule.COMMAND)
+			rules = rulesMap.get(COMMAND);
+		else if (flag == Rule.SIGN)
+			rules = rulesMap.get(SIGN);
+
+		// Then iterate over specific rules for events.
+		LagCatcher.start("Rule parse from: " + e.getClass().getSimpleName());
+		msg = iterateStandardRules(rules, e, pl, msg, flag, false);
+		LagCatcher.end("Rule parse from: " +  e.getClass().getSimpleName());
+		
+		if (e.isCancelled())
+			Common.Verbose("&fOriginal message &ccancelled&f.");
+		else if (!origin.equals(msg))
+			Common.Verbose("&fFINAL&a: &r" + msg);
+		
+		LagCatcher.end("Rule parse");
+		
+		return msg;
+	}
+
+	/**
+	 * Internal method, {@link #parseRules(Cancellable, Player, String)}
+	 */
+	private <T extends Cancellable> String iterateStandardRules(List<Rule> rules, T e, Player pl, String msg, int flag, boolean global) {
 		for (Rule rule : rules) {
-			if (rule.getIgnoredEvent() != null && rule.getIgnoredEvent() == flag)
+			if (!global && rule.getIgnoredEvent() != null && rule.getIgnoredEvent() == flag)
 				continue;
 
-			if (rule.matches(msg)) {
-				Common.Debug(rule.toShortString() + " &bcatched message: &f" + msg);
+			if (rule.getBypassPerm() != null)
+				if (Common.hasPerm(pl, rule.getBypassPerm()))
+					continue;
 
+			if (rule.matches(msg)) {
+				
+				Common.Verbose(Common.consoleLine());
+				Common.Verbose("&fMATCH&b: &r" + (Settings.DEBUG ? rule : rule.getMatch()));
+				Common.Verbose("&fCATCH&b: &r" + msg);
+				
 				if (rule.log()) {
-					Common.Log(org.bukkit.ChatColor.RED + (flag == Handler.SIGN ? "[SIGN at " + Common.shortLocation(pl.getLocation()) + "] " : "") + pl.getName() + " violated " + rule.toShortString() + " with message: &f" + msg);
-					Writer.Write("logs/rules_log.txt", pl.getName(), (flag == Handler.SIGN ? "[SIGN at " + Common.shortLocation(pl.getLocation()) + "] " : "") + rule.toShortString() + " caught message: " + msg);
+					Common.Log(org.bukkit.ChatColor.RED + (flag == Rule.SIGN ? "[SIGN at " + Common.shortLocation(pl.getLocation()) + "] " : "") + pl.getName() + " violated " + rule.toShortString() + " with message: &f" + msg);
+					Writer.Write("logs/rules_log.txt", pl.getName(), (flag == Rule.SIGN ? "[SIGN at " + Common.shortLocation(pl.getLocation()) + "] " : "") + rule.toShortString() + " caught message: " + msg);
 				}
 
-				if (rule.getCustomAlertMessage() != null) {
-					Objects.requireNonNull(rule.getCustomAlertPermission(), "Custom alert permission cannot be null!");
+				if (rule.getCustomNotifyMessage() != null) {
+					Objects.requireNonNull(rule.getCustomNotifyPermission(), "Custom alert permission cannot be null!");
 
 					for (Player online : ChatControl.getOnlinePlayers())
-						if (Common.hasPerm(online, rule.getCustomAlertPermission()))
-							Common.tellLater(online, 1, rule.getCustomAlertMessage().replace("%player", pl.getName()).replace("%message", msg).replace("%ruleID", rule.getId()));
+						if (Common.hasPerm(online, rule.getCustomNotifyPermission()))
+							Common.tellLater(online, 1, replaceVariables(rule, rule.getCustomNotifyMessage()).replace("%player", pl.getName()).replace("%message", msg));
 				}
 
 				if (rule.getHandler() != null)
@@ -174,19 +257,31 @@ public final class ChatCeaser {
 					return msg; // The message will not appear in the chat, no need to continue.
 
 				if (rule.getRewrite() != null)
-					msg = Common.colorize(rule.getRewrite());
+					msg = Common.colorize(replaceVariables(rule, rule.getRewrite()));
 
 				if (rule.getReplacement() != null)
-					msg = msg.replaceAll(rule.getMatch(), Common.colorize(rule.getReplacement()));
+					msg = msg.replaceAll(rule.getMatch(), Common.colorize(replaceVariables(rule, rule.getReplacement())));
 
-				if (rule.getCommandToExecute() != null)
-					Common.customAction(pl, rule.getCommandToExecute(), msg);
+				if (rule.getCommandsToExecute() != null)
+					for (String command : rule.getCommandsToExecute()) {
+						command = replaceVariables(rule, command);
+						Common.customAction(pl, command, msg);
+					}
 
 				if (rule.getWarnMessage() != null)
-					Common.tell(pl, Common.colorize(rule.getWarnMessage()));
+					Common.tell(pl, Common.colorize(replaceVariables(rule, rule.getWarnMessage())));
 
 				if (rule.getFine() != null && ChatControl.instance().vault != null)
 					ChatControl.instance().vault.takeMoney(pl.getName(), rule.getFine());
+
+				if (rule.getKickMessage() != null) {
+					new BukkitRunnable() {
+						@Override
+						public void run() {
+							pl.kickPlayer(Common.colorize(rule.getKickMessage()));
+						}
+					}.runTask(ChatControl.instance());
+				}
 
 				if (rule.cancelEvent()) {
 					e.setCancelled(true);
@@ -196,15 +291,14 @@ public final class ChatCeaser {
 		}
 
 		HandlerCache.reset();
-
 		return msg;
 	}
 
-	public <T extends Cancellable> String handle(T e, Player pl, String match, String msg, Handler handler, int flag) {
+	private <T extends Cancellable> String handle(T e, Player pl, String match, String msg, Handler handler, int flag) {
 		if (handler.getBypassPermission() != null && Common.hasPerm(pl, handler.getBypassPermission()))
 			return msg;
 
-		if (flag == Handler.COMMAND)
+		if (flag == Rule.COMMAND)
 			for (String ignored : handler.getIgnoredInCommands())
 				if (msg.startsWith(ignored))
 					return msg;
@@ -228,7 +322,7 @@ public final class ChatCeaser {
 
 			for (Player online : ChatControl.getOnlinePlayers())
 				if (Common.hasPerm(online, handler.getStaffAlertPermission()))
-					Common.tell(online, (flag == Handler.SIGN ? "[SIGN at " + Common.shortLocation(pl.getLocation()) + "] " : "") + replaceVariables(handler, handler.getStaffAlertMsg()).replace("%message", msg), pl.getName());
+					Common.tell(online, (flag == Rule.SIGN ? "[SIGN at " + Common.shortLocation(pl.getLocation()) + "] " : "") + replaceVariables(handler, handler.getStaffAlertMsg()).replace("%message", msg), pl.getName());
 		}
 
 		if (handler.getConsoleMsg() != null)
@@ -236,17 +330,89 @@ public final class ChatCeaser {
 
 		if (handler.getCommandsToExecute() != null)
 			for (String cmd : handler.getCommandsToExecute())
-				Common.customAction(pl, cmd, msg);
+				Common.customAction(pl, replaceVariables(handler, cmd), msg);
 
 		if (handler.getWriteToFileName() != null)
 			Writer.Write(handler.getWriteToFileName(), pl.getName(), replaceVariables(handler, "[Handler=%handler, Rule ID=%ruleID] ") + msg);
 
-		if (handler.blockMessage() || (flag == Handler.SIGN && Settings.Signs.BLOCK_WHEN_VIOLATES_RULE))
+		if (handler.blockMessage() || (flag == Rule.SIGN && Settings.Signs.BLOCK_WHEN_VIOLATES_RULE))
 			e.setCancelled(true);
 		else if (handler.getMsgReplacement() != null)
-			return msg.replaceAll(match, Common.colorize(handler.getMsgReplacement()));
+			return msg.replaceAll(match, Common.colorize(replaceVariables(handler, handler.getMsgReplacement())));
 		else if (handler.getRewriteTo() != null)
 			return Common.colorize(replaceVariables(handler, handler.getRewriteTo()).replace("%player", pl.getName()).replace("%message", msg));
+
+		return msg;
+	}
+
+	/**
+	 * Parses the JSON chat message and check it agains packet rules
+	 * @param input the JSON chat message object
+	 * @return whenever the packet should be cancelled (this is defined in the packet rule)
+	 * @throws PacketCancelledException if the packet should be cancelled
+	 */
+	@SuppressWarnings("unchecked")
+	public boolean parsePacketRules(Object input) throws PacketCancelledException {
+		if (input instanceof JSONObject) {
+			JSONObject objects = (JSONObject) input;
+
+			for (Object key : objects.keySet()) {
+				Object value = objects.get(key);
+
+				if (value instanceof JSONObject) 
+					parsePacketRules((JSONObject) value);
+
+				else if (value instanceof JSONArray)
+					parsePacketRules((JSONArray) value);
+
+				else if (value instanceof String) {
+					String result = parsePacketRule(value.toString());
+					objects.put(key, result);
+				}
+			}
+
+		} else if (input instanceof JSONArray) {
+			JSONArray array = (JSONArray) input;
+
+			for (int i = 0; i < array.size(); i++) {
+				Object value = array.get(i);
+
+				if (value instanceof JSONObject)
+					parsePacketRules((JSONObject) value);
+
+				else if (value instanceof JSONArray)
+					parsePacketRules((JSONArray) value);
+
+				else if (value instanceof String) {
+					String result = parsePacketRule(value.toString());
+					array.set(i, result);
+				}
+			}
+		} else
+			System.out.println("Skipping unknown object: " + input.getClass().getTypeName());
+
+		return false;
+	}
+
+	private String parsePacketRule(String msg) throws PacketCancelledException {
+		if (msg == null || msg.isEmpty())
+			return msg;
+
+		for (Rule standardrule : rulesMap.get(PACKET)) {
+			if (standardrule.matches(msg.toLowerCase())) {
+				PacketRule rule = standardrule.getPacketRule();
+				Objects.requireNonNull(rule, "Malformed rule - must be a packet rule: " + standardrule);
+
+				if (rule.denyPacket())
+					throw new PacketCancelledException();
+
+				else if (rule.getRewritePacket() != null)
+					msg = Common.colorize(replaceVariables(standardrule, rule.getRewritePacket()));
+
+				else if (rule.getReplacePacket() != null)
+					msg = msg.replaceAll(standardrule.getMatch(), Common.colorize(rule.getReplacePacket()));
+			}
+		}
 
 		return msg;
 	}
@@ -260,6 +426,21 @@ public final class ChatCeaser {
 	 */
 	private String replaceVariables(Handler handler, String message) {
 		return message.replace("%ruleID", handler.getRuleID()).replace("%handler", handler.getName());
+	}
+
+	/**
+	 * Replaces rule ID (if set) in the message.
+	 *
+	 * @param rule the rule the id will be taken from
+	 * @param message the message to replace variables in
+	 * @returns message with modified variables
+	 */
+	private String replaceVariables(Rule rule, String message) {		
+		return message.replace("%ruleID", rule.getId() != null ? rule.getId() : "UNSET");
+	}
+
+	public static class PacketCancelledException extends Exception {
+		private static final long serialVersionUID = 1L;		
 	}
 }
 

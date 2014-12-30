@@ -43,27 +43,22 @@ public class ConfHelper {
 		// Order matters.
 		Settings.load();
 		SettingsConsole.load();
-		SettingsRemap.load();
 		Localization.load();
 	}
 
 	protected static void loadValues(Class<?> clazz) throws Exception {
 		Objects.requireNonNull(cfg, "YamlConfiguration is null!");
-		Common.Debug("Setting up config: " + clazz.getSimpleName());
 
 		// The class itself.
 		invokeMethods(clazz);
 
 		// All sub-classes.
 		for (Class<?> subClazz : clazz.getDeclaredClasses()) {
-			Common.Debug("Setting up config section: " + subClazz.getSimpleName());
 			invokeMethods(subClazz);
 
 			// And classes in sub-classes.
-			for (Class<?> subSubClazz : subClazz.getDeclaredClasses()) {
-				Common.Debug("Setting up config section: " + subClazz.getSimpleName() + "." + subSubClazz.getSimpleName());
+			for (Class<?> subSubClazz : subClazz.getDeclaredClasses())
 				invokeMethods(subSubClazz);
-			}
 		}
 
 		save();
@@ -168,6 +163,7 @@ public class ConfHelper {
 
 		return keys;
 	}
+
 
 	protected static HashMap<String, String> getValuesAndKeys(String path, HashMap<String, String> def, boolean deep) {
 		path = addPathPrefix(path);

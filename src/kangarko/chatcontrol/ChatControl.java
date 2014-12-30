@@ -61,7 +61,7 @@ public class ChatControl extends JavaPlugin {
 
 			ConfHelper.loadAll();
 
-			chatCeaser = new ChatCeaser("rules/rules.txt");
+			chatCeaser = new ChatCeaser();
 			chatCeaser.load();
 
 			for (Player pl : getOnlinePlayers())
@@ -180,12 +180,12 @@ public class ChatControl extends JavaPlugin {
 			for (String world : timed.keySet())
 				broadcasterCache.put(world, new ArrayList<String>(timed.get(world)));
 
-		if (Settings.VERBOSE)
+		if (Settings.DEBUG)
 			for (String world : timed.keySet()) {
-				Common.Log("&fMessages for: " + world);
+				Common.Debug("&fMessages for: " + world);
 
 				for (String msg : timed.get(world))
-					Common.Log(" - " + msg);
+					Common.Debug(" - " + msg);
 			}
 
 		new BukkitRunnable() {

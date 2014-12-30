@@ -10,7 +10,6 @@ import java.util.regex.PatternSyntaxException;
 import kangarko.chatcontrol.ChatControl;
 import kangarko.chatcontrol.model.Localization;
 import kangarko.chatcontrol.model.Settings;
-import kangarko.chatcontrol.model.SettingsRemap;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -141,20 +140,6 @@ public class Common {
 		return tempMessage.trim();
 	}
 
-	public static String replaceCharacters(Player pl, String msg) {
-		String finalMsg = msg;
-
-		if (!SettingsRemap.REPLACE_UTF_MAP.isEmpty())
-			for (String character : SettingsRemap.REPLACE_UTF_MAP.keySet())
-				finalMsg = finalMsg.replace(colorize(character), SettingsRemap.REPLACE_UTF_MAP.get(character));
-
-		if (!SettingsRemap.REPLACE_REGEX_MAP.isEmpty())
-			for (String character : SettingsRemap.REPLACE_REGEX_MAP.keySet())
-				finalMsg = finalMsg.replaceAll(colorize(character), SettingsRemap.REPLACE_REGEX_MAP.get(character));
-
-		return finalMsg;
-	}
-
 	// ---------------------------- PRIVATE --------------------------------------
 
 	private static String setPrefix(String str) {
@@ -179,13 +164,18 @@ public class Common {
 		if (Settings.DEBUG)
 			console.sendMessage(colorize("[ChatControl Debug] " + str));
 	}
+	
+	public static void Verbose(String str) {
+		if (Settings.VERBOSE_RULES || Settings.DEBUG)
+			console.sendMessage(colorize(str.replace("\n", "\n&r")));
+	}
 
 	public static void Error(String str, Throwable ex) {
-		Bukkit.getLogger().log(Level.SEVERE, "[" + ChatControl.instance().getDescription().getVersion() + "]" + str, ex);
+		Bukkit.getLogger().log(Level.SEVERE, "[ChatControl " + ChatControl.instance().getDescription().getVersion() + "] " + str, ex);
 	}
 
 	public static void Error(String str) {
-		Bukkit.getLogger().log(Level.SEVERE, "[" + ChatControl.instance().getDescription().getVersion() + "]" + str);
+		Bukkit.getLogger().log(Level.SEVERE, "[ChatControl " + ChatControl.instance().getDescription().getVersion() + "] " + str);
 	}
 
 	public static void LogInFrame(boolean disable, String... messages) {
@@ -213,8 +203,6 @@ public class Common {
 	}
 
 	public static String prepareForSimilarityCheck(String str) {
-		str = str.replaceAll(ChatColor.COLOR_CHAR + "([0-9a-fk-or])", ""); // strip colors
-
 		if (Settings.AntiSpam.STRIP_SPECIAL_CHARS)
 			str = str.replaceAll("[^a-zA-Z0-9\\s]", ""); // strip spec. characters EXCEPT spaces
 
@@ -224,7 +212,7 @@ public class Common {
 			str = str.replaceAll("(...)(?=\\1\\1+)", "");
 		}
 
-		return str.toLowerCase();
+		return stripColors(str.toLowerCase());
 	}
 
 	public static String stripDuplicate(String str) {
@@ -232,6 +220,10 @@ public class Common {
 		return str;
 	}
 
+	public static String stripColors(String str) {
+		return str.replaceAll("(" + ChatColor.COLOR_CHAR + "|&)([0-9a-fk-or])", "");
+	}
+	
 	public static int[] checkCaps(String message) {
 		int[] editedMsg = new int[message.length()];
 		String[] parts = message.split(" ");
@@ -302,10 +294,13 @@ public class Common {
 	}
 
 	public static boolean regExMatch(String regex, String plain_msg) {
+		regex = stripColors(regex);
+		plain_msg = stripColors(plain_msg);
+		
 		Pattern pattern = null;
 		TimedCharSequence timedMsg = new TimedCharSequence(plain_msg.toLowerCase(), Settings.REGEX_TIMEOUT);
 
-		Debug("Checking " + timedMsg + " against " + regex);
+		//Debug("Checking " + timedMsg + " against " + regex);
 
 		try {
 			pattern = Pattern.compile(regex, Pattern.CASE_INSENSITIVE);

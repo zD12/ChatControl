@@ -2,18 +2,21 @@
 # This is the very first implementation of ChatControl's
 # new custom rule engine codenamed ChatCeaser By Kangarko
 #
-# Accepts following arguments (without <>)
+# Accepts following operators (without <>)
 # match <regex> (A valid regular expression string to match the message.)
 # id <number/string> (Assign an id/name to the rule. Used in messages and handlers.)
-# ignore string <string/regex> (If the message matches given string it will be ignored.)
+# ignore string <string/regex> (If the message matches given string it will be ignored. 
+#                               It only ignores the string if it's the only message in chat, as a protection against bypasses.)
 # ignore event <chat/commands/signs> (If the rule triggers on specified event it will be ignored.)
+# ignore perm <permission> (A permission to bypass the rule.)
 # strip <regex> (A valid regular expression used to strip specified characters before the message is checked.)
 # then replace <replacement> (A string that replaces the part of the checked message that matches the match.)
 # then rewrite <message> (A message that replaces the entire checked message.)
 # then deny (Cancel the player's message from appearing in the chat.)
-# then console <command> (A command to execute as the server console. Use %player to get the player name.)
+# then console <command|command2|command3> (A commands to execute as the console. Use %player to get player name. Divide multiple commands by |)
 # then warn <message> (A message that is displayed to the player.)
-# then alert <permission> <message> (Send a message to all players with specified permission.)
+# then kick <optionalResaon> (If set, the player will be kicked with optional message.)
+# then notify <permission> <message> (Send a message to all players with specified permission.)
 # then fine <amount> (If plugin Vault is installed - take specified amount of money from the player.)
 # then log (Caught message will be printed in console and saved in rules_log.txt)
 # handle as <handler_name> (Launch actions specified in handlers.yml)
@@ -41,19 +44,8 @@ match \bass\b|\basshole
 id 4
 handle as swear
 
-# Notice the id, it can be a string and can used multiple times.
-match This server (suck|is crappy|is shitty)
-id ServerHate
-then rewrite I love this filter!
-then alert chatcontrol.notify.rulesalert &8[&7ID %ruleID&8] &7%player: &f%message
-then console kick %player &cYour rating will be processed by our staff soon. \nThanks and welcome back!
-
-match \byolo\b
-ignore event signs
-then replace apple
-
-match staff suck
-id ServerHate
-then console kick %player &cI don't think so.
+# Swastika
+match \u534D|\u5350
+then kick &cDisallowed characters in the chat
+then notify chatcontrol.notify.rulesalert &8[&7Swastika&8] &7%player: &f%message
 then deny
-then log

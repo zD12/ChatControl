@@ -180,6 +180,10 @@ Packets:
   # For more advanced configuration use Spigot and configure the function in spigot.yml
   Disable_Tab_Complete: false
 
+  # If enabled, chat messages will be checked against rules in rules/packets.txt
+  # This can overlaps messages sent by other plugin's or server itself.
+  Use_Packet_Rules: true
+
 # Custom rules are found in rules/ folder inside your plugins folder.
 Rules:
   # Enabled in chat?
@@ -251,8 +255,13 @@ Regex_Timeout_Milis: 100
 # It will be filled with all the values.
 Locale: en
 
-# Print important info in the console on plugin startup/reload.
-Verbose: false
+# Time of some plugin's operations is measured.
+# Print a message in the console if they take longer than specified milisecond time.
+# Set to 0 to disable.
+Log_Lag_Over_Milis: 100
+
+# If a message was caught by a rule print info to the console.
+Verbose_Rules: true
 
 # Enable if you are having issues, will tell you detailed info in the console.
 Debug: false

@@ -1,15 +1,13 @@
 package kangarko.chatcontrol.hooks;
 
 import java.io.File;
-import java.util.Map.Entry;
 
 import kangarko.chatcontrol.ChatControl;
 import kangarko.chatcontrol.model.Settings;
-import kangarko.chatcontrol.model.SettingsRemap;
+import kangarko.chatcontrol.rules.ChatCeaser.PacketCancelledException;
 import kangarko.chatcontrol.utils.Common;
 import kangarko.chatcontrol.utils.Permissions;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -48,65 +46,31 @@ public class ProtocolLibHook {
 			}
 		}
 
-		manager.addPacketListener(new PacketAdapter(ChatControl.instance(), PacketType.Play.Server.CHAT) {
+		if (Settings.Packets.USE_PACKET_RULES) {
+			manager.addPacketListener(new PacketAdapter(ChatControl.instance(), PacketType.Play.Server.CHAT) {
 
-			@Override
-			public void onPacketSending(PacketEvent e) {
-				StructureModifier<WrappedChatComponent> chat = e.getPacket().getChatComponents();
+				@Override
+				public void onPacketSending(PacketEvent e) {
+					StructureModifier<WrappedChatComponent> chat = e.getPacket().getChatComponents();
 
-				try {
-					JSONObject json = (JSONObject) parser.parse(chat.read(0).getJson());
-					replaceAll(json);
-
-					chat.write(0, WrappedChatComponent.fromJson(json.toJSONString()));
-				} catch (ParseException ex) {
-					Common.Error("Unable to parse chat packet", ex);
+					try {
+						JSONObject json = (JSONObject) parser.parse(chat.read(0).getJson());
+						
+						try {
+							ChatControl.instance().chatCeaser.parsePacketRules(json);
+						
+							chat.write(0, WrappedChatComponent.fromJson(json.toJSONString()));
+						} catch (PacketCancelledException e1) {
+							e.setCancelled(true);
+						}
+					} catch (ArrayIndexOutOfBoundsException ex) { 
+						Common.Error("Skipping invalid chat packet for " + e.getPlayer().getName());
+						
+					} catch (ParseException ex) {
+						Common.Error("Unable to parse chat packet", ex);
+					}
 				}
-			}
-		});
-	}
-
-	@SuppressWarnings("unchecked")
-	private static void replaceAll(Object input) {
-		if (input instanceof JSONObject) {
-			JSONObject objects = (JSONObject) input;
-
-			for (Object key : objects.keySet()) {
-				Object value = objects.get(key);
-
-				if (value instanceof JSONObject) 
-					replaceAll((JSONObject) value);
-
-				else if (value instanceof JSONArray)
-					replaceAll((JSONArray) value);
-
-				else if (value instanceof String)
-					objects.put(key, replace(value.toString()));
-			}
-
-		} else if (input instanceof JSONArray) {
-			JSONArray array = (JSONArray) input;
-
-			for (int i = 0; i < array.size(); i++) {
-				Object value = array.get(i);
-
-				if (value instanceof JSONObject)
-					replaceAll((JSONObject) value);
-
-				else if (value instanceof JSONArray)
-					replaceAll((JSONArray) value);
-
-				else if (value instanceof String) 
-					array.set(i, replace(value.toString()));
-			}
-		} else
-			System.out.println("Skipping unknown object: " + input.getClass().getTypeName());
-	}
-
-	private static String replace(String msg) {
-		for (Entry<String, String> entry : SettingsRemap.REPLACE_PROTOCOL_MAP.entrySet())
-			msg = msg.replaceAll(entry.getKey(), entry.getValue());
-
-		return msg;
+			});
+		}
 	}
 }
