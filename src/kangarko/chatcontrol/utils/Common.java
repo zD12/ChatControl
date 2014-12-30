@@ -64,7 +64,7 @@ public class Common {
 		tellColored(pl, msg.replace("%player", plReplacement));
 	}
 
-	public static void tellLater(CommandSender pl, int delayTicks, String... msgs) {
+	public static void tellLater(final CommandSender pl, int delayTicks, final String... msgs) {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -95,7 +95,7 @@ public class Common {
 		return sender.hasPermission(str);
 	}
 
-	public static void customAction(Player pl, String action, String msg) {
+	public static void customAction(final Player pl, final String action, final String msg) {
 		if (action.isEmpty() || action.equalsIgnoreCase("none"))
 			return;
 

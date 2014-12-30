@@ -89,12 +89,13 @@ public class CommandsHandler implements CommandExecutor {
 			}
 
 			final String Reason = reason;
+			final CommandSender Sender = sender;
 			if (param.isEmpty())
 				// Workaround; delay the message so it's displayed after blank lines.
 				new BukkitRunnable() {
 				@Override
 				public void run() {
-					Common.broadcastIfEnabled(Settings.Clear.BROADCAST, sender, Localization.CLEAR_BROADCAST, Reason);
+					Common.broadcastIfEnabled(Settings.Clear.BROADCAST, Sender, Localization.CLEAR_BROADCAST, Reason);
 				}
 			}.runTaskLater(ChatControl.instance(), 2);
 			else if ((param.equalsIgnoreCase("-silent") || param.equalsIgnoreCase("-s")) && Common.hasPerm(sender, Permissions.Commands.CLEAR_SILENT)) {
@@ -103,7 +104,7 @@ public class CommandsHandler implements CommandExecutor {
 				new BukkitRunnable() {
 				@Override
 				public void run() {
-					Common.broadcastIfEnabled(Settings.Clear.BROADCAST, sender, Localization.CLEAR_ANON_BROADCAST, Reason);
+					Common.broadcastIfEnabled(Settings.Clear.BROADCAST, Sender, Localization.CLEAR_ANON_BROADCAST, Reason);
 				}
 			}.runTaskLater(ChatControl.instance(), 2);
 			else if (param.startsWith("-")) {

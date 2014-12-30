@@ -7,7 +7,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import kangarko.chatcontrol.ChatControl;
-import kangarko.chatcontrol.utils.Common;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 

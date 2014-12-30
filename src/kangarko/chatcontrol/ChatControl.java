@@ -165,11 +165,11 @@ public class ChatControl extends JavaPlugin {
 	}
 
 	private void scheduleTimedMessages() {
-		HashMap<String, Integer> broadcasterIndexes = new HashMap<String, Integer>();
-		HashMap<String, List<String>> broadcasterCache = new HashMap<>();
-		Random rand = new Random();
+		final HashMap<String, Integer> broadcasterIndexes = new HashMap<String, Integer>();
+		final HashMap<String, List<String>> broadcasterCache = new HashMap<>();
+		final Random rand = new Random();
 
-		HashMap<String, List<String>> timed = Settings.Messages.TIMED;
+		final HashMap<String, List<String>> timed = Settings.Messages.TIMED;
 
 		if (!Settings.Messages.TIMED_RANDOM_ORDER)
 			for (String world : timed.keySet())

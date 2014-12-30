@@ -18,12 +18,12 @@ import kangarko.chatcontrol.utils.LagCatcher;
 import kangarko.chatcontrol.utils.Writer;
 
 import org.apache.commons.lang3.Validate;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -284,14 +284,8 @@ public final class ChatCeaser {
 				if (rule.getFine() != null && ChatControl.instance().vault != null)
 					ChatControl.instance().vault.takeMoney(pl.getName(), rule.getFine());
 
-				if (rule.getKickMessage() != null) {
-					new BukkitRunnable() {
-						@Override
-						public void run() {
-							pl.kickPlayer(Common.colorize(rule.getKickMessage()));
-						}
-					}.runTask(ChatControl.instance());
-				}
+				if (rule.getKickMessage() != null)
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "kick " + pl.getName() + Common.colorize(rule.getKickMessage()));
 
 				if (rule.cancelEvent()) {
 					e.setCancelled(true);
@@ -472,12 +466,12 @@ public final class ChatCeaser {
 	/**
 	 * Get one colorized string with replaced rule variables from a list.
 	 * @param rule the rule variables will be taken from
-	 * @param strings the strings to choose from
+	 * @param messages the messages to choose from
 	 * @return a colorized string with replaced variables randoly choosen from strings
 	 */
-	private String getRandomString(Rule rule, String[] strings) {
-		String randomString = strings[rand.nextInt(strings.length)];	
-		return Common.colorize(replaceVariables(rule, randomString));
+	private String getRandomString(Rule rule, String[] messages) {
+		String randomMsg = messages[rand.nextInt(messages.length)];
+		return Common.colorize(replaceVariables(rule, randomMsg));
 	}
 
 	public static class PacketCancelledException extends Exception {
