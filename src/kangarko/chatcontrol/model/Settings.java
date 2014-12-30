@@ -270,6 +270,18 @@ public class Settings extends ConfHelper {
 		}
 	}
 
+	public static class Console {
+		public static boolean FILTER_ENABLED;
+		public static List<String> FILTER_MESSAGES;
+
+		private static final void init() {
+			pathPrefix("Console");
+			
+			FILTER_ENABLED = getBoolean("Filter.Enabled", true);
+			FILTER_MESSAGES = getStringList("Filter.Filter_Console_Messages", Arrays.asList("Reached end of stream for", "Connection reset", "lost connection"));
+		}
+	}
+	
 	public static class Writer {
 		public static boolean ENABLED;
 		public static boolean STRIP_COLORS;

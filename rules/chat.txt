@@ -28,7 +28,7 @@ then deny
 # Notice the id, it can be a string and can used multiple times.
 match this server (is (bad|crappy|shitty)|suck)
 id ServerHate
-then rewrite I love this filter!
+then rewrite I love this filter!|I can't behave property due to brain damage!|My bad manners was corrected by server.
 then notify chatcontrol.notify.rulesalert &8[&7ID %ruleID&8] &7%player: &f%message
 then console kick %player &cYour rating will be processed by our staff soon. \nThanks and welcome back!
 
@@ -38,8 +38,8 @@ then console kick %player &cI don't think so.
 then deny
 then log
 
-match owner (fucks|sucks) (kids|dicks|birds)
-then replace peiwdiepie iz a noob
+match owner is (a|an) (dick|noob|loser)
+then replace peiwdiepie iz a noob|i like this server|i luv justin beiber
 
 # -------- Example usage of unicode characters - making smileys
 match :\)

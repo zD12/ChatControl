@@ -193,6 +193,18 @@ Rules:
   # which supports replacing even bukkit / plugin messages.
   Check_Packets: true
 
+Console:
+  Filter:
+    # Filter console messages specified below?
+    Enabled: true
+    
+    # Remove certain messages from the server console.
+    # Does not need to be whole message, just a part of the message you want to block.
+    Filter_Console_Messages:
+    - Reached end of stream for
+    - Connection reset
+    - lost connection
+
 Signs:
   Duplication:
     # Player will be unable to place two signs with the same text.
@@ -254,7 +266,7 @@ Regex_Timeout_Milis: 100
 Locale: en
 
 # Time of some plugin's operations is measured.
-# Print a message in the console if they take longer than specified milisecond time.
+# Print a message in the console if they take longer than specified millisecond time.
 # Set to 0 to disable.
 Log_Lag_Over_Milis: 100
 

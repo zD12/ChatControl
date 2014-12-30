@@ -35,7 +35,7 @@ public class PlayerListener implements Listener {
 			long time = Settings.AntiBot.REJOIN_TIME - (now - ChatControl.ipLastLogin.get(ip));
 			String msg = Common.colorize(Localization.ANTIBOT_REJOIN_WAIT_MESSAGE.replace("%time", String.valueOf(time)).replace("%seconds", Localization.Parts.SECONDS.formatNumbers(time)));
 			msg.split("\n");
-			
+
 			e.disallow(Result.KICK_OTHER, msg);
 		}
 	}
@@ -43,7 +43,7 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onJoin(PlayerJoinEvent e) {
 		LagCatcher.start("Join event");
-		
+
 		long now = System.currentTimeMillis() / 1000L;
 
 		if (!Common.hasPerm(e.getPlayer(), Permissions.Bypasses.REJOIN))
@@ -66,7 +66,7 @@ public class PlayerListener implements Listener {
 				}
 
 		LagCatcher.end("Join event");
-		
+
 		if (ChatControl.muted && Settings.Mute.SILENT_JOIN) {
 			e.setJoinMessage(null);
 			return;
@@ -132,7 +132,7 @@ public class PlayerListener implements Listener {
 	public void onSignChange(SignChangeEvent e) {
 		if (ChatControl.getOnlinePlayers().length < Settings.MIN_PLAYERS_TO_ENABLE)
 			return;
-		
+
 		LagCatcher.start("Sign event");
 
 		Player pl = e.getPlayer();
@@ -140,7 +140,7 @@ public class PlayerListener implements Listener {
 		String msg = e.getLine(0) + e.getLine(1) + e.getLine(2) + e.getLine(3);
 
 		msg = msg.trim();
-		
+
 		if (Settings.Signs.DUPLICATION_CHECK && plData.lastSignText.equalsIgnoreCase(msg) && !Common.hasPerm(pl, Permissions.Bypasses.SIGN_DUPLICATION)) {
 			if (Settings.Signs.DUPLICATION_ALERT_STAFF)
 				for (Player online : ChatControl.getOnlinePlayers())
@@ -149,14 +149,14 @@ public class PlayerListener implements Listener {
 
 			Common.tell(pl, Localization.SIGNS_DUPLICATION);
 			e.setCancelled(true);
-			
+
 			if (Settings.Signs.DROP_SIGN)
 				e.getBlock().breakNaturally();	
-			
+
 			LagCatcher.end("Sign event");
 			return;
 		}
-		
+
 		if (Settings.Rules.CHECK_SIGNS && !Common.hasPerm(e.getPlayer(), Permissions.Bypasses.RULES)) {
 			ChatControl.instance().chatCeaser.parseRules(e, pl, msg);
 
@@ -168,7 +168,7 @@ public class PlayerListener implements Listener {
 					e.getBlock().breakNaturally();
 			}
 		}
-		
+
 		LagCatcher.end("Sign event");
 	}
 

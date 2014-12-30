@@ -42,7 +42,6 @@ public class ConfHelper {
 
 		// Order matters.
 		Settings.load();
-		SettingsConsole.load();
 		Localization.load();
 	}
 

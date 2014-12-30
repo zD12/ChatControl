@@ -54,18 +54,23 @@ public class ProtocolLibHook {
 					StructureModifier<WrappedChatComponent> chat = e.getPacket().getChatComponents();
 
 					try {
-						JSONObject json = (JSONObject) parser.parse(chat.read(0).getJson());
-						
+						String jsonString = chat.read(0).getJson();
+
+						if (jsonString == null || jsonString.isEmpty())
+							return;
+
+						JSONObject json = (JSONObject) parser.parse(jsonString);
+
+						String origin = json.toJSONString();
+
 						try {
 							ChatControl.instance().chatCeaser.parsePacketRules(json);
-						
-							chat.write(0, WrappedChatComponent.fromJson(json.toJSONString()));
+
+							if (!json.toJSONString().equals(origin))
+								chat.write(0, WrappedChatComponent.fromJson(json.toJSONString()));
 						} catch (PacketCancelledException e1) {
 							e.setCancelled(true);
 						}
-					} catch (ArrayIndexOutOfBoundsException ex) { 
-						Common.Error("Skipping invalid chat packet for " + e.getPlayer().getName());
-						
 					} catch (ParseException ex) {
 						Common.Error("Unable to parse chat packet", ex);
 					}

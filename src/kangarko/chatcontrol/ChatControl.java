@@ -19,7 +19,6 @@ import kangarko.chatcontrol.model.ConfHelper;
 import kangarko.chatcontrol.model.ConfHelper.IllegalLocaleException;
 import kangarko.chatcontrol.model.ConfHelper.InBuiltFileMissingException;
 import kangarko.chatcontrol.model.Settings;
-import kangarko.chatcontrol.model.SettingsConsole;
 import kangarko.chatcontrol.rules.ChatCeaser;
 import kangarko.chatcontrol.utils.Common;
 import kangarko.chatcontrol.utils.Permissions;
@@ -33,7 +32,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-// TODO implement death messages
+// FIXME Bad packet id on /reload ingame when OP
 public class ChatControl extends JavaPlugin {
 
 	private static ChatControl instance;
@@ -78,17 +77,15 @@ public class ChatControl extends JavaPlugin {
 			getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 			getServer().getPluginManager().registerEvents(new CommandListener(), this);
 
-			if (SettingsConsole.FILTER_ENABLED || SettingsConsole.FILTER_COLORS_TO_ANSI)
+			if (Settings.Console.FILTER_ENABLED)
 				try {
 					Log4jFilter.init();
 					Common.Debug("Console filtering now using Log4j Filter.");
 				} catch (NoClassDefFoundError err) {
 					Filter filter = new ConsoleFilter();
-					
-					if (SettingsConsole.FILTER_FILTER_PLUGINS)
-						for (Plugin plugin : getServer().getPluginManager().getPlugins())
-							plugin.getLogger().setFilter(filter);
-					
+					for (Plugin plugin : getServer().getPluginManager().getPlugins())
+						plugin.getLogger().setFilter(filter);
+
 					Bukkit.getLogger().setFilter(filter);
 					Common.Debug("Console filtering initiated (MC 1.6.4 and lower).");
 				}

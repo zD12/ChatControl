@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 import kangarko.chatcontrol.ChatControl;
 import kangarko.chatcontrol.model.Settings;
@@ -38,7 +39,12 @@ public final class ChatCeaser {
 	 */
 	private final HashMap<String, List<Rule>> rulesMap = new HashMap<>();
 
+	/**
+	 * Rule files.
+	 */
 	private final String RULES = "rules.txt", CHAT = "chat.txt", COMMAND = "commands.txt", SIGN = "sign.txt", PACKET = "packets.txt";
+
+	private final Random rand = new Random();
 
 	/**
 	 * Clears {@link #rules} and load them .
@@ -111,25 +117,25 @@ public final class ChatCeaser {
 									rule.setIgnoredMessage(line.replaceFirst("ignore string ", ""));
 
 								else if (line.startsWith("ignore event "))
-									rule.setIgnoreEvent(line.replaceFirst("ignore event ", ""));
+									rule.parseIgnoreEvent(line.replaceFirst("ignore event ", ""));
 
 								else if (line.startsWith("ignore perm "))
 									rule.setBypassPerm(line.replaceFirst("ignore perm ", ""));
 
 								else if (line.startsWith("then rewrite "))
-									rule.setRewrite(line.replaceFirst("then rewrite ", ""));
+									rule.parseRewrites(line.replaceFirst("then rewrite ", ""));
 
 								else if (line.startsWith("then replace "))
-									rule.setReplacement(line.replaceFirst("then replace ", ""));
+									rule.parseReplacements(line.replaceFirst("then replace ", ""));
 
 								else if (line.startsWith("then console "))
-									rule.setCommandsToExecute(line.replaceFirst("then console ", ""));
+									rule.parseCommandsToExecute(line.replaceFirst("then console ", ""));
 
 								else if (line.startsWith("then warn "))
 									rule.setWarnMessage(line.replaceFirst("then warn ", ""));
 
 								else if (line.startsWith("then notify "))
-									rule.setCustomNotify(line.replaceFirst("then notify ", ""));
+									rule.parseCustomNotify(line.replaceFirst("then notify ", ""));
 
 								else if (line.startsWith("then fine "))
 									rule.setFine(Double.parseDouble(line.replaceFirst("then fine ", "")));
@@ -187,16 +193,16 @@ public final class ChatCeaser {
 			flag = Rule.SIGN;
 
 		LagCatcher.start("Rule parse");
-		
+
 		String origin = msg;
-		
+
 		// First iterate over all rules.
 		List<Rule> rules = rulesMap.get(RULES);
-		
+
 		LagCatcher.start("Rule parse: global");
 		msg = iterateStandardRules(rules, e, pl, msg, flag, true);
 		LagCatcher.end("Rule parse: global");
-		
+
 		if (flag == Rule.CHAT)
 			rules = rulesMap.get(CHAT);
 		else if (flag == Rule.COMMAND)
@@ -208,14 +214,14 @@ public final class ChatCeaser {
 		LagCatcher.start("Rule parse from: " + e.getClass().getSimpleName());
 		msg = iterateStandardRules(rules, e, pl, msg, flag, false);
 		LagCatcher.end("Rule parse from: " +  e.getClass().getSimpleName());
-		
+
 		if (e.isCancelled())
 			Common.Verbose("&fOriginal message &ccancelled&f.");
 		else if (!origin.equals(msg))
 			Common.Verbose("&fFINAL&a: &r" + msg);
-		
+
 		LagCatcher.end("Rule parse");
-		
+
 		return msg;
 	}
 
@@ -232,11 +238,11 @@ public final class ChatCeaser {
 					continue;
 
 			if (rule.matches(msg)) {
-				
-				Common.Verbose(Common.consoleLine());
+
+				Common.Verbose("&f*--------- ChatControl rule match --------- ID " + (rule.getId() != null ? rule.getId() : "UNSET"));
 				Common.Verbose("&fMATCH&b: &r" + (Settings.DEBUG ? rule : rule.getMatch()));
 				Common.Verbose("&fCATCH&b: &r" + msg);
-				
+
 				if (rule.log()) {
 					Common.Log(org.bukkit.ChatColor.RED + (flag == Rule.SIGN ? "[SIGN at " + Common.shortLocation(pl.getLocation()) + "] " : "") + pl.getName() + " violated " + rule.toShortString() + " with message: &f" + msg);
 					Writer.Write("logs/rules_log.txt", pl.getName(), (flag == Rule.SIGN ? "[SIGN at " + Common.shortLocation(pl.getLocation()) + "] " : "") + rule.toShortString() + " caught message: " + msg);
@@ -256,11 +262,11 @@ public final class ChatCeaser {
 				if (e.isCancelled())
 					return msg; // The message will not appear in the chat, no need to continue.
 
-				if (rule.getRewrite() != null)
-					msg = Common.colorize(replaceVariables(rule, rule.getRewrite()));
+				if (rule.getRewrites() != null)
+					msg = getRandomString(rule, rule.getRewrites());
 
-				if (rule.getReplacement() != null)
-					msg = msg.replaceAll(rule.getMatch(), Common.colorize(replaceVariables(rule, rule.getReplacement())));
+				if (rule.getReplacements() != null)
+					msg = msg.replaceAll(rule.getMatch(), getRandomString(rule, rule.getReplacements()));
 
 				if (rule.getCommandsToExecute() != null)
 					for (String command : rule.getCommandsToExecute()) {
@@ -268,8 +274,12 @@ public final class ChatCeaser {
 						Common.customAction(pl, command, msg);
 					}
 
-				if (rule.getWarnMessage() != null)
-					Common.tell(pl, Common.colorize(replaceVariables(rule, rule.getWarnMessage())));
+				if (rule.getWarnMessage() != null) {
+					if (rule.cancelEvent()) // if not blocked, display after player's message
+						Common.tell(pl, Common.colorize(replaceVariables(rule, rule.getWarnMessage())));
+					else
+						Common.tellLater(pl, 1, Common.colorize(replaceVariables(rule, rule.getWarnMessage())));
+				}
 
 				if (rule.getFine() != null && ChatControl.instance().vault != null)
 					ChatControl.instance().vault.takeMoney(pl.getName(), rule.getFine());
@@ -294,6 +304,10 @@ public final class ChatCeaser {
 		return msg;
 	}
 
+	/**
+	 * Handlers a custom handler. Returns the original message (can be modified)
+	 * Can cancel the event.
+	 */
 	private <T extends Cancellable> String handle(T e, Player pl, String match, String msg, Handler handler, int flag) {
 		if (handler.getBypassPermission() != null && Common.hasPerm(pl, handler.getBypassPermission()))
 			return msg;
@@ -306,7 +320,12 @@ public final class ChatCeaser {
 		String warnMessage = handler.getPlayerWarnMsg();
 
 		if (warnMessage != null && !HandlerCache.lastWarnMsg.equals(warnMessage)) {
-			Common.tellLater(pl, 1, replaceVariables(handler, warnMessage));
+
+			if (handler.blockMessage()) // if not blocked, display after player's message
+				Common.tell(pl, replaceVariables(handler, warnMessage));
+			else
+				Common.tellLater(pl, 1, replaceVariables(handler, warnMessage));
+
 			HandlerCache.lastWarnMsg = warnMessage;
 		}
 
@@ -399,18 +418,29 @@ public final class ChatCeaser {
 			return msg;
 
 		for (Rule standardrule : rulesMap.get(PACKET)) {
-			if (standardrule.matches(msg.toLowerCase())) {
+			if (standardrule.matches(msg.toLowerCase())) {				
 				PacketRule rule = standardrule.getPacketRule();
 				Objects.requireNonNull(rule, "Malformed rule - must be a packet rule: " + standardrule);
 
-				if (rule.deny())
+				Common.Verbose("&f*--------- ChatControl rule match: chat packet ---------");
+				Common.Verbose("&fMATCH&b: &r" + (Settings.DEBUG ? rule : standardrule.getMatch()));
+				Common.Verbose("&fCATCH&b: &r" + msg);
+				
+				String origin = msg;
+				
+				if (rule.deny()) {
+					Common.Verbose("&fPacket sending &ccancelled&f.");
 					throw new PacketCancelledException();
-
+				}
+					
 				else if (rule.getRewritePacket() != null)
 					msg = Common.colorize(replaceVariables(standardrule, rule.getRewritePacket()));
 
 				else if (rule.getReplacePacket() != null)
 					msg = msg.replaceAll(standardrule.getMatch(), Common.colorize(rule.getReplacePacket()));
+				
+				if (!origin.equals(msg))
+					Common.Verbose("&fFINAL&a: &r" + msg);
 			}
 		}
 
@@ -437,6 +467,17 @@ public final class ChatCeaser {
 	 */
 	private String replaceVariables(Rule rule, String message) {		
 		return message.replace("%ruleID", rule.getId() != null ? rule.getId() : "UNSET");
+	}
+
+	/**
+	 * Get one colorized string with replaced rule variables from a list.
+	 * @param rule the rule variables will be taken from
+	 * @param strings the strings to choose from
+	 * @return a colorized string with replaced variables randoly choosen from strings
+	 */
+	private String getRandomString(Rule rule, String[] strings) {
+		String randomString = strings[rand.nextInt(strings.length)];	
+		return Common.colorize(replaceVariables(rule, randomString));
 	}
 
 	public static class PacketCancelledException extends Exception {

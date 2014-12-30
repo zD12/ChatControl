@@ -47,14 +47,14 @@ public class Rule {
 	private String stripBefore;
 
 	/**
-	 * Replace the part of the checked message that matches {@link #match} with provided string
+	 * Replace the part of the checked message that matches {@link #match} with one of the string (randomly chosen)
 	 */
-	private String replacement;
+	private String[] replacement;
 
 	/**
-	 * Rewrite the entire message to specified string
+	 * Rewrite the entire message to specified string chosen randomly
 	 */
-	private String rewrite;
+	private String[] rewrite;
 
 	/**
 	 * Optional commands executed as the server console divided by |
@@ -123,9 +123,10 @@ public class Rule {
 		if (stripBefore != null)
 			message = message.replaceAll(stripBefore, "");
 		
-		if (ignoredMessage != null && message.matches(ignoredMessage)) {
-			Common.Debug("&fIgnoring \'" + message + "\', ignore rule: " + ignoredMessage);
-			return false;
+		if (ignoredMessage != null && Common.regExMatch(ignoredMessage, message)) {
+			Common.Debug("&fIGNORE&c:&r "+ ignoredMessage + ", message \'" + message + "\' ignored");
+			
+			message = message.replaceAll(ignoredMessage, ""); // prevent bypasses
 		}
 
 		return Common.regExMatch(match, message);
@@ -159,7 +160,7 @@ public class Rule {
 		return ignoredEvent;
 	}
 
-	public void setIgnoreEvent(String ignoreEvent) {
+	public void parseIgnoreEvent(String ignoreEvent) {
 		Validate.isTrue(ignoredEvent == null, "Ignored event already set on: " + this);
 
 		ignoredEvent = getEventFromName(ignoreEvent);
@@ -181,31 +182,31 @@ public class Rule {
 		this.stripBefore = stripBefore;
 	}
 
-	public String getReplacement() {
+	public String[] getReplacements() {
 		return replacement;
 	}
 
-	public void setReplacement(String replacement) {
+	public void parseReplacements(String line) {
 		Validate.isTrue(this.replacement == null, "Replacement already set on: " + this);
 
-		this.replacement = replacement;
+		this.replacement = line.split("\\|");
 	}
 
-	public String getRewrite() {
+	public String[] getRewrites() {
 		return rewrite;
 	}
 
-	public void setRewrite(String rewrite) {
+	public void parseRewrites(String line) {
 		Validate.isTrue(this.rewrite == null, "Rewrite message already set on: " + this);
 
-		this.rewrite = rewrite;
+		this.rewrite = line.split("\\|");
 	}
 
 	public String[] getCommandsToExecute() {
 		return commandToExecute;
 	}
 
-	public void setCommandsToExecute(String line) {
+	public void parseCommandsToExecute(String line) {
 		Validate.isTrue(this.commandToExecute == null, "Command to execute already set on: " + this);
 
 		this.commandToExecute = line.split("\\|");
@@ -221,7 +222,7 @@ public class Rule {
 		this.warnMessage = warnMessage;
 	}
 
-	public void setCustomNotify(String raw) {
+	public void parseCustomNotify(String raw) {
 		String[] parts = raw.split(" ");
 		Validate.isTrue(parts.length > 0, "Malformed then notify - must specify permission and a message.");
 
@@ -308,7 +309,7 @@ public class Rule {
 				+ (bypassPerm != null ? "    Bypass With Perm = \'" + bypassPerm + "\',\n" : "")
 				+ (ignoredMessage != null ? "    Ignore Message = \'" + ignoredMessage + "\',\n" : "")
 				+ (ignoredEvent != null ? "    Ignore Event = \'" + ignoredEvent + "\',\n" : "")
-				+ (replacement != null ? "    Replace With = \'" + replacement + "\',\n" : "")
+				+ (replacement != null ? "    Replace With = \'" + StringUtils.join(replacement, ",") + "\',\n" : "")
 				+ (rewrite != null ? "    Rewrite = \'" + rewrite + "\',\n" : "")
 				+ (commandToExecute != null ? "    Execute Command = \'" + StringUtils.join(commandToExecute, ",") + "\',\n" : "")
 				+ (handler != null ? "    Handler = \'" + handler + "\',\n" : "")

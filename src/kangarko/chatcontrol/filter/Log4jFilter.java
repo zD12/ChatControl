@@ -1,6 +1,7 @@
 package kangarko.chatcontrol.filter;
 
-import kangarko.chatcontrol.model.SettingsConsole;
+import kangarko.chatcontrol.model.Settings;
+import kangarko.chatcontrol.utils.Common;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -50,11 +51,13 @@ public class Log4jFilter implements Filter {
 	}
 
 	private Result checkMessage(String message) {
-		for (String filter : SettingsConsole.FILTER_MESSAGES)
-			if (filter.equalsIgnoreCase(message) || filter.toLowerCase().contains(message.toLowerCase()))
-				return Result.DENY;
+		message = Common.stripColors(message);
+
+		for (String filter : Settings.Console.FILTER_MESSAGES)
+			if (message.equalsIgnoreCase(filter) || message.toLowerCase().contains(filter.toLowerCase()))
+				return Result.DENY;	
 		   //else if (Common.regExMatch(filter, message)) // TODO Temporary disabled. Causes server to silently crash if a message is printed inside the match method.
-		   //	return Result.DENY;
+		   //	return Result.DENY;*/
 		
 		return Result.NEUTRAL;
 	}
