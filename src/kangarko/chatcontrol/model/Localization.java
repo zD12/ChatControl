@@ -153,7 +153,7 @@ public class Localization extends ConfHelper {
 		RELOAD_COMPLETE = getString("Reload_Complete", "%prefix &2Configuration reloaded successfuly.");
 		RELOAD_FAILED = getString("Reload_Failed", "%prefix &cReloading configuration failed, check console. The error was: &4%error");
 
-		WRONG_PARAMETERS = getString("Wrong_Parameters", "&cWrong parameters, type &6/chc list&c for instructions.");
+		WRONG_PARAMETERS = getString("Wrong_Parameters", "&cWrong parameters or missing permission.");
 		WRONG_ARGUMENTS = getString("Wrong_Arguments", "&cWrong arguments. Type &6/chc list&c for command list.");
 	}
 }

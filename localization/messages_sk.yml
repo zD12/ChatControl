@@ -57,7 +57,7 @@ Update_Available: '&2Je dostupna nova verzia &3ChatControlu&2.\n&2Sucasna verzia
 No_Permission: '&cNedostatocne povolenie (%perm).'
 Reload_Complete: '%prefix &2Nastavenia a pravidla boli znovunacitane.'
 Reload_Failed: '%prefix &cRestart nastaveni a pravidiel zlyhal, pozri konzolu. Chyba: &4%error'
-Wrong_Parameters: '&cChybne parametre, pozrite &6/chc list&c pre pomoc.'
+Wrong_Parameters: '&cChybne parametre alebo povolenie na ich pouzitie.'
 Wrong_Arguments: '&cChybne argumenty. Prikazom &6/chc list&c zobrazite pomoc.'
 
 General:

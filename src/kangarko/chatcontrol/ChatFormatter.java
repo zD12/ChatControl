@@ -91,7 +91,7 @@ public class ChatFormatter implements Listener {
 		return format
 				.replace("%prefix", formatColor(ChatControl.instance().vault.getPlayerPrefix(pl))).replace("%suffix", formatColor(ChatControl.instance().vault.getPlayerSuffix(pl)))
 				.replace("%world", getWorldAlias(world)).replace("%health", formatHealth(pl) + ChatColor.RESET)
-				.replace("%player", pl.getDisplayName())
+				.replace("%player", pl.getName())
 				.replace("%town", getTown(pl)).replace("%nation", getNation(pl));
 	}
 

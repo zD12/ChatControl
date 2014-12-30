@@ -56,7 +56,7 @@ Update_Available: '&2A new version of &3ChatControl&2 is available.\n&2Current v
 No_Permission: '&cInsufficient permission (%perm).'
 Reload_Complete: '%prefix &2Configuration reloaded successfuly.'
 Reload_Failed: '%prefix &cReloading configuration failed, check console. The error was: &4%error'
-Wrong_Parameters: '&cWrong parameters, type &6/chc list&c for instructions.'
+Wrong_Parameters: '&cWrong parameters or missing permission.'
 Wrong_Arguments: '&cWrong arguments. Type &6/chc list&c for command list.'
 
 General:
