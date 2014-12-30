@@ -263,6 +263,7 @@ Regex_Timeout_Milis: 100
 
 # To customize a locale, make file in localization/messages_LOCALENAME.yml
 # It will be filled with all the values.
+# Current available locales: en (english), sk (slovak)
 Locale: en
 
 # Time of some plugin's operations is measured.
