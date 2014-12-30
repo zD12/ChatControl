@@ -1,7 +1,6 @@
 name: ChatControl
 main: kangarko.chatcontrol.ChatControl
-version: 5.0.0-DEV
-description: Complete chat management suite for Bukkit.
+version: 5.0.0
 author: kangarko
 soft-depend: [Essentials, Vault, Multiverse-Core, ProtocolLib, Towny, AuthMe]
 commands: 
