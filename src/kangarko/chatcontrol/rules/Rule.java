@@ -290,6 +290,8 @@ public class Rule {
 	}
 
 	public void setPacketRule() {
+		Validate.isTrue(this.packetRule == null, "Rule is already a packet rule: " + this);
+		
 		this.packetRule = new PacketRule();
 	}
 
@@ -350,6 +352,11 @@ public class Rule {
 class PacketRule {
 
 	/**
+	 * Whenever the message should be cancelled from appearing.
+	 */
+	private boolean deny = false;
+	
+	/**
 	 * A string used to replace matched part of the checked message.
 	 */
 	private String replace;
@@ -359,11 +366,16 @@ class PacketRule {
 	 */
 	private String rewrite;
 
-	/**
-	 * Whenever the message should be cancelled from appearing.
-	 */
-	private boolean deny = false;
+	public void setDeny() {
+		Validate.isTrue(!this.deny, "Rule is already denied: " + this);
 
+		this.deny = true;
+	}
+
+	public boolean deny() {
+		return deny;
+	}
+	
 	public void setReplacePacket(String replace) {
 		Validate.isTrue(this.replace == null, "Replace already set on: " + this);
 
@@ -382,16 +394,6 @@ class PacketRule {
 
 	public String getRewritePacket() {
 		return rewrite;
-	}
-
-	public void setDenyPacket() {
-		Validate.isTrue(!this.deny, "Packet rule is already denied: " + this);
-
-		this.deny = true;
-	}
-
-	public boolean denyPacket() {
-		return deny;
 	}
 
 	@Override

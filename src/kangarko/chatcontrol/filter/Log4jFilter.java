@@ -51,12 +51,11 @@ public class Log4jFilter implements Filter {
 
 	private Result checkMessage(String message) {
 		for (String filter : SettingsConsole.FILTER_MESSAGES)
-			if (filter.equalsIgnoreCase(message))
+			if (filter.equalsIgnoreCase(message) || filter.toLowerCase().contains(message.toLowerCase()))
 				return Result.DENY;
-			else if (filter.toLowerCase().contains(message.toLowerCase()))
-				return Result.DENY;
-		//else if (Common.regExMatch(filter, message)) // TODO Temporary disabled. Causes server to silently crash if a message is printed inside the match method.
-		//	return Result.DENY;
+		   //else if (Common.regExMatch(filter, message)) // TODO Temporary disabled. Causes server to silently crash if a message is printed inside the match method.
+		   //	return Result.DENY;
+		
 		return Result.NEUTRAL;
 	}
 }

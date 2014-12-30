@@ -4,7 +4,7 @@
 #
 # You need ProtocolLib to enable this features.
 # 
-# This uses custom operators above:
+# This accepts only operators below:
 #
 # Valid operators:
 # match <regex> (A valid regular expression to match the checked message.)

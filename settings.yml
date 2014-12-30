@@ -172,17 +172,11 @@ Mute:
   - r
   - w
 
+# Needs ProtocolLib
 Packets:
-  # Controls the whole packet related.
-  Enable_Packet_Features: true
-
   # Prevent tab complete in certain cases where it can reveal server info. 
   # For more advanced configuration use Spigot and configure the function in spigot.yml
   Disable_Tab_Complete: false
-
-  # If enabled, chat messages will be checked against rules in rules/packets.txt
-  # This can overlaps messages sent by other plugin's or server itself.
-  Use_Packet_Rules: true
 
 # Custom rules are found in rules/ folder inside your plugins folder.
 Rules:
@@ -194,6 +188,10 @@ Rules:
 
   # Enabled on signs?
   Check_Signs: true
+  
+  # Needs ProtocolLib. If enabled, messages will be checked agains rules/packets.txt
+  # which supports replacing even bukkit / plugin messages.
+  Check_Packets: true
 
 Signs:
   Duplication:

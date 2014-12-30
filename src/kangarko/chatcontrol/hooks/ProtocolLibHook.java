@@ -46,7 +46,7 @@ public class ProtocolLibHook {
 			}
 		}
 
-		if (Settings.Packets.USE_PACKET_RULES) {
+		if (Settings.Rules.CHECK_PACKETS) {
 			manager.addPacketListener(new PacketAdapter(ChatControl.instance(), PacketType.Play.Server.CHAT) {
 
 				@Override

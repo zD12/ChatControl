@@ -34,8 +34,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 // TODO implement death messages
-// TODO fix deprecations, split rules.txt
-// TODO implement lag checker
 public class ChatControl extends JavaPlugin {
 
 	private static ChatControl instance;
@@ -56,7 +54,7 @@ public class ChatControl extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		try {
+		try {			
 			instance = this;
 
 			ConfHelper.loadAll();
@@ -86,18 +84,18 @@ public class ChatControl extends JavaPlugin {
 					Common.Debug("Console filtering now using Log4j Filter.");
 				} catch (NoClassDefFoundError err) {
 					Filter filter = new ConsoleFilter();
-
+					
 					if (SettingsConsole.FILTER_FILTER_PLUGINS)
 						for (Plugin plugin : getServer().getPluginManager().getPlugins())
 							plugin.getLogger().setFilter(filter);
-
+					
 					Bukkit.getLogger().setFilter(filter);
 					Common.Debug("Console filtering initiated (MC 1.6.4 and lower).");
 				}
 
-			if (Settings.Packets.ENABLE_PACKET_FEATURES || Settings.Packets.DISABLE_TAB_COMPLETE)
+			if (Settings.Rules.CHECK_PACKETS || Settings.Packets.DISABLE_TAB_COMPLETE)
 				if (doesPluginExist("ProtocolLib")) {
-						ProtocolLibHook.init();
+					ProtocolLibHook.init();
 				} else
 					Common.LogInFrame(false, "Cannot enable packet features!", "Required plugin missing: ProtocolLib");
 
@@ -145,8 +143,12 @@ public class ChatControl extends JavaPlugin {
 				Common.Log(" &cIt will be filled with default values.");
 				Common.Log(" &ePlease inform the developer about this error.");
 
-			} else
-				Common.Log(" &cThe error was: " + t.getMessage());
+			} else {
+				String error = "Unable to get error message, search above.";				
+				if (t.getMessage() != null && !t.getMessage().isEmpty() && !t.getMessage().equalsIgnoreCase("null"))
+					error = t.getMessage();					
+				Common.Log(" &cThe error was: " + error);
+			}
 			Common.Log("&4!----------------------------------------------!");
 
 			getPluginLoader().disablePlugin(this);
@@ -161,7 +163,7 @@ public class ChatControl extends JavaPlugin {
 
 		UpdateCheck.needsUpdate = false;
 		getServer().getScheduler().cancelTasks(this);
-		
+
 		instance = null;
 	}
 

@@ -87,7 +87,7 @@ public final class ChatCeaser {
 
 							if (packetRule) {
 								if ("then deny".equals(line))
-									rule.getPacketRule().setDenyPacket();
+									rule.getPacketRule().setDeny();
 								else if (line.startsWith("then replace "))
 									rule.getPacketRule().setReplacePacket(line.replaceFirst("then replace ", ""));
 								else if (line.startsWith("then rewrite "))
@@ -346,7 +346,7 @@ public final class ChatCeaser {
 	}
 
 	/**
-	 * Parses the JSON chat message and check it agains packet rules
+	 * Parses the JSON chat message and check it against packet rules
 	 * @param input the JSON chat message object
 	 * @return whenever the packet should be cancelled (this is defined in the packet rule)
 	 * @throws PacketCancelledException if the packet should be cancelled
@@ -403,7 +403,7 @@ public final class ChatCeaser {
 				PacketRule rule = standardrule.getPacketRule();
 				Objects.requireNonNull(rule, "Malformed rule - must be a packet rule: " + standardrule);
 
-				if (rule.denyPacket())
+				if (rule.deny())
 					throw new PacketCancelledException();
 
 				else if (rule.getRewritePacket() != null)
