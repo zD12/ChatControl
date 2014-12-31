@@ -374,4 +374,11 @@ public class Common {
 	public static String shortLocation(Location loc) {
 		return loc.getWorld().getName() + " x:" + (int) loc.getX() + " y:" + (int) loc.getY() + " z:" + (int) loc.getZ();
 	}
+	
+	public static String getServerVersion() {
+		String packageName = Bukkit.getServer().getClass().getPackage().getName();
+		String apiVersion = packageName.substring(packageName.lastIndexOf('.') + 1);
+
+		return apiVersion;
+	}
 }

@@ -136,6 +136,7 @@ public class Settings extends ConfHelper {
 		public static boolean TIMED_RANDOM_ORDER;
 		public static boolean TIMED_RANDOM_NO_REPEAT;
 		public static String TIMED_PREFIX;
+		public static String TIMED_SUFFIX;
 		public static int TIMED_DELAY_SECONDS;
 
 		public static HashMap<String, List<String>> TIMED;
@@ -152,11 +153,12 @@ public class Settings extends ConfHelper {
 			TIMED_RANDOM_ORDER = getBoolean("Random_Order", false);
 			TIMED_RANDOM_NO_REPEAT = getBoolean("Random_No_Repeat", true);
 			TIMED_PREFIX = getString("Prefix", "&8[&2Tip&8]&2");
+			TIMED_SUFFIX = getString("Suffix", "");
 			TIMED_DELAY_SECONDS = getInteger("Delay_Seconds", 180);
 
 			HashMap<String, List<String>> timedDef = new HashMap<>();
 			timedDef.put("global", Arrays.asList("Hey, %player, did you know that this server is running ChatControl?", "Visit developer website: &awww.rushmine.6f.sk"));
-			timedDef.put("hardcore", Arrays.asList("Grief is not permitted what-so-ever and every griefer will be banned.", "Can you survive the night on hardcore world?"));
+			timedDef.put("hardcore", Arrays.asList("Grief is not permitted what-so-ever and every griefer will be banned.", "Can you survive the night on %world world?"));
 			timedDef.put("creative", Arrays.asList("excludeGlobal", "Welcome on Creative world. Enjoy your gamemode :)"));
 			timedDef.put("ignored-world", Arrays.asList("excludeGlobal"));
 

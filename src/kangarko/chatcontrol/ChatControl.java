@@ -123,6 +123,7 @@ public class ChatControl extends JavaPlugin {
 
 			Common.Log("&4!----------------------------------------------!");
 			Common.Log(" &cError loading ChatControl, plugin is disabled!");
+			Common.Log(" &cRunning on server " + Common.getServerVersion() + " and Java " + System.getProperty("java.version"));
 			Common.Log("&4!----------------------------------------------!");
 
 			if (t instanceof InvalidConfigurationException) {
@@ -196,7 +197,7 @@ public class ChatControl extends JavaPlugin {
 					if (msgs.size() == 0)
 						continue;
 
-					String msg = Settings.Messages.TIMED_PREFIX + " ";
+					String msg;
 
 					if (Settings.Messages.TIMED_RANDOM_ORDER) {
 						if (Settings.Messages.TIMED_RANDOM_NO_REPEAT) {
@@ -207,28 +208,30 @@ public class ChatControl extends JavaPlugin {
 
 							int cacheRand = rand.nextInt(worldCache.size());
 
-							msg += worldCache.get(cacheRand);
+							msg = worldCache.get(cacheRand);
 							worldCache.remove(cacheRand);
 						} else
-							msg += msgs.get(rand.nextInt(msgs.size()));
+							msg = msgs.get(rand.nextInt(msgs.size()));
 					} else {
 						int last = broadcasterIndexes.get(world);
 
 						if (msgs.size() < last + 1)
 							last = 0;
 
-						msg = Settings.Messages.TIMED_PREFIX + " " + msgs.get(last);
+						msg = msgs.get(last);
 
 						broadcasterIndexes.put(world, last + 1);
 					}
 
-					if (msg.equals(Settings.Messages.TIMED_PREFIX + " ")) // is empty
+					if (msg == null)
 						continue;
+					else
+						msg = Settings.Messages.TIMED_PREFIX + " " + msg + " " + Settings.Messages.TIMED_SUFFIX;
 
 					if (world.equalsIgnoreCase("global")) {
 						for (Player online : getOnlinePlayers())
 							if (!timed.keySet().contains(online.getWorld().getName()) && Common.hasPerm(online, Permissions.VIEW_TIMED_MESSAGES))
-								Common.tell(online, msg);
+								Common.tell(online, msg.replace("%world", online.getWorld().getName()));
 
 					} else {
 						World bukkitworld = getServer().getWorld(world);
@@ -238,7 +241,7 @@ public class ChatControl extends JavaPlugin {
 						else
 							for (Player online : bukkitworld.getPlayers())
 								if (Common.hasPerm(online, Permissions.VIEW_TIMED_MESSAGES))
-									Common.tell(online, msg);
+									Common.tell(online, msg.replace("%world", world));
 					}
 				}
 			}

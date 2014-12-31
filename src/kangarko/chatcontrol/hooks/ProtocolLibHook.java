@@ -55,22 +55,26 @@ public class ProtocolLibHook {
 
 					try {
 						String jsonString = chat.read(0).getJson();
-
 						if (jsonString == null || jsonString.isEmpty())
 							return;
 
-						JSONObject json = (JSONObject) parser.parse(jsonString);
+						Object parsed = parser.parse(jsonString);
+						if (!(parsed instanceof JSONObject))
+							return;
 
+						JSONObject json = (JSONObject) parsed;
 						String origin = json.toJSONString();
 
 						try {
 							ChatControl.instance().chatCeaser.parsePacketRules(json);
-
-							if (!json.toJSONString().equals(origin))
-								chat.write(0, WrappedChatComponent.fromJson(json.toJSONString()));
 						} catch (PacketCancelledException e1) {
 							e.setCancelled(true);
+							return;
 						}
+
+						if (!json.toJSONString().equals(origin))
+							chat.write(0, WrappedChatComponent.fromJson(json.toJSONString()));
+
 					} catch (ParseException ex) {
 						Common.Error("Unable to parse chat packet", ex);
 					}

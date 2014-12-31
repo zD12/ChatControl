@@ -43,7 +43,7 @@ public class ChatFormatter implements Listener {
 
 		if (Bukkit.getPluginManager().getPlugin("Towny") != null) {
 			townyHook = new TownyHook();
-			Common.Log("&fTowny 0.88x integration enabled.");
+			Common.Log("&fTowny 0.8x integration enabled.");
 		}
 	}
 

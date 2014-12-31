@@ -2,8 +2,8 @@ package kangarko.chatcontrol.rules;
 
 import kangarko.chatcontrol.utils.Common;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Represents a single rule

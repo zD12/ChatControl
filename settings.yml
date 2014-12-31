@@ -125,10 +125,14 @@ Messages:
   Timed:
     Enabled: false
     Random_Order: false
+    
     # If random order is enabled, the messages will be put in a cache and not repeat until the cache is empty,
     # then it will be filled again and so on.
     Random_No_Repeat: true
+    
+    # Prefix and suffix supports variables %player (player name) and %world (world name)
     Prefix: '&8[&2Tip&8]&2'
+    Suffix: ''
     Delay_Seconds: 180
 
     # Timed messages per worlds.
@@ -143,7 +147,7 @@ Messages:
       # In this world will be displayed both global messages and these specified below.
       hardcore:
       - Grief is not permitted what-so-ever and every griefer will be banned.
-      - Can you survive the night on hardcore world?
+      - Can you survive the night on %world world?
       
       # No messages will be broadcasted in this world.
       ignored-world:
