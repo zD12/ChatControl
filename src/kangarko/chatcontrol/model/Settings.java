@@ -67,8 +67,8 @@ public class Settings extends ConfHelper {
 
 				DELAY = getInteger("Delay_Between_Commands", 2);
 				SIMILARITY = getInteger("Similar_Percentage_Block", 80);
-				WHITELIST_DELAY = new HashSet<>(getStringList("Whitelist_Delay", Arrays.asList("tell", "pm", "t", "w", "r")));
-				WHITELIST_SIMILARITY = new HashSet<>(getStringList("Whitelist_Similarity", Arrays.asList("spawn", "home")));
+				WHITELIST_DELAY = new HashSet<>(getStringList("Whitelist_Delay", Arrays.asList("spawn", "home")));
+				WHITELIST_SIMILARITY = new HashSet<>(getStringList("Whitelist_Similarity", Arrays.asList("tell", "pm", "t", "w", "r")));
 			}
 		}
 

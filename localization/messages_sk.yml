@@ -1,4 +1,4 @@
-﻿# ---------------------------------------------------------
+# ---------------------------------------------------------
 # Tento subor obsahuje väcsinu sprav od pluginu
 # a umoznuje jednoduchu distribuciu prekladov.
 # 
@@ -26,7 +26,7 @@ Anti_Spam:
   Similar_Command: '&cProsim neopakujte rovnake (alebo podobne) prikazy.'
   Too_Much_Caps: '&cProsim nepouzivajte prilis vela CAPS locku!'
   Command_Wait_Message: '&cProsim pockajte %time %seconds pred dalsim prikazom.'
-  Chat_Wait_Message: '&cProsim pockajte %time %seconds pred dalsiou spravou.'
+  Chat_Wait_Message: '&cProsim pockajte %time %seconds pred dalsou spravou.'
 
 Chat_Mute:
   Mute: '&7Chat bol uspesne zablokovany.'

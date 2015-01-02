@@ -46,7 +46,8 @@ public class Common {
 	 */
 	public static void tellColored(CommandSender sender, String msg) {
 		if (!msg.isEmpty() && !msg.equalsIgnoreCase("none"))
-			sender.sendMessage(colorize(msg));
+			for (String part : msg.split("\n"))
+				sender.sendMessage(colorize(part));
 	}
 
 	/**
@@ -316,7 +317,9 @@ public class Common {
 			return matcher.find();
 		} catch (RuntimeException ex) {
 			Writer.Write(Writer.ERROR_FILE_PATH, null, "Regex check timed out (bad regex?) (plugin ver. " + ChatControl.instance().getDescription().getVersion() + ")! \nString checked: " + timedMsg + "\nRegex: " + regex + "");
-			throw new RuntimeException("RegEx checking " + ex.getMessage());
+			Thread.dumpStack();
+			LogInFrame(false, "Regex timed out after " + Settings.REGEX_TIMEOUT + "ms! ", "&fREG EX&c: &7" + regex, "&fSTRING&c: &7" + plain_msg);
+			return false;
 		}
 	}
 

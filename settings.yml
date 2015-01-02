@@ -59,7 +59,7 @@ Anti_Spam:
     Similar_Percentage_Block: 80
  
     # Commands ignored from the delay check.
-    Whitelist_Delay:
+    Whitelist_Similarity:
     - tell
     - pm
     - t
@@ -67,7 +67,7 @@ Anti_Spam:
     - r
  
     # Commands ignored from the similarity check.
-    Whitelist_Similarity:
+    Whitelist_Delay:
     - spawn
     - home
 

@@ -22,10 +22,10 @@ public class ChatListener implements Listener {
 			return;
 
 		Player pl = e.getPlayer();
-		PlayerCache playerData = ChatControl.getDataFor(pl);
+		PlayerCache plData = ChatControl.getDataFor(pl);
 		String message = e.getMessage();
 
-		if (Settings.AntiSpam.BLOCK_CHAT_UNTIL_MOVED && pl.getLocation().equals(playerData.loginLocation))
+		if (Settings.AntiSpam.BLOCK_CHAT_UNTIL_MOVED && pl.getLocation().equals(plData.loginLocation))
 			if (!Common.hasPerm(pl, Permissions.Bypasses.MOVE)) {
 				Common.tell(pl, Localization.CANNOT_CHAT_UNTIL_MOVED);
 				e.setCancelled(true);
@@ -39,26 +39,26 @@ public class ChatListener implements Listener {
 		}
 
 		long now = System.currentTimeMillis() / 1000L;
-		if (now - playerData.lastMessageTime < Settings.AntiSpam.Messages.DELAY)
+		if (now - plData.lastMessageTime < Settings.AntiSpam.Messages.DELAY)
 			if (!Common.hasPerm(pl, Permissions.Bypasses.DELAY_CHAT)) {
-				long time = Settings.AntiSpam.Messages.DELAY - (now - playerData.lastMessageTime);
+				long time = Settings.AntiSpam.Messages.DELAY - (now - plData.lastMessageTime);
 
 				Common.tell(pl, Localization.CHAT_WAIT_MESSAGE.replace("%time", String.valueOf(time)).replace("%seconds", Localization.Parts.SECONDS.formatNumbers(time)));
 				e.setCancelled(true);
 				return;
 			}
-		playerData.lastMessageTime = now;
+		plData.lastMessageTime = now;
 
 		if (Settings.AntiSpam.Messages.SIMILARITY > 0 && Settings.AntiSpam.Messages.SIMILARITY < 100) {
 			String strippedMsg = Common.prepareForSimilarityCheck(message);
 
-			if (Common.similarity(strippedMsg, playerData.lastMessage) > Settings.AntiSpam.Messages.SIMILARITY)
+			if (Common.similarity(strippedMsg, plData.lastMessage) > Settings.AntiSpam.Messages.SIMILARITY)
 				if (!Common.hasPerm(pl, Permissions.Bypasses.SIMILAR_CHAT)) {
 					Common.tell(pl, Localization.ANTISPAM_SIMILAR_MESSAGE);
 					e.setCancelled(true);
 					return;
 				}
-			playerData.lastMessage = strippedMsg;
+			plData.lastMessage = strippedMsg;
 		}
 
 		if (Settings.Rules.CHECK_CHAT && !Common.hasPerm(e.getPlayer(), Permissions.Bypasses.RULES))
