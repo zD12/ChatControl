@@ -23,6 +23,10 @@ Anti_Bot:
 Anti_Caps:
   Enabled: true
   Warn_Player: true
+  
+  # Ignore player names. Exclude them from caps percentage and caps in a row.
+  # Enabling is not recommended on a bigger servers (50+ slots) due to iterating over every player (laggy).
+  Ignore_Usernames: false
   Min_Message_Length: 5
   Min_Caps_Percentage: 50
   Min_Caps_In_A_Row: 5

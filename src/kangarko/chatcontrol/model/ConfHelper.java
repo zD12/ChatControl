@@ -17,7 +17,7 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-public class ConfHelper {
+public abstract class ConfHelper {
 
 	protected static YamlConfiguration cfg;
 	protected static File file;

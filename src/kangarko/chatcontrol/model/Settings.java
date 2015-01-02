@@ -79,10 +79,11 @@ public class Settings extends ConfHelper {
 
 		private static void init() {
 			pathPrefix("Anti_Spam");
-
+			
 			BLOCK_CHAT_UNTIL_MOVED = getBoolean("Block_Chat_Until_Moved", true);
 
-			pathPrefix("Anti_Spam.Similarity_Check");
+			pathPrefix("Anti_Spam.Similarity_Check");		
+			
 			STRIP_SPECIAL_CHARS = getBoolean("Ignore_Special_Characters", true);
 			STRIP_DUPLICATE_CHARS = getBoolean("Ignore_Duplicate_Characters", false);
 			STRIP_DUPLICATE_CHARS = getBoolean("Ignore_First_Arguments_In_Commands", true);
@@ -117,12 +118,12 @@ public class Settings extends ConfHelper {
 
 			private static void init() {
 				pathPrefix("Chat.Grammar.Insert_Dot");
-
+				
 				INSERT_DOT = getBoolean("Enabled", true);
 				INSERT_DOT_MSG_LENGTH = getInteger("Min_Message_Length", 5);
 
 				pathPrefix("Chat.Grammar.Capitalize");
-
+				
 				CAPITALIZE = getBoolean("Enabled", true);
 				CAPITALIZE_MSG_LENGTH = getInteger("Min_Message_Length", 5);
 			}
@@ -149,6 +150,7 @@ public class Settings extends ConfHelper {
 			KICK = getMessage("Kick", new ChatMessage(Type.DEFAULT));
 
 			pathPrefix("Messages.Timed");
+			
 			TIMED_ENABLED = getBoolean("Enabled", false);
 			TIMED_RANDOM_ORDER = getBoolean("Random_Order", false);
 			TIMED_RANDOM_NO_REPEAT = getBoolean("Random_No_Repeat", true);
@@ -161,7 +163,7 @@ public class Settings extends ConfHelper {
 			timedDef.put("hardcore", Arrays.asList("Grief is not permitted what-so-ever and every griefer will be banned.", "Can you survive the night on %world world?"));
 			timedDef.put("creative", Arrays.asList("excludeGlobal", "Welcome on Creative world. Enjoy your gamemode :)"));
 			timedDef.put("ignored-world", Arrays.asList("excludeGlobal"));
-
+			
 			TIMED = getValuesAndList("Message_List", timedDef);
 
 			List<String> global = TIMED.get("global");
@@ -217,6 +219,7 @@ public class Settings extends ConfHelper {
 	public static class AntiCaps {
 		public static boolean ENABLED;
 		public static boolean WARN_PLAYER;
+		public static boolean IGNORE_USERNAMES;
 		public static List<String> WHITELIST;
 
 		public static int MIN_MESSAGE_LENGTH;
@@ -227,7 +230,8 @@ public class Settings extends ConfHelper {
 			pathPrefix("Anti_Caps");
 			ENABLED = getBoolean("Enabled", true);
 			WARN_PLAYER = getBoolean("Warn_Player", true);
-
+			IGNORE_USERNAMES = getBoolean("Ignore_Usernames", false);
+			
 			MIN_MESSAGE_LENGTH = getInteger("Min_Message_Length", 5);
 			MIN_CAPS_PERCENTAGE = getInteger("Min_Caps_Percentage", 50);
 			MIN_CAPS_IN_A_ROW = getInteger("Min_Caps_In_A_Row", 5);

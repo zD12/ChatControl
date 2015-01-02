@@ -69,7 +69,7 @@ public class ChatListener implements Listener {
 
 		if (Settings.AntiCaps.ENABLED && !Common.hasPerm(pl, Permissions.Bypasses.CAPS))
 			if (message.length() >= Settings.AntiCaps.MIN_MESSAGE_LENGTH) {
-
+				String msgBefore = message;
 				int[] newMessage = Common.checkCaps(message);
 				if (Common.percentageCaps(newMessage) >= Settings.AntiCaps.MIN_CAPS_PERCENTAGE || Common.checkCapsInRow(newMessage) >= Settings.AntiCaps.MIN_CAPS_IN_A_ROW) {
 
@@ -78,12 +78,22 @@ public class ChatListener implements Listener {
 					boolean whitelisted = false;
 
 					for (int i = 0; i < parts.length; i++) {
-						for (String whitelist : Settings.AntiCaps.WHITELIST)
+						for (String whitelist : Settings.AntiCaps.WHITELIST) {
 							if (whitelist.equalsIgnoreCase(parts[i])) {
 								whitelisted = true;
 								capsAllowed = true;
-								break;
+								continue;
 							}
+						}
+
+						if (Settings.AntiCaps.IGNORE_USERNAMES) {
+							for (Player online : ChatControl.getOnlinePlayers())
+								if (online.getName().equalsIgnoreCase(parts[i])) {
+									whitelisted = true;
+									capsAllowed = true;
+									continue;
+								}
+						}
 
 						if (!whitelisted) {
 							if (!capsAllowed) {
@@ -94,11 +104,13 @@ public class ChatListener implements Listener {
 
 							capsAllowed = !parts[i].endsWith(".") && !parts[i].endsWith("!");
 						}
+
+						whitelisted = false;
 					}
 
 					message = StringUtils.join(parts, " ");
 
-					if (Settings.AntiCaps.WARN_PLAYER)
+					if (!msgBefore.equals(message) && Settings.AntiCaps.WARN_PLAYER)
 						Common.tellLater(pl, 1, Localization.ANTISPAM_CAPS_MESSAGE);
 				}
 			}
