@@ -5,7 +5,6 @@ import kangarko.chatcontrol.PlayerCache;
 import kangarko.chatcontrol.model.Localization;
 import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.utils.Common;
-import kangarko.chatcontrol.utils.LagCatcher;
 import kangarko.chatcontrol.utils.Permissions;
 import kangarko.chatcontrol.utils.Writer;
 
@@ -22,7 +21,6 @@ public class ChatListener implements Listener {
 		if (ChatControl.getOnlinePlayers().length < Settings.MIN_PLAYERS_TO_ENABLE)
 			return;
 
-		LagCatcher.start("Chat event");
 		Player pl = e.getPlayer();
 		PlayerCache playerData = ChatControl.getDataFor(pl);
 		String message = e.getMessage();
@@ -31,14 +29,12 @@ public class ChatListener implements Listener {
 			if (!Common.hasPerm(pl, Permissions.Bypasses.MOVE)) {
 				Common.tell(pl, Localization.CANNOT_CHAT_UNTIL_MOVED);
 				e.setCancelled(true);
-				LagCatcher.end("Chat event");
 				return;
 			}
 
 		if (ChatControl.muted && !Common.hasPerm(pl, Permissions.Bypasses.MUTE)) {
 			Common.tell(pl, Localization.CANNOT_CHAT_WHILE_MUTED);
 			e.setCancelled(true);
-			LagCatcher.end("Chat event");
 			return;
 		}
 
@@ -49,7 +45,6 @@ public class ChatListener implements Listener {
 
 				Common.tell(pl, Localization.CHAT_WAIT_MESSAGE.replace("%time", String.valueOf(time)).replace("%seconds", Localization.Parts.SECONDS.formatNumbers(time)));
 				e.setCancelled(true);
-				LagCatcher.end("Chat event");
 				return;
 			}
 		playerData.lastMessageTime = now;
@@ -61,7 +56,6 @@ public class ChatListener implements Listener {
 				if (!Common.hasPerm(pl, Permissions.Bypasses.SIMILAR_CHAT)) {
 					Common.tell(pl, Localization.ANTISPAM_SIMILAR_MESSAGE);
 					e.setCancelled(true);
-					LagCatcher.end("Chat event");
 					return;
 				}
 			playerData.lastMessage = strippedMsg;
@@ -70,10 +64,8 @@ public class ChatListener implements Listener {
 		if (Settings.Rules.CHECK_CHAT && !Common.hasPerm(e.getPlayer(), Permissions.Bypasses.RULES))
 			message = ChatControl.instance().chatCeaser.parseRules(e, pl, message);
 
-		if (e.isCancelled()) { // cancelled from chat ceaser
-			LagCatcher.end("Chat event");
+		if (e.isCancelled()) // cancelled from chat ceaser
 			return;
-		}
 
 		if (Settings.AntiCaps.ENABLED && !Common.hasPerm(pl, Permissions.Bypasses.CAPS))
 			if (message.length() >= Settings.AntiCaps.MIN_MESSAGE_LENGTH) {
@@ -133,8 +125,6 @@ public class ChatListener implements Listener {
 					if (message.toLowerCase().contains(Settings.SoundNotify.CHAT_PREFIX + online.getName().toLowerCase()) && canSoundNotify(online.getName())
 							&& Common.hasPerm(online, Permissions.Notify.WHEN_MENTIONED))
 						online.playSound(online.getLocation(), Settings.SoundNotify.SOUND.sound, Settings.SoundNotify.SOUND.volume, Settings.SoundNotify.SOUND.pitch);
-		
-		LagCatcher.end("Chat event");
 	}
 
 	public boolean canSoundNotify(String pl) {

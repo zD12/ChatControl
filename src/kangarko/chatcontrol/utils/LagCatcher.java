@@ -4,8 +4,6 @@ import java.util.HashMap;
 
 import kangarko.chatcontrol.model.Settings;
 
-import org.apache.commons.lang.Validate;
-
 /**
  * Simple timings-like live lag catcher.
  * @author kangarko
@@ -18,7 +16,8 @@ public class LagCatcher {
 		if (Settings.CATCH_LAG == 0)
 			return;
 		
-		Validate.isTrue(!lagMap.containsKey(section), "Lag of " + section + " already being measured!" );
+		if (lagMap.containsKey(section))
+			Common.Log("Lag of " + section + "already being measured!");
 
 		lagMap.put(section, System.currentTimeMillis());
 	}
@@ -27,7 +26,10 @@ public class LagCatcher {
 		if (Settings.CATCH_LAG == 0)
 			return;
 		
-		Validate.isTrue(lagMap.containsKey(section), "Lag measure of " + section + " is not in the cache!");
+		if (!lagMap.containsKey(section)) {
+			Common.Log("Lag measuring of " + section + " is not in our cache!");
+			return;
+		}
 
 		long lag = System.currentTimeMillis() - lagMap.get(section);
 		
