@@ -81,7 +81,7 @@ public class Settings extends ConfHelper {
 			pathPrefix("Anti_Spam");
 
 			BLOCK_CHAT_UNTIL_MOVED = getBoolean("Block_Chat_Until_Moved", true);
-			
+
 			pathPrefix("Anti_Spam.Similarity_Check");
 			STRIP_SPECIAL_CHARS = getBoolean("Ignore_Special_Characters", true);
 			STRIP_DUPLICATE_CHARS = getBoolean("Ignore_Duplicate_Characters", false);
@@ -164,20 +164,21 @@ public class Settings extends ConfHelper {
 
 			TIMED = getValuesAndList("Message_List", timedDef);
 
-			List<String> global = new ArrayList<>(TIMED.get("global"));
+			List<String> global = TIMED.get("global");
+			if (global != null && !global.isEmpty()) { // no global messages
+				for (String world : TIMED.keySet()) {
+					List<String> worldMessages = TIMED.get(world);
 
-			for (String world : TIMED.keySet()) {
-				List<String> worldMessages = TIMED.get(world);
+					if (worldMessages.size() == 0 || world.equalsIgnoreCase("global"))
+						continue;
 
-				if (worldMessages.size() == 0 || world.equalsIgnoreCase("global"))
-					continue;
+					if (worldMessages.get(0).equalsIgnoreCase("excludeGlobal")) {
+						worldMessages.remove(0);
+						continue;
+					}
 
-				if (worldMessages.get(0).equalsIgnoreCase("excludeGlobal")) {
-					worldMessages.remove(0);
-					continue;
+					worldMessages.addAll(global);
 				}
-
-				worldMessages.addAll(global);
 			}
 		}
 	}
@@ -278,12 +279,12 @@ public class Settings extends ConfHelper {
 
 		private static final void init() {
 			pathPrefix("Console");
-			
+
 			FILTER_ENABLED = getBoolean("Filter.Enabled", true);
 			FILTER_MESSAGES = getStringList("Filter.Filter_Console_Messages", Arrays.asList("Reached end of stream for", "Connection reset", "lost connection"));
 		}
 	}
-	
+
 	public static class Writer {
 		public static boolean ENABLED;
 		public static boolean STRIP_COLORS;
