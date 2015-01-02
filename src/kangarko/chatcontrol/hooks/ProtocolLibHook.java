@@ -10,7 +10,6 @@ import kangarko.chatcontrol.utils.Permissions;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
@@ -53,31 +52,33 @@ public class ProtocolLibHook {
 				public void onPacketSending(PacketEvent e) {
 					StructureModifier<WrappedChatComponent> chat = e.getPacket().getChatComponents();
 
+					String raw = chat.read(0).getJson();
+					if (raw == null || raw.isEmpty())
+						return;
+
+					Object parsed;
+					
 					try {
-						String jsonString = chat.read(0).getJson();
-						if (jsonString == null || jsonString.isEmpty())
-							return;
-
-						Object parsed = parser.parse(jsonString);
-						if (!(parsed instanceof JSONObject))
-							return;
-
-						JSONObject json = (JSONObject) parsed;
-						String origin = json.toJSONString();
-
-						try {
-							ChatControl.instance().chatCeaser.parsePacketRules(json);
-						} catch (PacketCancelledException e1) {
-							e.setCancelled(true);
-							return;
-						}
-
-						if (!json.toJSONString().equals(origin))
-							chat.write(0, WrappedChatComponent.fromJson(json.toJSONString()));
-
-					} catch (ParseException ex) {
-						Common.Error("Unable to parse chat packet", ex);
+						parsed = parser.parse(raw);
+					} catch (Throwable t) {
+						return;
 					}
+					
+					if (!(parsed instanceof JSONObject))
+						return;
+
+					JSONObject json = (JSONObject) parsed;					
+					String origin = json.toJSONString();
+
+					try {
+						ChatControl.instance().chatCeaser.parsePacketRules(json);
+					} catch (PacketCancelledException e1) {
+						e.setCancelled(true);
+						return;
+					}
+
+					if (!json.toJSONString().equals(origin))
+						chat.write(0, WrappedChatComponent.fromJson(json.toJSONString()));
 				}
 			});
 		}
