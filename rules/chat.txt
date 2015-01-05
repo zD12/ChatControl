@@ -38,9 +38,6 @@ then console kick %player &cI don't think so.
 then deny
 then log
 
-match owner is (a|an) (dick|noob|loser)
-then replace peiwdiepie iz a noob|i like this server|i luv justin beiber
-
 # -------- Example usage of unicode characters - making smileys
 match :\)
 then replace ☺
