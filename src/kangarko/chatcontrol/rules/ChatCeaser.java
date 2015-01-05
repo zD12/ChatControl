@@ -24,6 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -98,6 +99,8 @@ public final class ChatCeaser {
 									rule.getPacketRule().setReplacePacket(line.replaceFirst("then replace ", ""));
 								else if (line.startsWith("then rewrite "))
 									rule.getPacketRule().setRewritePacket(line.replaceFirst("then rewrite ", ""));
+								else if (line.startsWith("then rewritein "))
+									rule.getPacketRule().addRewriteIn(line.replaceFirst("then rewritein ", ""));
 								else
 									throw new NullPointerException("Unknown packet rule operator: " + line);
 							} else {
@@ -125,8 +128,13 @@ public final class ChatCeaser {
 								else if (line.startsWith("then rewrite "))
 									rule.parseRewrites(line.replaceFirst("then rewrite ", ""));
 
+								// workaround
 								else if (line.startsWith("then replace "))
 									rule.parseReplacements(line.replaceFirst("then replace ", ""));
+
+								else if (line.startsWith("then replace"))
+									rule.parseReplacements(line.replaceFirst("then replace", ""));
+								//
 
 								else if (line.startsWith("then console "))
 									rule.parseCommandsToExecute(line.replaceFirst("then console ", ""));
@@ -140,8 +148,13 @@ public final class ChatCeaser {
 								else if (line.startsWith("then fine "))
 									rule.setFine(Double.parseDouble(line.replaceFirst("then fine ", "")));
 
+								//
 								else if (line.startsWith("then kick "))
 									rule.setKickMessage(line.replaceFirst("then kick ", ""));
+
+								else if (line.startsWith("then kick"))
+									rule.setKickMessage(line.replaceFirst("then kick", ""));
+								//
 
 								else if (line.startsWith("handle as "))
 									rule.setHandler(HandlerLoader.loadHandler(line.replaceFirst("handle as ", ""), rule.getId()));
@@ -284,8 +297,17 @@ public final class ChatCeaser {
 				if (rule.getFine() != null && ChatControl.instance().vault != null)
 					ChatControl.instance().vault.takeMoney(pl.getName(), rule.getFine());
 
-				if (rule.getKickMessage() != null)
-					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "kick " + pl.getName() + Common.colorize(rule.getKickMessage()));
+				if (rule.getKickMessage() != null) {
+					final Player Pl = pl;
+					final Rule Rule = rule;
+					
+					new BukkitRunnable() {
+						@Override
+						public void run() {
+							Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "kick " + Pl.getName() + " " + Common.colorize(Rule.getKickMessage()));
+						}
+					}.runTask(ChatControl.instance());
+				}
 
 				if (rule.cancelEvent()) {
 					e.setCancelled(true);
@@ -365,7 +387,7 @@ public final class ChatCeaser {
 	 * @throws PacketCancelledException if the packet should be cancelled
 	 */
 	@SuppressWarnings("unchecked")
-	public boolean parsePacketRules(Object input) throws PacketCancelledException {
+	public boolean parsePacketRules(Player pl, Object input) throws PacketCancelledException {
 		if (input instanceof JSONObject) {
 			JSONObject objects = (JSONObject) input;
 
@@ -373,13 +395,13 @@ public final class ChatCeaser {
 				Object value = objects.get(key);
 
 				if (value instanceof JSONObject) 
-					parsePacketRules((JSONObject) value);
+					parsePacketRules(pl, (JSONObject) value);
 
 				else if (value instanceof JSONArray)
-					parsePacketRules((JSONArray) value);
+					parsePacketRules(pl, (JSONArray) value);
 
 				else if (value instanceof String) {
-					String result = parsePacketRule(value.toString());
+					String result = parsePacketRule(pl.getWorld().getName(), value.toString());
 					objects.put(key, result);
 				}
 			}
@@ -391,13 +413,13 @@ public final class ChatCeaser {
 				Object value = array.get(i);
 
 				if (value instanceof JSONObject)
-					parsePacketRules((JSONObject) value);
+					parsePacketRules(pl, (JSONObject) value);
 
 				else if (value instanceof JSONArray)
-					parsePacketRules((JSONArray) value);
+					parsePacketRules(pl, (JSONArray) value);
 
 				else if (value instanceof String) {
-					String result = parsePacketRule(value.toString());
+					String result = parsePacketRule(pl.getWorld().getName(), value.toString());
 					array.set(i, result);
 				}
 			}
@@ -407,7 +429,7 @@ public final class ChatCeaser {
 		return false;
 	}
 
-	private String parsePacketRule(String msg) throws PacketCancelledException {
+	private String parsePacketRule(String world, String msg) throws PacketCancelledException {
 		if (msg == null || msg.isEmpty())
 			return msg;
 
@@ -419,20 +441,23 @@ public final class ChatCeaser {
 				Common.Verbose("&f*--------- ChatControl rule match: chat packet ---------");
 				Common.Verbose("&fMATCH&b: &r" + (Settings.DEBUG ? rule : standardrule.getMatch()));
 				Common.Verbose("&fCATCH&b: &r" + msg);
-				
+
 				String origin = msg;
-				
+
 				if (rule.deny()) {
 					Common.Verbose("&fPacket sending &ccancelled&f.");
 					throw new PacketCancelledException();
 				}
-					
+				
+				else if (rule.getRewritePerWorld() != null && rule.getRewritePerWorld().get(world) != null)
+					msg = Common.colorize(replaceVariables(standardrule, rule.getRewritePerWorld().get(world)));
+				
 				else if (rule.getRewritePacket() != null)
 					msg = Common.colorize(replaceVariables(standardrule, rule.getRewritePacket()));
 
 				else if (rule.getReplacePacket() != null)
 					msg = msg.replaceAll(standardrule.getMatch(), Common.colorize(rule.getReplacePacket()));
-				
+
 				if (!origin.equals(msg))
 					Common.Verbose("&fFINAL&a: &r" + msg);
 			}

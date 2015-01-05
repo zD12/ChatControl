@@ -1,5 +1,7 @@
 package kangarko.chatcontrol.rules;
 
+import java.util.HashMap;
+
 import kangarko.chatcontrol.utils.Common;
 
 import org.apache.commons.lang.StringUtils;
@@ -150,10 +152,6 @@ public class Rule {
 		Validate.isTrue(this.ignoredMessage == null, "Ignored message already set on: " + this);
 
 		this.ignoredMessage = ignoredMessage;
-	}
-
-	public String getStripBefore() {
-		return stripBefore;
 	}
 
 	public Integer getIgnoredEvent() {
@@ -361,11 +359,17 @@ class PacketRule {
 	 * A string used to replace matched part of the checked message.
 	 */
 	private String replace;
-
+	
 	/** 
 	 * A message to replace the entire checked message.
 	 */
 	private String rewrite;
+	
+	/** 
+	 * A message to replace the entire checked message (custom per world).
+	 *
+	 */
+	private HashMap<String, String> rewritePerWorld;
 
 	public void setDeny() {
 		Validate.isTrue(!this.deny, "Rule is already denied: " + this);
@@ -395,6 +399,22 @@ class PacketRule {
 
 	public String getRewritePacket() {
 		return rewrite;
+	}
+	
+	public void addRewriteIn(String line) {
+		if (rewritePerWorld == null)
+			rewritePerWorld = new HashMap<>();
+		
+		String[] parts = line.split(" ");
+		Validate.isTrue(parts.length > 1, "Malformed rule then rewritein, has to have a world and a message! Example: then rewritein hardcore &cCommand disabled in Hardcore world.");
+		
+		Validate.isTrue(!this.rewritePerWorld.containsKey(parts[0]), "Rewrite already set in world: " + parts[0] + " to: " + this.rewritePerWorld.get(parts[0]) + " on: " + this);
+
+		this.rewritePerWorld.put(parts[0], line.replace(parts[0] + " ", ""));
+	}
+	
+	public HashMap<String, String> getRewritePerWorld() {
+		return rewritePerWorld;
 	}
 
 	@Override

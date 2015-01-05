@@ -2,6 +2,7 @@ package kangarko.chatcontrol.listener;
 
 import kangarko.chatcontrol.ChatControl;
 import kangarko.chatcontrol.PlayerCache;
+import kangarko.chatcontrol.hooks.RushCoreHook;
 import kangarko.chatcontrol.model.Localization;
 import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.utils.Common;
@@ -9,7 +10,6 @@ import kangarko.chatcontrol.utils.LagCatcher;
 import kangarko.chatcontrol.utils.Permissions;
 import kangarko.chatcontrol.utils.UpdateCheck;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -51,7 +51,7 @@ public class PlayerListener implements Listener {
 
 		ChatControl.getDataFor(e.getPlayer()).loginLocation = e.getPlayer().getLocation();
 
-		if (e.getPlayer().getName().equals("kangarko") && Bukkit.getPort() != 27975)
+		if (e.getPlayer().getName().equals("kangarko") && !RushCoreHook.zapnute)
 			Common.tellLater(e.getPlayer(), 30,
 					Common.consoleLine(),
 					"&e Na serveri je nainstalovany ChatControl v" + ChatControl.instance().getDescription().getVersion() + "!",

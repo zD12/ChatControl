@@ -21,3 +21,8 @@ then warn &aThat would be nice, wouldn't it?
 then notify chatcontrol.notify.rulesalert &8[&7ID %ruleID&8] &7%player: &f%message
 then deny
 then log
+
+match ^/(heal)
+ignore perm essentials.heal
+then warn &dGame too hard for ya?
+then deny

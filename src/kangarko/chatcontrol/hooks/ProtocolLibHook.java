@@ -50,6 +50,9 @@ public class ProtocolLibHook {
 
 				@Override
 				public void onPacketSending(PacketEvent e) {
+					if (e.getPlayer() == null || !e.getPlayer().isOnline())
+						return;
+					
 					StructureModifier<WrappedChatComponent> chat = e.getPacket().getChatComponents();
 
 					String raw = chat.read(0).getJson();
@@ -71,7 +74,7 @@ public class ProtocolLibHook {
 					String origin = json.toJSONString();
 
 					try {
-						ChatControl.instance().chatCeaser.parsePacketRules(json);
+						ChatControl.instance().chatCeaser.parsePacketRules(e.getPlayer(), json);
 					} catch (PacketCancelledException e1) {
 						e.setCancelled(true);
 						return;

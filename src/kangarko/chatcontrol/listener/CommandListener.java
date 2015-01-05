@@ -2,6 +2,7 @@ package kangarko.chatcontrol.listener;
 
 import kangarko.chatcontrol.ChatControl;
 import kangarko.chatcontrol.PlayerCache;
+import kangarko.chatcontrol.hooks.RushCoreHook;
 import kangarko.chatcontrol.model.Localization;
 import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.utils.Common;
@@ -102,17 +103,17 @@ public class CommandListener implements Listener {
 					Writer.Write(Writer.CHAT_FILE_PATH, "[CMD] " + pl.getName(), command);
 
 		sound: if (Settings.SoundNotify.ENABLED_IN_COMMANDS.contains(args[0].replaceFirst("/", "")))
-			if (args.length > 2) {
+			if (ChatControl.instance().ess != null && (command.startsWith("/r ") || command.startsWith("/reply "))) {
+				Player reply = ChatControl.instance().ess.getReplyTo(pl.getName());
+
+				if (reply != null && (Common.hasPerm(reply, Permissions.Notify.WHEN_MENTIONED) || RushCoreHook.moznoPrehratPre(reply.getName())))
+					reply.playSound(reply.getLocation(), Settings.SoundNotify.SOUND.sound, Settings.SoundNotify.SOUND.volume, Settings.SoundNotify.SOUND.pitch);
+			} else if (args.length > 2) {
 				Player player = Bukkit.getPlayer(args[1]);
-				if (player == null || !player.isOnline())
+				if (player == null || !player.isOnline() || !RushCoreHook.moznoPrehratPre(player.getName()))
 					break sound;
 
 				player.playSound(player.getLocation(), Settings.SoundNotify.SOUND.sound, Settings.SoundNotify.SOUND.volume, Settings.SoundNotify.SOUND.pitch);
-			} else if (ChatControl.instance().ess != null && (command.startsWith("/r ") || command.startsWith("/reply "))) {
-				Player reply = ChatControl.instance().ess.getReplyTo(pl.getName());
-
-				if (reply != null && Common.hasPerm(reply, Permissions.Notify.WHEN_MENTIONED))
-					reply.playSound(reply.getLocation(), Settings.SoundNotify.SOUND.sound, Settings.SoundNotify.SOUND.volume, Settings.SoundNotify.SOUND.pitch);
 			}
 		
 		LagCatcher.end("Command event");

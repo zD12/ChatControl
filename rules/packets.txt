@@ -10,6 +10,9 @@
 # match <regex> (A valid regular expression to match the checked message.)
 # then replace <message> (A word used to replace only the part of the matched message.)
 # then rewrite <message> (A message used to replace the whole checked message.)
+# then rewritein <world> <message> (A message used to replace the whole checked message in the specified world only. 
+                                    You can use this together with rewrite as a fallback on other worlds.
+                                    You can add multiple rules to multiple worlds!)
 # then deny (Message will not be shown in the chat - cancels the packet.)
 #
 # Supports color codes with & and unicode characters when saved in UTF-8 encoding.
@@ -22,3 +25,4 @@
 # Rewrite message from Bukkit or Essentials.
 match ^I'm sorry, but you do not have permission to perform this.*|^You do not have access to that command.
 then rewrite &cInsufficient permission.
+#then rewritein hardcore &cThis command is not available in Hardcore world.

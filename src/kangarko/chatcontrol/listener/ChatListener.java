@@ -2,6 +2,7 @@ package kangarko.chatcontrol.listener;
 
 import kangarko.chatcontrol.ChatControl;
 import kangarko.chatcontrol.PlayerCache;
+import kangarko.chatcontrol.hooks.RushCoreHook;
 import kangarko.chatcontrol.model.Localization;
 import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.utils.Common;
@@ -126,7 +127,7 @@ public class ChatListener implements Listener {
 		if (Settings.Writer.ENABLED && !Settings.Writer.WHITELIST_PLAYERS.contains(pl.getName().toLowerCase()))
 			Writer.Write(Writer.CHAT_FILE_PATH, pl.getName(), message);
 
-		if (Settings.SoundNotify.ENABLED)
+		if (Settings.SoundNotify.ENABLED && !RushCoreHook.zapnute)
 			if (Settings.SoundNotify.CHAT_PREFIX.equalsIgnoreCase("none")) {
 				for (Player online : ChatControl.getOnlinePlayers())
 					if (message.toLowerCase().contains(online.getName().toLowerCase()) && canSoundNotify(online.getName()) && Common.hasPerm(online, Permissions.Notify.WHEN_MENTIONED))

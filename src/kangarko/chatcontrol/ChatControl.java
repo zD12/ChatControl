@@ -11,6 +11,7 @@ import kangarko.chatcontrol.filter.Log4jFilter;
 import kangarko.chatcontrol.hooks.AuthMeHook;
 import kangarko.chatcontrol.hooks.EssentialsHook;
 import kangarko.chatcontrol.hooks.ProtocolLibHook;
+import kangarko.chatcontrol.hooks.RushCoreHook;
 import kangarko.chatcontrol.hooks.VaultHook;
 import kangarko.chatcontrol.listener.ChatListener;
 import kangarko.chatcontrol.listener.CommandListener;
@@ -72,6 +73,9 @@ public class ChatControl extends JavaPlugin {
 
 			if (doesPluginExist("AuthMe"))
 				authMe = new AuthMeHook();
+			
+			if (doesPluginExist("RushCore"))
+				RushCoreHook.zapnute = true;
 
 			getServer().getPluginManager().registerEvents(new ChatListener(), this);
 			getServer().getPluginManager().registerEvents(new PlayerListener(), this);
@@ -159,6 +163,7 @@ public class ChatControl extends JavaPlugin {
 		playerData.clear();
 		ipLastLogin.clear();
 
+		RushCoreHook.zapnute = false;
 		UpdateCheck.needsUpdate = false;
 		getServer().getScheduler().cancelTasks(this);
 
