@@ -2,6 +2,7 @@ package kangarko.chatcontrol.rules;
 
 import java.util.HashMap;
 
+import kangarko.chatcontrol.rules.ChatCeaser.RuleType;
 import kangarko.chatcontrol.utils.Common;
 
 import org.apache.commons.lang.StringUtils;
@@ -12,11 +13,6 @@ import org.apache.commons.lang.Validate;
  * @author kangarko
  */
 public class Rule {
-
-	/**
-	 * Flags
-	 */
-	public static final int CHAT = 0, COMMAND = 1, SIGN = 2;
 
 	/**
 	 * Required regular expression used against the checked message
@@ -41,7 +37,7 @@ public class Rule {
 	/**
 	 * Ignore events. Currently can be: chat, command or sign
 	 */
-	private Integer ignoredEvent;
+	private Integer ruleType;
 
 	/**
 	 * Required regular expression used before the message is checked to strip characters
@@ -187,7 +183,7 @@ public class Rule {
 	public void parseReplacements(String line) {
 		Validate.isTrue(this.replacement == null, "Replacement already set on: " + this);
 
-		this.replacement = line.split("\\|");
+		this.replacement = line.isEmpty() ? new String[] {""} : line.replaceFirst(" ", "").split("\\|");
 	}
 
 	public String[] getRewrites() {
@@ -245,7 +241,7 @@ public class Rule {
 	public void setKickMessage(String kickMessage) {
 		Validate.isTrue(this.kickMessage == null, "Kick message already set on: " + this);
 		
-		this.kickMessage = kickMessage.isEmpty() ? "Kicked from the server" : kickMessage;
+		this.kickMessage = kickMessage.isEmpty() ? "Kicked from the server" : kickMessage.replaceFirst(" ", "");
 	}
 	
 	public Handler getHandler() {
@@ -324,24 +320,6 @@ public class Rule {
 	public String toShortString() {
 		return (getPacketRule() != null ? "PacketRule" : "Rule") + " {" + (id != null ? "ID=" + id + "," : "") + "Match=\'" + match + "\'}";
 	}
-
-	private int getEventFromName(String str) {
-		switch (str.toLowerCase().replace(" ", "")) {
-		case "chat":
-		case "asyncplayerchatevent":
-			return CHAT;
-		case "command":
-		case "commands":
-		case "playercommandpreprocessevent":
-			return COMMAND;
-		case "sign":
-		case "signs":
-		case "signchangeevent":
-			return SIGN;
-		default:
-			throw new NullPointerException("Unknown ignore event: " + str);
-		}
-	}
 }
 
 /**
@@ -349,7 +327,7 @@ public class Rule {
  * From normal rule uses only {@link #match} 
  */
 class PacketRule {
-
+	
 	/**
 	 * Whenever the message should be cancelled from appearing.
 	 */
