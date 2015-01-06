@@ -5,14 +5,14 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 
 import kangarko.chatcontrol.ChatControl;
 import kangarko.chatcontrol.model.Settings;
-import kangarko.chatcontrol.util.safety.SafeList;
-import kangarko.chatcontrol.util.safety.SafeMap;
 import kangarko.chatcontrol.utils.Common;
 import kangarko.chatcontrol.utils.LagCatcher;
 import kangarko.chatcontrol.utils.Writer;
@@ -38,43 +38,14 @@ public final class ChatCeaser {
 	/**
 	 * Stored rules by file. Can only be modified in {@link #load()} method.
 	 */
-	private final SafeMap<RuleType, SafeList<Rule>> rulesMap = new SafeMap<>();
+	private final HashMap<String, List<Rule>> rulesMap = new HashMap<>();
 
-	private final Random rand = new Random();
-	
 	/**
 	 * Rule files.
 	 */
-	public static enum RuleType {
-		RULES("rules.txt"),
-		CHAT("chat.txt"), 
-		COMMAND("commands.txt"),
-		SIGN("sign.txt"), 
-		PACKET("packets.txt");
-		
-		private String filePath;
-		RuleType(String filePath) {
-			this.filePath = filePath;
-		}
-		
-		public static RuleType parseRuleType(String str) {
-			switch (str.toLowerCase().replace(" ", "")) {
-			case "chat":
-			case "asyncplayerchatevent":
-				return CHAT;
-			case "command":
-			case "commands":
-			case "playercommandpreprocessevent":
-				return COMMAND;
-			case "sign":
-			case "signs":
-			case "signchangeevent":
-				return SIGN;
-			default:
-				throw new NullPointerException("Unknown rule type: " + str);
-			}
-		}
-	}
+	private final String RULES = "rules.txt", CHAT = "chat.txt", COMMAND = "commands.txt", SIGN = "sign.txt", PACKET = "packets.txt";
+
+	private final Random rand = new Random();
 
 	/**
 	 * Clears {@link #rules} and load them .
@@ -82,24 +53,24 @@ public final class ChatCeaser {
 	public void load() {
 		rulesMap.clear();
 
-		loadRules();
+		loadRules(RULES, CHAT, COMMAND, SIGN, PACKET);
 	}
 
 	/**
 	 * Fill {@link #rules} with rules in specified file paths.
 	 * @param filePaths the paths for every rule file
 	 */
-	private void loadRules() {
-		for (RuleType ruleType : RuleType.values()) {
-			File file = Writer.Extract("rules/" + ruleType.filePath);
-			SafeList<Rule> createdRules = new SafeList<>();
+	private void loadRules(String... filePaths) {
+		for (String path : filePaths) {
+			File file = Writer.Extract("rules/" + path);
+			List<Rule> createdRules = new ArrayList<>();
 
 			try {
 				Rule rule = null; // The rule being created.
 				String previousRuleName = null;
-				boolean packetRule = ruleType == RuleType.PACKET;
+				boolean packetRule = path == PACKET;
 
-				SafeList<String> rawLines = new SafeList<>(Files.readAllLines(Paths.get(file.toURI()), StandardCharsets.UTF_8));
+				List<String> rawLines = Files.readAllLines(Paths.get(file.toURI()), StandardCharsets.UTF_8);
 
 				for (int i = 0; i < rawLines.size(); i++) {
 					String line = rawLines.get(i).trim();
@@ -107,8 +78,10 @@ public final class ChatCeaser {
 					if (!line.isEmpty() && !line.startsWith("#"))
 						// If a line starts with 'match ' then assume a new rule is found and start creating it. This makes a new instance of 'rule' variable.
 						if (line.startsWith("match ")) {
-							if (rule != null) // Found another match, assuming previous rule is finished creating.
+							if (rule != null) { // Found another match, assuming previous rule is finished creating.
+								Validate.isTrue(!createdRules.contains(path), path + " already contains rule where match is: " + line);
 								createdRules.add(rule);
+							}
 
 							rule = new Rule(line.replaceFirst("match ", ""));
 							previousRuleName = rule.toShortString();
@@ -155,8 +128,13 @@ public final class ChatCeaser {
 								else if (line.startsWith("then rewrite "))
 									rule.parseRewrites(line.replaceFirst("then rewrite ", ""));
 
-								else if (line.startsWith("then replace")) // supports empty message
+								// workaround
+								else if (line.startsWith("then replace "))
+									rule.parseReplacements(line.replaceFirst("then replace ", ""));
+
+								else if (line.startsWith("then replace"))
 									rule.parseReplacements(line.replaceFirst("then replace", ""));
+								//
 
 								else if (line.startsWith("then console "))
 									rule.parseCommandsToExecute(line.replaceFirst("then console ", ""));
@@ -170,8 +148,13 @@ public final class ChatCeaser {
 								else if (line.startsWith("then fine "))
 									rule.setFine(Double.parseDouble(line.replaceFirst("then fine ", "")));
 
-								else if (line.startsWith("then kick")) // supports empty message
+								//
+								else if (line.startsWith("then kick "))
+									rule.setKickMessage(line.replaceFirst("then kick ", ""));
+
+								else if (line.startsWith("then kick"))
 									rule.setKickMessage(line.replaceFirst("then kick", ""));
+								//
 
 								else if (line.startsWith("handle as "))
 									rule.setHandler(HandlerLoader.loadHandler(line.replaceFirst("handle as ", ""), rule.getId()));
@@ -188,21 +171,21 @@ public final class ChatCeaser {
 				ex.printStackTrace();
 			}
 
-			Validate.isTrue(!rulesMap.containsKey(ruleType), "Rules map already contains rules from: " + ruleType + "!");
-			rulesMap.put(ruleType, createdRules);
+			Validate.isTrue(!rulesMap.containsKey(path), "Rules map already contains rules from: " + path + "!");
+			rulesMap.put(path, createdRules);
 		}
 
 		if (Settings.DEBUG)
-			for (RuleType ruleType : rulesMap.keySet()) {
+			for (String file : rulesMap.keySet()) {
 				Common.Debug("&e" + Common.consoleLine());
-				Common.Debug("&eDisplaying rules from: " + ruleType.filePath);
+				Common.Debug("&eDisplaying rules from: " + file);
 
-				for (Rule rule : rulesMap.get(ruleType))
+				for (Rule rule : rulesMap.get(file))
 					Common.Debug("Loaded rule:\n" + rule);
 			}
 
-		for (RuleType ruleType : rulesMap.keySet())
-			Common.Verbose("&fLoaded " + rulesMap.get(ruleType).size() + " " + ruleType + " Rules.");
+		for (String file : rulesMap.keySet())
+			Common.Verbose("&fLoaded " + rulesMap.get(file).size() + " Rules in " + file);
 	}
 
 	/**
@@ -227,18 +210,18 @@ public final class ChatCeaser {
 		String origin = msg;
 
 		// First iterate over all rules.
-		SafeList<Rule> rules = rulesMap.get(RuleType.RULES);
+		List<Rule> rules = rulesMap.get(RULES);
 
 		LagCatcher.start("Rule parse: global");
 		msg = iterateStandardRules(rules, e, pl, msg, flag, true);
 		LagCatcher.end("Rule parse: global");
 
 		if (flag == Rule.CHAT)
-			rules = rulesMap.get(RuleType.CHAT);
+			rules = rulesMap.get(CHAT);
 		else if (flag == Rule.COMMAND)
-			rules = rulesMap.get(RuleType.COMMAND);
+			rules = rulesMap.get(COMMAND);
 		else if (flag == Rule.SIGN)
-			rules = rulesMap.get(RuleType.SIGN);
+			rules = rulesMap.get(SIGN);
 
 		// Then iterate over specific rules for events.
 		LagCatcher.start("Rule parse from: " + e.getClass().getSimpleName());
@@ -258,7 +241,7 @@ public final class ChatCeaser {
 	/**
 	 * Internal method, {@link #parseRules(Cancellable, Player, String)}
 	 */
-	private <T extends Cancellable> String iterateStandardRules(SafeList<Rule> rules, T e, Player pl, String msg, int flag, boolean global) {
+	private <T extends Cancellable> String iterateStandardRules(List<Rule> rules, T e, Player pl, String msg, int flag, boolean global) {
 		for (Rule rule : rules) {
 			if (!global && rule.getIgnoredEvent() != null && rule.getIgnoredEvent() == flag)
 				continue;
@@ -450,7 +433,7 @@ public final class ChatCeaser {
 		if (msg == null || msg.isEmpty())
 			return msg;
 
-		for (Rule standardrule : rulesMap.get(RuleType.PACKET)) {
+		for (Rule standardrule : rulesMap.get(PACKET)) {
 			if (standardrule.matches(msg.toLowerCase())) {				
 				PacketRule rule = standardrule.getPacketRule();
 				Objects.requireNonNull(rule, "Malformed rule - must be a packet rule: " + standardrule);
