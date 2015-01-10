@@ -95,6 +95,8 @@ public final class ChatCeaser {
 							if (packetRule) {
 								if ("then deny".equals(line))
 									rule.getPacketRule().setDeny();
+								else if ("dont verbose".equals(line))
+									rule.getPacketRule().setDoNotVerbose();
 								else if (line.startsWith("then replace "))
 									rule.getPacketRule().setReplacePacket(line.replaceFirst("then replace ", ""));
 								else if (line.startsWith("then rewrite "))
@@ -300,7 +302,7 @@ public final class ChatCeaser {
 				if (rule.getKickMessage() != null) {
 					final Player Pl = pl;
 					final Rule Rule = rule;
-					
+
 					new BukkitRunnable() {
 						@Override
 						public void run() {
@@ -424,7 +426,7 @@ public final class ChatCeaser {
 				}
 			}
 		} else
-			System.out.println("Skipping unknown object: " + input.getClass().getTypeName());
+			Common.Debug("Skipping unknown object: " + input.getClass().getTypeName());
 
 		return false;
 	}
@@ -438,27 +440,30 @@ public final class ChatCeaser {
 				PacketRule rule = standardrule.getPacketRule();
 				Objects.requireNonNull(rule, "Malformed rule - must be a packet rule: " + standardrule);
 
-				Common.Verbose("&f*--------- ChatControl rule match: chat packet ---------");
-				Common.Verbose("&fMATCH&b: &r" + (Settings.DEBUG ? rule : standardrule.getMatch()));
-				Common.Verbose("&fCATCH&b: &r" + msg);
+				if (!rule.doNotVerboe()) {
+					Common.Verbose("&f*--------- ChatControl rule match: chat packet ---------");
+					Common.Verbose("&fMATCH&b: &r" + (Settings.DEBUG ? rule : standardrule.getMatch()));
+					Common.Verbose("&fCATCH&b: &r" + msg);
+				}
 
 				String origin = msg;
 
 				if (rule.deny()) {
-					Common.Verbose("&fPacket sending &ccancelled&f.");
+					if (!rule.doNotVerboe())
+						Common.Verbose("&fPacket sending &ccancelled&f.");
 					throw new PacketCancelledException();
 				}
-				
+
 				else if (rule.getRewritePerWorld() != null && rule.getRewritePerWorld().get(world) != null)
 					msg = Common.colorize(replaceVariables(standardrule, rule.getRewritePerWorld().get(world)));
-				
+
 				else if (rule.getRewritePacket() != null)
 					msg = Common.colorize(replaceVariables(standardrule, rule.getRewritePacket()));
 
 				else if (rule.getReplacePacket() != null)
 					msg = msg.replaceAll(standardrule.getMatch(), Common.colorize(rule.getReplacePacket()));
 
-				if (!origin.equals(msg))
+				if (!origin.equals(msg) && !rule.doNotVerboe())
 					Common.Verbose("&fFINAL&a: &r" + msg);
 			}
 		}

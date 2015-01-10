@@ -97,7 +97,7 @@ public class Rule {
 	 * Whenever the message should be logged and saved into a file.
 	 */
 	private boolean log = false;
-
+	
 	/**
 	 * How much money to take from the player (Vault must be loaded)
 	 */
@@ -273,7 +273,7 @@ public class Rule {
 	}
 
 	public void setLog() {
-		Validate.isTrue(!log, "Message already being logged on: " + this);
+		Validate.isTrue(!log, "Rule already being logged on: " + this);
 
 		log = true;
 	}
@@ -365,6 +365,11 @@ class PacketRule {
 	 */
 	private String rewrite;
 	
+	/**
+	 * Whenever the rule should not be logged into console even if Verbose is enabled.
+	 */
+	private boolean doNotVerbose = false;
+	
 	/** 
 	 * A message to replace the entire checked message (custom per world).
 	 *
@@ -415,6 +420,16 @@ class PacketRule {
 	
 	public HashMap<String, String> getRewritePerWorld() {
 		return rewritePerWorld;
+	}
+	
+	public boolean doNotVerboe() {
+		return doNotVerbose;
+	}
+	
+	public void setDoNotVerbose() {
+		Validate.isTrue(!doNotVerbose, "Rule already being ignored from verbose: " + this);
+		
+		this.doNotVerbose = true;
 	}
 
 	@Override
