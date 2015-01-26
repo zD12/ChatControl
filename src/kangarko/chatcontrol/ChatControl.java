@@ -234,7 +234,7 @@ public class ChatControl extends JavaPlugin {
 					if (msg == null)
 						continue;
 					else
-						msg = Settings.Messages.TIMED_PREFIX + " " + msg + " " + Settings.Messages.TIMED_SUFFIX;
+						msg = (!Settings.Messages.TIMED_PREFIX.isEmpty() ? Settings.Messages.TIMED_PREFIX + " " : "") + msg + " " + Settings.Messages.TIMED_SUFFIX;
 
 					if (world.equalsIgnoreCase("global")) {
 						for (Player online : getServer().getOnlinePlayers())
