@@ -153,6 +153,10 @@ Messages:
       - Grief is not permitted what-so-ever and every griefer will be banned.
       - Can you survive the night on %world world?
       
+      # In this world will be displayed messages included from hardcore world.
+      hardcore_nether:
+      - includeFrom hardcore
+      
       # No messages will be broadcasted in this world.
       ignored-world:
       - excludeGlobal
@@ -182,9 +186,22 @@ Mute:
 
 # Needs ProtocolLib
 Packets:
-  # Prevent tab complete in certain cases where it can reveal server info. 
+  # Enables all features that requires ProtocolLib
+  # e.g. packet rules, tab complete
+  Enabled: true
+
+  # Prevent tab complete in certain cases where it can reveal server info.
   # For more advanced configuration use Spigot and configure the function in spigot.yml
-  Disable_Tab_Complete: false
+  Tab_Complete:
+    Disable: true
+    Disable_Only_In_Commands: true
+    
+    # If the written message/command contains space ' ', allow it.
+    Allow_When_Message_Has_Space: true
+    
+    # Allow when the message length is above specific number. 
+    # Not recommended as it might still reveal your server setup.
+    Allow_When_Length_Above: 0
 
 # Custom rules are found in rules/ folder inside your plugins folder.
 Rules:

@@ -22,6 +22,7 @@ import kangarko.chatcontrol.model.ConfHelper.InBuiltFileMissingException;
 import kangarko.chatcontrol.model.Settings;
 import kangarko.chatcontrol.rules.ChatCeaser;
 import kangarko.chatcontrol.utils.Common;
+import kangarko.chatcontrol.utils.LagCatcher;
 import kangarko.chatcontrol.utils.Permissions;
 import kangarko.chatcontrol.utils.UpdateCheck;
 
@@ -62,7 +63,7 @@ public class ChatControl extends JavaPlugin {
 			chatCeaser = new ChatCeaser();
 			chatCeaser.load();
 
-			for (Player pl : getOnlinePlayers())
+			for (Player pl : getServer().getOnlinePlayers())
 				getDataFor(pl);
 
 			if (doesPluginExist("Essentials"))
@@ -94,7 +95,7 @@ public class ChatControl extends JavaPlugin {
 					Common.Debug("Console filtering initiated (MC 1.6.4 and lower).");
 				}
 
-			if (Settings.Rules.CHECK_PACKETS || Settings.Packets.DISABLE_TAB_COMPLETE)
+			if (Settings.Packets.ENABLED)
 				if (doesPluginExist("ProtocolLib")) {
 					ProtocolLibHook.init();
 				} else
@@ -197,6 +198,8 @@ public class ChatControl extends JavaPlugin {
 
 			@Override
 			public void run() {
+				LagCatcher.start("timed messages");
+				
 				for (String world : timed.keySet()) {
 					List<String> msgs = timed.get(world);
 					if (msgs.size() == 0)
@@ -234,8 +237,8 @@ public class ChatControl extends JavaPlugin {
 						msg = Settings.Messages.TIMED_PREFIX + " " + msg + " " + Settings.Messages.TIMED_SUFFIX;
 
 					if (world.equalsIgnoreCase("global")) {
-						for (Player online : getOnlinePlayers())
-							if (!timed.keySet().contains(online.getWorld().getName()) && Common.hasPerm(online, Permissions.VIEW_TIMED_MESSAGES))
+						for (Player online : getServer().getOnlinePlayers())
+							if (!timed.keySet().contains(online.getWorld().getName()) && Common.hasPerm(online, Permissions.VIEW_TIMED_MESSAGES) && RushCoreHook.moznoZobrazitSpravu(online.getName()))
 								Common.tell(online, msg.replace("%world", online.getWorld().getName()));
 
 					} else {
@@ -245,10 +248,12 @@ public class ChatControl extends JavaPlugin {
 							Common.Warn("World \"" + world + "\" doesn't exist. No timed messages broadcast.");
 						else
 							for (Player online : bukkitworld.getPlayers())
-								if (Common.hasPerm(online, Permissions.VIEW_TIMED_MESSAGES))
+								if (Common.hasPerm(online, Permissions.VIEW_TIMED_MESSAGES) && RushCoreHook.moznoZobrazitSpravu(online.getName()))
 									Common.tell(online, msg.replace("%world", world));
 					}
 				}
+				
+				LagCatcher.end("timed messages");
 			}
 		}.runTaskTimer(this, 20, 20 * Settings.Messages.TIMED_DELAY_SECONDS);
 	}
@@ -278,11 +283,6 @@ public class ChatControl extends JavaPlugin {
 		}
 
 		return playerData.get(pl);
-	}
-
-	@SuppressWarnings("deprecation")
-	public static Player[] getOnlinePlayers() {
-		return Bukkit.getOnlinePlayers();
 	}
 
 	public static ChatControl instance() {

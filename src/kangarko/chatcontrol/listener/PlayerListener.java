@@ -10,6 +10,7 @@ import kangarko.chatcontrol.utils.LagCatcher;
 import kangarko.chatcontrol.utils.Permissions;
 import kangarko.chatcontrol.utils.UpdateCheck;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -58,7 +59,7 @@ public class PlayerListener implements Listener {
 					Common.consoleLine());
 
 		if (UpdateCheck.needsUpdate && Settings.Updater.NOTIFY)
-			for (Player pl : ChatControl.getOnlinePlayers())
+			for (Player pl : Bukkit.getOnlinePlayers())
 				if (Common.hasPerm(pl, Permissions.Notify.UPDATE_AVAILABLE)) {
 					String sprava = Common.colorize(Localization.UPDATE_AVAILABLE).replace("%current", ChatControl.instance().getDescription().getVersion()).replace("%new", UpdateCheck.newVersion);
 					sprava.split("\n");
@@ -130,7 +131,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onSignChange(SignChangeEvent e) {
-		if (ChatControl.getOnlinePlayers().length < Settings.MIN_PLAYERS_TO_ENABLE)
+		if (Bukkit.getOnlinePlayers().size() < Settings.MIN_PLAYERS_TO_ENABLE)
 			return;
 
 		LagCatcher.start("Sign event");
@@ -143,7 +144,7 @@ public class PlayerListener implements Listener {
 
 		if (Settings.Signs.DUPLICATION_CHECK && plData.lastSignText.equalsIgnoreCase(msg) && !Common.hasPerm(pl, Permissions.Bypasses.SIGN_DUPLICATION)) {
 			if (Settings.Signs.DUPLICATION_ALERT_STAFF)
-				for (Player online : ChatControl.getOnlinePlayers())
+				for (Player online : Bukkit.getOnlinePlayers())
 					if (!online.getName().equals(pl.getName()) && Common.hasPerm(online, Permissions.Notify.SIGN_DUPLICATION))
 						Common.tell(online, Localization.SIGNS_DUPLICATION_STAFF.replace("%message", msg), pl.getName());
 

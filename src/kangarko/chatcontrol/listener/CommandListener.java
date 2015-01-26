@@ -21,7 +21,7 @@ public class CommandListener implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent e) {
-		if (ChatControl.getOnlinePlayers().length < Settings.MIN_PLAYERS_TO_ENABLE)
+		if (Bukkit.getOnlinePlayers().size() < Settings.MIN_PLAYERS_TO_ENABLE)
 			return;
 
 		LagCatcher.start("Command event");
@@ -106,11 +106,11 @@ public class CommandListener implements Listener {
 			if (ChatControl.instance().ess != null && (command.startsWith("/r ") || command.startsWith("/reply "))) {
 				Player reply = ChatControl.instance().ess.getReplyTo(pl.getName());
 
-				if (reply != null && (Common.hasPerm(reply, Permissions.Notify.WHEN_MENTIONED) || RushCoreHook.moznoPrehratPre(reply.getName())))
+				if (reply != null && (Common.hasPerm(reply, Permissions.Notify.WHEN_MENTIONED) || RushCoreHook.moznoPrehratZvuk(reply.getName())))
 					reply.playSound(reply.getLocation(), Settings.SoundNotify.SOUND.sound, Settings.SoundNotify.SOUND.volume, Settings.SoundNotify.SOUND.pitch);
 			} else if (args.length > 2) {
 				Player player = Bukkit.getPlayer(args[1]);
-				if (player == null || !player.isOnline() || !RushCoreHook.moznoPrehratPre(player.getName()))
+				if (player == null || !player.isOnline() || !RushCoreHook.moznoPrehratZvuk(player.getName()))
 					break sound;
 
 				player.playSound(player.getLocation(), Settings.SoundNotify.SOUND.sound, Settings.SoundNotify.SOUND.volume, Settings.SoundNotify.SOUND.pitch);

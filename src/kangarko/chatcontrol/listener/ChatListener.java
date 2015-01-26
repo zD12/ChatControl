@@ -10,6 +10,7 @@ import kangarko.chatcontrol.utils.Permissions;
 import kangarko.chatcontrol.utils.Writer;
 
 import org.apache.commons.lang.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,7 +20,7 @@ public class ChatListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerChat(AsyncPlayerChatEvent e) {
-		if (ChatControl.getOnlinePlayers().length < Settings.MIN_PLAYERS_TO_ENABLE)
+		if (Bukkit.getOnlinePlayers().size() < Settings.MIN_PLAYERS_TO_ENABLE)
 			return;
 
 		Player pl = e.getPlayer();
@@ -88,7 +89,7 @@ public class ChatListener implements Listener {
 						}
 
 						if (Settings.AntiCaps.IGNORE_USERNAMES) {
-							for (Player online : ChatControl.getOnlinePlayers())
+							for (Player online : Bukkit.getOnlinePlayers())
 								if (online.getName().equalsIgnoreCase(parts[i])) {
 									whitelisted = true;
 									capsAllowed = true;
@@ -129,12 +130,12 @@ public class ChatListener implements Listener {
 
 		if (Settings.SoundNotify.ENABLED && !RushCoreHook.zapnute)
 			if (Settings.SoundNotify.CHAT_PREFIX.equalsIgnoreCase("none")) {
-				for (Player online : ChatControl.getOnlinePlayers())
+				for (Player online : Bukkit.getOnlinePlayers())
 					if (message.toLowerCase().contains(online.getName().toLowerCase()) && canSoundNotify(online.getName()) && Common.hasPerm(online, Permissions.Notify.WHEN_MENTIONED))
 						online.playSound(online.getLocation(), Settings.SoundNotify.SOUND.sound, Settings.SoundNotify.SOUND.volume, Settings.SoundNotify.SOUND.pitch);
 
 			} else
-				for (Player online : ChatControl.getOnlinePlayers())
+				for (Player online : Bukkit.getOnlinePlayers())
 					if (message.toLowerCase().contains(Settings.SoundNotify.CHAT_PREFIX + online.getName().toLowerCase()) && canSoundNotify(online.getName())
 							&& Common.hasPerm(online, Permissions.Notify.WHEN_MENTIONED))
 						online.playSound(online.getLocation(), Settings.SoundNotify.SOUND.sound, Settings.SoundNotify.SOUND.volume, Settings.SoundNotify.SOUND.pitch);

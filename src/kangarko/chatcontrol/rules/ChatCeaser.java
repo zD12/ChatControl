@@ -68,7 +68,7 @@ public final class ChatCeaser {
 			try {
 				Rule rule = null; // The rule being created.
 				String previousRuleName = null;
-				boolean packetRule = path == PACKET;
+				boolean packetRule = path.equals(PACKET);
 
 				List<String> rawLines = Files.readAllLines(Paths.get(file.toURI()), StandardCharsets.UTF_8);
 
@@ -254,7 +254,7 @@ public final class ChatCeaser {
 
 			if (rule.matches(msg)) {
 
-				Common.Verbose("&f*--------- ChatControl rule match --------- ID " + (rule.getId() != null ? rule.getId() : "UNSET"));
+				Common.Verbose("&f*--------- ChatControl rule match on " + pl.getName() + " --------- ID " + (rule.getId() != null ? rule.getId() : "UNSET"));
 				Common.Verbose("&fMATCH&b: &r" + (Settings.DEBUG ? rule : rule.getMatch()));
 				Common.Verbose("&fCATCH&b: &r" + msg);
 
@@ -266,7 +266,7 @@ public final class ChatCeaser {
 				if (rule.getCustomNotifyMessage() != null) {
 					Objects.requireNonNull(rule.getCustomNotifyPermission(), "Custom alert permission cannot be null!");
 
-					for (Player online : ChatControl.getOnlinePlayers())
+					for (Player online : Bukkit.getOnlinePlayers())
 						if (Common.hasPerm(online, rule.getCustomNotifyPermission()))
 							Common.tellLater(online, 1, replaceVariables(rule, rule.getCustomNotifyMessage()).replace("%player", pl.getName()).replace("%message", msg));
 				}
@@ -357,7 +357,7 @@ public final class ChatCeaser {
 		if (handler.getStaffAlertMsg() != null) {
 			Objects.requireNonNull(handler.getStaffAlertPermission(), "Staff alert permission is null for: " + this);
 
-			for (Player online : ChatControl.getOnlinePlayers())
+			for (Player online : Bukkit.getOnlinePlayers())
 				if (Common.hasPerm(online, handler.getStaffAlertPermission()))
 					Common.tell(online, (flag == Rule.SIGN ? "[SIGN at " + Common.shortLocation(pl.getLocation()) + "] " : "") + replaceVariables(handler, handler.getStaffAlertMsg()).replace("%message", msg), pl.getName());
 		}
@@ -434,6 +434,8 @@ public final class ChatCeaser {
 	private String parsePacketRule(String world, String msg) throws PacketCancelledException {
 		if (msg == null || msg.isEmpty())
 			return msg;
+		
+		msg = Common.stripColors(msg);
 
 		for (Rule standardrule : rulesMap.get(PACKET)) {
 			if (standardrule.matches(msg.toLowerCase())) {				

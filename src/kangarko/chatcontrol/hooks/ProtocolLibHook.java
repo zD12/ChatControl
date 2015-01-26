@@ -25,24 +25,32 @@ public class ProtocolLibHook {
 	private static final JSONParser parser = new JSONParser();
 
 	public static void init() {
-		if (Settings.Packets.DISABLE_TAB_COMPLETE) {
+
+		if (Settings.Packets.TabComplete.DISABLE) {
+
 			if (new File("spigot.yml").exists())
-				Common.LogInFrame(false, "&aIf you want to disable tab complete, set", "&bcommands.tab-complete &ato 0 in &fspigot.yml &afile.", "&aFunction in ChatControl was disabled.");
-			else {
-				manager.addPacketListener(new PacketAdapter(ChatControl.instance(), PacketType.Play.Client.TAB_COMPLETE) {
+				Common.Log("&aDetected spigot (or similar), it is recommended to use its inbuilt tab-complete instead.");
 
-					@Override
-					public void onPacketReceiving(PacketEvent e) {
-						if (Common.hasPerm(e.getPlayer(), Permissions.Bypasses.TAB_COMPLETE))
-							return;
+			manager.addPacketListener(new PacketAdapter(ChatControl.instance(), PacketType.Play.Client.TAB_COMPLETE) {
 
-						String msg = e.getPacket().getStrings().read(0);
+				@Override
+				public void onPacketReceiving(PacketEvent e) {
+					if (Common.hasPerm(e.getPlayer(), Permissions.Bypasses.TAB_COMPLETE))
+						return;
 
-						if (msg.startsWith("/") && !msg.contains(" "))
-							e.setCancelled(true);
-					}
-				});
-			}
+					String msg = e.getPacket().getStrings().read(0);
+
+					if (Settings.Packets.TabComplete.DISABLE_ONLY_IN_CMDS && !msg.startsWith("/"))
+						return;
+
+					if (Settings.Packets.TabComplete.ALLOW_IF_SPACE && msg.contains(" "))
+						return;
+
+					if (msg.length() > Settings.Packets.TabComplete.IGNORE_ABOVE_LENGTH)
+						e.setCancelled(true);
+				}
+			});
+
 		}
 
 		if (Settings.Rules.CHECK_PACKETS) {
@@ -52,7 +60,7 @@ public class ProtocolLibHook {
 				public void onPacketSending(PacketEvent e) {
 					if (e.getPlayer() == null || !e.getPlayer().isOnline())
 						return;
-					
+
 					StructureModifier<WrappedChatComponent> chat = e.getPacket().getChatComponents();
 
 					String raw = chat.read(0).getJson();
@@ -60,13 +68,13 @@ public class ProtocolLibHook {
 						return;
 
 					Object parsed;
-					
+
 					try {
 						parsed = parser.parse(raw);
 					} catch (Throwable t) {
 						return;
 					}
-					
+
 					if (!(parsed instanceof JSONObject))
 						return;
 

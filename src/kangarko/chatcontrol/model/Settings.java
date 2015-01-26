@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import kangarko.api.Spravy;
 import kangarko.chatcontrol.model.ConfHelper.ChatMessage.Type;
 
 @SuppressWarnings("unused")
@@ -16,11 +17,27 @@ public class Settings extends ConfHelper {
 	}
 
 	public static class Packets {
-		public static boolean DISABLE_TAB_COMPLETE;
-
+		
+		public static boolean ENABLED;
+		
 		private static void init() {
 			pathPrefix("Packets");
-			DISABLE_TAB_COMPLETE = getBoolean("Disable_Tab_Complete", false);
+			
+			ENABLED = getBoolean("Enabled", true);
+		}
+		
+		public static class TabComplete {
+			public static boolean DISABLE, DISABLE_ONLY_IN_CMDS, ALLOW_IF_SPACE;
+			public static int IGNORE_ABOVE_LENGTH;
+
+			private static void init() {
+				pathPrefix("Packets.Tab_Complete");
+				
+				DISABLE = getBoolean("Disable", true);
+				DISABLE_ONLY_IN_CMDS = getBoolean("Disable_Only_In_Commands", true);
+				ALLOW_IF_SPACE = getBoolean("Allow_When_Message_Has_Space", true);
+				IGNORE_ABOVE_LENGTH = getInteger("Allow_When_Length_Above", 0);
+			}
 		}
 	}
 
@@ -79,11 +96,11 @@ public class Settings extends ConfHelper {
 
 		private static void init() {
 			pathPrefix("Anti_Spam");
-			
+
 			BLOCK_CHAT_UNTIL_MOVED = getBoolean("Block_Chat_Until_Moved", true);
 
 			pathPrefix("Anti_Spam.Similarity_Check");		
-			
+
 			STRIP_SPECIAL_CHARS = getBoolean("Ignore_Special_Characters", true);
 			STRIP_DUPLICATE_CHARS = getBoolean("Ignore_Duplicate_Characters", false);
 			STRIP_DUPLICATE_CHARS = getBoolean("Ignore_First_Arguments_In_Commands", true);
@@ -118,12 +135,12 @@ public class Settings extends ConfHelper {
 
 			private static void init() {
 				pathPrefix("Chat.Grammar.Insert_Dot");
-				
+
 				INSERT_DOT = getBoolean("Enabled", true);
 				INSERT_DOT_MSG_LENGTH = getInteger("Min_Message_Length", 5);
 
 				pathPrefix("Chat.Grammar.Capitalize");
-				
+
 				CAPITALIZE = getBoolean("Enabled", true);
 				CAPITALIZE_MSG_LENGTH = getInteger("Min_Message_Length", 5);
 			}
@@ -150,7 +167,7 @@ public class Settings extends ConfHelper {
 			KICK = getMessage("Kick", new ChatMessage(Type.DEFAULT));
 
 			pathPrefix("Messages.Timed");
-			
+
 			TIMED_ENABLED = getBoolean("Enabled", false);
 			TIMED_RANDOM_ORDER = getBoolean("Random_Order", false);
 			TIMED_RANDOM_NO_REPEAT = getBoolean("Random_No_Repeat", true);
@@ -161,26 +178,40 @@ public class Settings extends ConfHelper {
 			HashMap<String, List<String>> timedDef = new HashMap<>();
 			timedDef.put("global", Arrays.asList("Hey, %player, did you know that this server is running ChatControl?", "Visit developer website: &awww.rushmine.6f.sk"));
 			timedDef.put("hardcore", Arrays.asList("Grief is not permitted what-so-ever and every griefer will be banned.", "Can you survive the night on %world world?"));
+			timedDef.put("hardcore_nether", Arrays.asList("incluceFrom hardcore"));
 			timedDef.put("creative", Arrays.asList("excludeGlobal", "Welcome on Creative world. Enjoy your gamemode :)"));
 			timedDef.put("ignored-world", Arrays.asList("excludeGlobal"));
-			
+
 			TIMED = getValuesAndList("Message_List", timedDef);
 
 			List<String> global = TIMED.get("global");
-			if (global != null && !global.isEmpty()) { // no global messages
-				for (String world : TIMED.keySet()) {
-					List<String> worldMessages = TIMED.get(world);
 
-					if (worldMessages.size() == 0 || world.equalsIgnoreCase("global"))
-						continue;
+			for (String world : TIMED.keySet()) {
+				List<String> worldMessages = TIMED.get(world);
 
-					if (worldMessages.get(0).equalsIgnoreCase("excludeGlobal")) {
-						worldMessages.remove(0);
-						continue;
-					}
+				if (worldMessages.size() == 0 || world.equalsIgnoreCase("global"))
+					continue;
 
-					worldMessages.addAll(global);
+				String firstArgument = worldMessages.get(0);
+				
+				if (firstArgument.startsWith("includeFrom ")) {
+					worldMessages.remove(0);
+					
+					List<String> worldToInclude = TIMED.get(firstArgument.replace("includeFrom ", ""));
+					
+					if (worldToInclude == null || worldToInclude.size() == 0)
+						Spravy.Warn("Cannot include messages from " + firstArgument.replace("includeFrom ", " ") + " as the world does not exist or is empty");
+					
+					worldMessages.addAll(worldToInclude);
 				}
+				
+				if (firstArgument.equalsIgnoreCase("excludeGlobal")) {
+					worldMessages.remove(0);
+					continue;
+				}
+
+				if (global != null && !global.isEmpty())
+					worldMessages.addAll(global);
 			}
 		}
 	}
@@ -231,7 +262,7 @@ public class Settings extends ConfHelper {
 			ENABLED = getBoolean("Enabled", true);
 			WARN_PLAYER = getBoolean("Warn_Player", true);
 			IGNORE_USERNAMES = getBoolean("Ignore_Usernames", false);
-			
+
 			MIN_MESSAGE_LENGTH = getInteger("Min_Message_Length", 5);
 			MIN_CAPS_PERCENTAGE = getInteger("Min_Caps_Percentage", 50);
 			MIN_CAPS_IN_A_ROW = getInteger("Min_Caps_In_A_Row", 5);

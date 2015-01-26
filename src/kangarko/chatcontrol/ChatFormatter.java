@@ -14,7 +14,6 @@ import kangarko.chatcontrol.utils.Permissions;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.entity.Damageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -101,7 +100,7 @@ public class ChatFormatter implements Listener {
 			Location playerLocation = pl.getLocation();
 			double squaredDistance = Math.pow(range, 2.0D);
 
-			for (Player recipient : ChatControl.getOnlinePlayers())
+			for (Player recipient : Bukkit.getOnlinePlayers())
 				if (recipient.getWorld().equals(pl.getWorld()))
 					if (playerLocation.distanceSquared(recipient.getLocation()) <= squaredDistance || Common.hasPerm(pl, Permissions.Formatter.OVERRIDE_RANGED))
 						recipients.add(recipient);
@@ -111,7 +110,7 @@ public class ChatFormatter implements Listener {
 			Common.Debug("(Range Chat) Got " + ex.getMessage() + ", trying backup.");
 
 			if (Common.hasPerm(pl, Permissions.Formatter.OVERRIDE_RANGED)) {
-				for (Player recipient : ChatControl.getOnlinePlayers())
+				for (Player recipient : Bukkit.getOnlinePlayers())
 					if (recipient.getWorld().equals(pl.getWorld()))
 						recipients.add(recipient);
 				return recipients;
@@ -198,7 +197,7 @@ public class ChatFormatter implements Listener {
 	}
 
 	private String formatHealth(Player pl) {
-		int health = (int) ((Damageable) pl).getHealth();
+		int health = (int) pl.getHealth();
 
 		if (health > 10)
 			return ChatColor.DARK_GREEN + "" + health;

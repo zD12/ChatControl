@@ -112,7 +112,7 @@ public class CommandsHandler implements CommandExecutor {
 				return;
 			}
 
-			for (Player pl : ChatControl.getOnlinePlayers()) {
+			for (Player pl : Bukkit.getOnlinePlayers()) {
 				if (Settings.Clear.IGNORE_STAFF && Common.hasPerm(pl, Permissions.Bypasses.CHAT_CLEARING)) {
 					Common.tell(pl, Localization.CLEAR_STAFF, sender.getName());
 					continue;
