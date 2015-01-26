@@ -94,7 +94,10 @@ public class UpdateCheck implements Runnable {
 		} catch (NumberFormatException ex) {
 			Common.Warn("Update check failed, malformed version string: " + ex.getMessage());
 		} catch (IOException ex) {
-			Common.Error("Error while checking for update from: " + fileurl, ex);
+			if (ex.getMessage().equals("Permission denied: connect"))
+				Common.Warn("Unable to connect to the update site, check your internet/firewall.");
+			else
+				Common.Error("Error while checking for update from: " + fileurl, ex);
 		}
 	}
 
