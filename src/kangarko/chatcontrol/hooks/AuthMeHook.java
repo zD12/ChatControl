@@ -17,4 +17,8 @@ public class AuthMeHook {
 
 		return API.instance.getCountryName(ip);
 	}
+	
+	public boolean isLogged(Player pl) {
+		return API.isAuthenticated(pl);
+	}
 }

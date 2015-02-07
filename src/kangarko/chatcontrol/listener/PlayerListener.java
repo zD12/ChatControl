@@ -74,14 +74,14 @@ public class PlayerListener implements Listener {
 		}
 
 		switch (Settings.Messages.JOIN.getType()) {
-		case HIDDEN:
-			e.setJoinMessage(null);
-			break;
-		case CUSTOM:
-			e.setJoinMessage(replacePlayerVariables(Settings.Messages.JOIN.getMessage(), e.getPlayer()));
-			break;
-		default:
-			break;
+			case HIDDEN:
+				e.setJoinMessage(null);
+				break;
+			case CUSTOM:
+				e.setJoinMessage(replacePlayerVariables(Settings.Messages.JOIN.getMessage(), e.getPlayer()));
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -92,15 +92,20 @@ public class PlayerListener implements Listener {
 			return;
 		}
 
-		switch (Settings.Messages.QUIT.getType()) {
-		case HIDDEN:
+		if (Settings.Messages.QUIT_ONLY_WHEN_LOGGED && ChatControl.instance().authMe != null && !ChatControl.instance().authMe.isLogged(e.getPlayer())) {
 			e.setQuitMessage(null);
-			break;
-		case CUSTOM:
-			e.setQuitMessage(replacePlayerVariables(Settings.Messages.QUIT.getMessage(), e.getPlayer()));
-			break;
-		default:
-			break;
+			return;
+		}
+
+		switch (Settings.Messages.QUIT.getType()) {
+			case HIDDEN:
+				e.setQuitMessage(null);
+				break;
+			case CUSTOM:
+				e.setQuitMessage(replacePlayerVariables(Settings.Messages.QUIT.getMessage(), e.getPlayer()));
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -112,14 +117,14 @@ public class PlayerListener implements Listener {
 		}
 
 		switch (Settings.Messages.KICK.getType()) {
-		case HIDDEN:
-			e.setLeaveMessage(null);
-			break;
-		case CUSTOM:
-			e.setLeaveMessage(replacePlayerVariables(Settings.Messages.KICK.getMessage(), e.getPlayer()));
-			break;
-		default:
-			break;
+			case HIDDEN:
+				e.setLeaveMessage(null);
+				break;
+			case CUSTOM:
+				e.setLeaveMessage(replacePlayerVariables(Settings.Messages.KICK.getMessage(), e.getPlayer()));
+				break;
+			default:
+				break;
 		}
 	}
 

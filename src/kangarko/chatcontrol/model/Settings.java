@@ -150,6 +150,8 @@ public class Settings extends ConfHelper {
 	public static class Messages {
 		public static ChatMessage JOIN, QUIT, KICK;
 
+		public static boolean QUIT_ONLY_WHEN_LOGGED;
+		
 		public static boolean TIMED_ENABLED;
 		public static boolean TIMED_RANDOM_ORDER;
 		public static boolean TIMED_RANDOM_NO_REPEAT;
@@ -166,6 +168,8 @@ public class Settings extends ConfHelper {
 			QUIT = getMessage("Quit", new ChatMessage(Type.DEFAULT));
 			KICK = getMessage("Kick", new ChatMessage(Type.DEFAULT));
 
+			QUIT_ONLY_WHEN_LOGGED = getBoolean("Show_Quit_Only_When_Logged", true);
+			
 			pathPrefix("Messages.Timed");
 
 			TIMED_ENABLED = getBoolean("Enabled", false);

@@ -124,6 +124,10 @@ Messages:
   Join: default
   Quit: default
   Kick: default
+  
+  # Needs AuthMe-Reloaded. Only display quit message when the player has logged.
+  # You can disable displaying join message in AuthMe itself by enabling 'delayJoinMessage' in its config
+  Show_Quit_Only_When_Logged: true
 
   # Automatic message broadcaster.
   Timed:

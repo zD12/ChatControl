@@ -330,7 +330,7 @@ public final class ChatCeaser {
 		if (handler.getBypassPermission() != null && Common.hasPerm(pl, handler.getBypassPermission()))
 			return msg;
 
-		if (flag == Rule.COMMAND)
+		if (flag == Rule.COMMAND && handler.getIgnoredInCommands() != null)
 			for (String ignored : handler.getIgnoredInCommands())
 				if (msg.startsWith(ignored))
 					return msg;

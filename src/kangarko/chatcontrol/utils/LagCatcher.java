@@ -17,7 +17,7 @@ public class LagCatcher {
 			return;
 		
 		if (lagMap.containsKey(section))
-			Common.Log("Lag of " + section + "already being measured!");
+			Common.Debug("Lag of " + section + " already being measured!");
 
 		lagMap.put(section, System.currentTimeMillis());
 	}
@@ -27,15 +27,13 @@ public class LagCatcher {
 			return;
 		
 		if (!lagMap.containsKey(section)) {
-			Common.Log("Lag measuring of " + section + " is not in our cache!");
+			Common.Debug("Lag measuring of " + section + " is not in our cache!");
 			return;
 		}
 
-		long lag = System.currentTimeMillis() - lagMap.get(section);
+		long lag = System.currentTimeMillis() - lagMap.remove(section);
 		
 		if (lag > Settings.CATCH_LAG)
 			Common.Log("&3[&fLag&3] &7" + section + " took &f" + lag + " ms");
-
-		lagMap.remove(section);
 	}
 }
