@@ -121,7 +121,6 @@ public class ChatControl extends JavaPlugin {
 				getServer().getScheduler().runTaskAsynchronously(this, new UpdateCheck("https://raw.github.com/kangarko/ChatControl/master/plugin.yml"));
 
 			Common.addLoggingPrefix();
-			Common.LogInFrame(false, "&aThis is a beta version, it might contains bugs!");
 
 		} catch (Throwable t) {
 			t.printStackTrace();
