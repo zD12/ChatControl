@@ -88,7 +88,7 @@ public class ChatFormatter implements Listener {
 			format = format.replace("%countrycode", ChatControl.instance().authMe.getCountryCode(pl)).replace("%countryname", ChatControl.instance().authMe.getCountryName(pl));
 
 		return format
-				.replace("%prefix", formatColor(ChatControl.instance().vault.getPlayerPrefix(pl))).replace("%suffix", formatColor(ChatControl.instance().vault.getPlayerSuffix(pl)))
+				.replace("%pl_prefix", formatColor(ChatControl.instance().vault.getPlayerPrefix(pl))).replace("%pl_suffix", formatColor(ChatControl.instance().vault.getPlayerSuffix(pl)))
 				.replace("%world", getWorldAlias(world)).replace("%health", formatHealth(pl) + ChatColor.RESET)
 				.replace("%player", pl.getName())
 				.replace("%town", getTown(pl)).replace("%nation", getNation(pl));

@@ -86,10 +86,10 @@ Chat:
     Enabled: false
 
     # Normal chat message format.
-    Message_Format: '%prefix%player:%suffix %message'
+    Message_Format: '%pl_prefix%player:%suffix %message'
 
     # Do not touch this unless you have enabled the Ranged_Mode
-    Global_Message_Format: '%prefix%player:%suffix %message'
+    Global_Message_Format: '%pl_prefix%player:%suffix %message'
 
     # If enabled and a players write a message, it will only be sent to players
     # within distance of the player specified in Range
@@ -119,7 +119,7 @@ Clear:
 
 Messages:
   # Use 'default' to not modify, 'hide' to not display or write a custom message
-  # Variables: %player %suffix %prefix (when Vault is installed)
+  # Variables: %player %pl_suffix %pl_prefix (when Vault is installed)
   # %countrycode and %countryname when AuthMe is installed
   Join: default
   Quit: default
