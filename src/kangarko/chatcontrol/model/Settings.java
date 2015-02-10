@@ -1,13 +1,12 @@
 package kangarko.chatcontrol.model;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import kangarko.api.Spravy;
 import kangarko.chatcontrol.model.ConfHelper.ChatMessage.Type;
+import kangarko.chatcontrol.utils.Common;
 
 @SuppressWarnings("unused")
 public class Settings extends ConfHelper {
@@ -204,7 +203,7 @@ public class Settings extends ConfHelper {
 					List<String> worldToInclude = TIMED.get(firstArgument.replace("includeFrom ", ""));
 					
 					if (worldToInclude == null || worldToInclude.size() == 0)
-						Spravy.Warn("Cannot include messages from " + firstArgument.replace("includeFrom ", " ") + " as the world does not exist or is empty");
+						Common.Warn("Cannot include messages from " + firstArgument.replace("includeFrom ", " ") + " as the world does not exist or is empty");
 					
 					worldMessages.addAll(worldToInclude);
 				}
