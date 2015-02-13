@@ -205,7 +205,8 @@ public class CommandsHandler implements CommandExecutor {
 					"  &f/chc mute &9[-silent] [-anonymous] &2[reason] &e- Chat (un)mute.",
 					"  &f/chc clear &9[-s] [-a] [-console] &2[reason] &e- Chat clear.",
 					"  &f/chc fake &6<join/leave> &2[name] &e- Fake join/quit messages.",
-					"  &f/chc reload &e- Reload configuration.", "  &f/chc list &e- Command list.");
+					"  &f/chc reload &e- Reload configuration.",
+					"  &f/chc list &e- Command list.");
 		} else
 			Common.tell(sender, Localization.WRONG_ARGUMENTS);
 	}
