@@ -281,7 +281,7 @@ public final class ChatCeaser {
 					msg = getRandomString(rule, rule.getRewrites());
 
 				if (rule.getReplacements() != null)
-					msg = msg.replaceAll(rule.getMatch(), getRandomString(rule, rule.getReplacements()));
+					msg = msg.replaceAll("(?i)" + rule.getMatch(), getRandomString(rule, rule.getReplacements()));
 
 				if (rule.getCommandsToExecute() != null)
 					for (String command : rule.getCommandsToExecute()) {
@@ -375,7 +375,7 @@ public final class ChatCeaser {
 		if (handler.blockMessage() || (flag == Rule.SIGN && Settings.Signs.BLOCK_WHEN_VIOLATES_RULE))
 			e.setCancelled(true);
 		else if (handler.getMsgReplacement() != null)
-			return msg.replaceAll(match, Common.colorize(replaceVariables(handler, handler.getMsgReplacement())));
+			return msg.replaceAll("(?i)" + match, Common.colorize(replaceVariables(handler, handler.getMsgReplacement())));
 		else if (handler.getRewriteTo() != null)
 			return Common.colorize(replaceVariables(handler, handler.getRewriteTo()).replace("%player", pl.getName()).replace("%message", msg));
 
