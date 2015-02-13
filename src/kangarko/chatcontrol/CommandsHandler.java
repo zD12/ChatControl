@@ -37,7 +37,8 @@ public class CommandsHandler implements CommandExecutor {
 			boolean local = Bukkit.getIp().equalsIgnoreCase("93.91.250.138") && Bukkit.getPort() == 27975;
 			Common.tell(sender,
 					"&8-----------------------------------------------------|",
-					"&3ChatControl &8// &fRunning &7v" + ChatControl.instance().getDescription().getVersion(), "&3ChatControl &8// &fBy &7kangarko &f© 2013 - 2015",
+					"&3ChatControl &8// &fRunning &7v" + ChatControl.instance().getDescription().getVersion(),
+					"&3ChatControl &8// &fBy &7kangarko &f© 2013 - 2015",
 					"&3ChatControl &8// &fWebsite: &7http://rushmine.6f.sk" + (!local && new Random().nextInt(6) == 1 ? " &b< Prid si zahrat!" : ""));
 			return;
 		}
