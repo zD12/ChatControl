@@ -118,8 +118,8 @@ public class Settings extends ConfHelper {
 				pathPrefix("Chat.Formatter");
 
 				ENABLED = getBoolean("Enabled", false);
-				FORMAT = getString("Message_Format", "%pl_prefix%player:%suffix %message");
-				GLOBAL_FORMAT = getString("Global_Message_Format", "%pl_prefix%player:%suffix %message");
+				FORMAT = getString("Message_Format", "%pl_prefix%player:%pl_suffix %message");
+				GLOBAL_FORMAT = getString("Global_Message_Format", "%pl_prefix%player:%pl_suffix %message");
 				RANGED_MODE = getBoolean("Ranged_Mode", false);
 				RANGE = getDouble("Range", 100);
 			}

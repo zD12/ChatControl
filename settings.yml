@@ -86,10 +86,11 @@ Chat:
     Enabled: false
 
     # Normal chat message format.
-    Message_Format: '%pl_prefix%player:%suffix %message'
+    # The prefix has to include pl_ because without it it fetch the plugin's prefix name.
+    Message_Format: '%pl_prefix%player:%pl_suffix %message'
 
     # Do not touch this unless you have enabled the Ranged_Mode
-    Global_Message_Format: '%pl_prefix%player:%suffix %message'
+    Global_Message_Format: '%pl_prefix%player:%pl_suffix %message'
 
     # If enabled and a players write a message, it will only be sent to players
     # within distance of the player specified in Range
