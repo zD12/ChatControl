@@ -51,6 +51,9 @@ public class Log4jFilter implements Filter {
 	}
 
 	private Result checkMessage(String message) {
+		if (message == null || message.isEmpty())
+			return Result.NEUTRAL;
+
 		message = Common.stripColors(message);
 
 		for (String filter : Settings.Console.FILTER_MESSAGES)
