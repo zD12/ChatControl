@@ -126,7 +126,7 @@ public class Permissions {
 		// Permission to speak in global chat when chat range is enabled (a player can speak to global chat by inserting '!' before the message).
 		public static final String GLOBAL_CHAT = "chatcontrol.chat.global";
 
-		// Permission to override the chat range (when enabled) and always speak to global chat.
+		// Permission to override the chat range (when enabled) and send message for players in the entire world.
 		public static final String OVERRIDE_RANGED = "chatcontrol.chat.overrideranged";
 	}
 

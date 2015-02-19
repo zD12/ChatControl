@@ -95,6 +95,8 @@ Chat:
     # If enabled and a players write a message, it will only be sent to players
     # within distance of the player specified in Range
     Ranged_Mode: false
+    
+    # If you want the range for entire world, give everyone chatcontrol.chat.overrideranged permission.
     Range: 100.0
 
   Grammar:
@@ -274,7 +276,6 @@ Updater:
   Download: true
 
 Writer:
-
   # Save chat to file?
   Write_Chat_Communication: true
   Strip_Colors: true
@@ -302,6 +303,8 @@ Locale: en
 Log_Lag_Over_Milis: 100
 
 # If a message was caught by a rule print info to the console.
+# It is possible to hide individual packet rules from appearing
+# with "dont verbose" operators. This currently works only on packet rules.
 Verbose_Rules: true
 
 # Enable if you are having issues, will tell you detailed info in the console.

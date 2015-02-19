@@ -49,11 +49,10 @@ public class ChatFormatter implements Listener {
 	@EventHandler(ignoreCancelled = true)
 	public void onChatFormat(AsyncPlayerChatEvent e) {
 		Player pl = e.getPlayer();
-		String world = pl.getWorld().getName();
+		String msg = e.getMessage();
 
 		String msgFormat = Settings.Chat.Formatter.FORMAT;
 		boolean rangedMode = Settings.Chat.Formatter.RANGED_MODE;
-		String msg = e.getMessage();
 
 		if (rangedMode && msg.startsWith("!") && Common.hasPerm(pl, Permissions.Formatter.GLOBAL_CHAT)) {
 			rangedMode = false;
@@ -64,7 +63,7 @@ public class ChatFormatter implements Listener {
 
 		msgFormat = formatColor(msgFormat);
 
-		msg = formatColor(msg, pl, world);
+		msg = formatColor(msg, pl, pl.getWorld().getName());
 
 		msgFormat = msgFormat.replace("%message", "%2$s").replace("%displayname", "%1$s");
 		msgFormat = replacePlayerVariables(pl, msgFormat);
@@ -74,10 +73,8 @@ public class ChatFormatter implements Listener {
 		e.setMessage(msg);
 
 		if (rangedMode) {
-			double range = Settings.Chat.Formatter.RANGE;
-
 			e.getRecipients().clear();
-			e.getRecipients().addAll(getLocalRecipients(pl, msgFormat, range));
+			e.getRecipients().addAll(getLocalRecipients(pl, msgFormat, Settings.Chat.Formatter.RANGE));
 		}
 	}
 

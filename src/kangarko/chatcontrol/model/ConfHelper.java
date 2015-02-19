@@ -80,13 +80,13 @@ public abstract class ConfHelper {
 	private static void save() throws IOException {
 		if (file != null && save) {
 			cfg.options().header("!---------------------------------------------------------!\n" +
-					"! File automatically updated at " + Common.getFormattedDate() + "\n" +
-					"! to plugin version v" + ChatControl.instance().getDescription().getVersion() + "\n" +
-					"!---------------------------------------------------------!\n" +
-					"! Unfortunatelly due to how Bukkit handles YAML\n"+
-					"! configurations, all comments (#) were wiped. \n" +
-					"! For reference values and comments visit\n" +
-					"! https://github.com/kangarko/chatcontrol\n" +
+							"! File automatically updated at " + Common.getFormattedDate() + "\n" +
+							"! to plugin version v" + ChatControl.instance().getDescription().getVersion() + "\n" +
+							"!---------------------------------------------------------!\n" +
+							"! Unfortunatelly due to how Bukkit handles YAML\n"+
+							"! configurations, all comments (#) were wiped. \n" +
+							"! For reference values and comments visit\n" +
+							"! https://github.com/kangarko/chatcontrol\n" +
 					"!---------------------------------------------------------!\n");
 			cfg.save(file);
 
@@ -162,7 +162,6 @@ public abstract class ConfHelper {
 
 		return keys;
 	}
-
 
 	protected static HashMap<String, String> getValuesAndKeys(String path, HashMap<String, String> def, boolean deep) {
 		path = addPathPrefix(path);
@@ -263,16 +262,16 @@ public abstract class ConfHelper {
 
 			public static Type fromValue(String raw) {
 				switch (raw.toLowerCase()) {
-				case "default":
-				case "def":
-				case "vanilla":
-					return DEFAULT;
-				case "none":
-				case "hide":
-				case "hidden":
-					return HIDDEN;
-				default:
-					return CUSTOM;
+					case "default":
+					case "def":
+					case "vanilla":
+						return DEFAULT;
+					case "none":
+					case "hide":
+					case "hidden":
+						return HIDDEN;
+					default:
+						return CUSTOM;
 				}
 			}
 		}

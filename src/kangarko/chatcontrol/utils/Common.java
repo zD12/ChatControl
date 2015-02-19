@@ -221,7 +221,7 @@ public class Common {
 		return str;
 	}
 
-	public static String stripColors(String str) {
+	public static String stripColors(String str) {	
 		return str.replaceAll("(" + ChatColor.COLOR_CHAR + "|&)([0-9a-fk-or])", "");
 	}
 	

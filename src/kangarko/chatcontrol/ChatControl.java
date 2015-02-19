@@ -202,8 +202,8 @@ public class ChatControl extends JavaPlugin {
 			public void run() {
 				LagCatcher.start("timed messages");
 				
-				for (String world : timed.keySet()) {
-					List<String> msgs = timed.get(world);
+				for (String world : timed.keySet()) {					
+					List<String> msgs = timed.get(world);					
 					if (msgs.size() == 0)
 						continue;
 
@@ -238,6 +238,8 @@ public class ChatControl extends JavaPlugin {
 					else
 						msg = (!Settings.Messages.TIMED_PREFIX.isEmpty() ? Settings.Messages.TIMED_PREFIX + " " : "") + msg + " " + Settings.Messages.TIMED_SUFFIX;
 
+					Common.Debug(msg);
+					
 					if (world.equalsIgnoreCase("global")) {
 						for (Player online : getServer().getOnlinePlayers())
 							if (!timed.keySet().contains(online.getWorld().getName()) && Common.hasPerm(online, Permissions.VIEW_TIMED_MESSAGES) && RushCoreHook.moznoZobrazitSpravu(online.getName()))
