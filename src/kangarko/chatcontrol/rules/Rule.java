@@ -411,7 +411,7 @@ class PacketRule {
 			rewritePerWorld = new HashMap<>();
 		
 		String[] parts = line.split(" ");
-		Validate.isTrue(parts.length > 1, "Malformed rule then rewritein, has to have a world and a message! Example: then rewritein hardcore &cCommand disabled in Hardcore world.");
+		Validate.isTrue(parts.length > 1, "Malformed rule then rewritein, please specify world and message! If you want to hide rule, set the message to \'none\'. Example: then rewritein hardcore &cCommand disabled in Hardcore world.");
 		
 		Validate.isTrue(!this.rewritePerWorld.containsKey(parts[0]), "Rewrite already set in world: " + parts[0] + " to: " + this.rewritePerWorld.get(parts[0]) + " on: " + this);
 

@@ -202,9 +202,10 @@ public class ChatControl extends JavaPlugin {
 			public void run() {
 				LagCatcher.start("timed messages");
 				
-				for (String world : timed.keySet()) {					
-					List<String> msgs = timed.get(world);					
-					if (msgs.size() == 0)
+				for (String world : timed.keySet()) {
+					List<String> msgs = timed.get(world); // messages in world					
+					
+					if (msgs.size() == 0) // no messages there, pass through
 						continue;
 
 					String msg;
@@ -216,10 +217,8 @@ public class ChatControl extends JavaPlugin {
 							if (worldCache.size() == 0)
 								worldCache.addAll(msgs);
 
-							int cacheRand = rand.nextInt(worldCache.size());
-
-							msg = worldCache.get(cacheRand);
-							worldCache.remove(cacheRand);
+							// Pull the message randomly from the cache
+							msg = worldCache.remove(rand.nextInt(worldCache.size()));
 						} else
 							msg = msgs.get(rand.nextInt(msgs.size()));
 					} else {
@@ -235,9 +234,13 @@ public class ChatControl extends JavaPlugin {
 
 					if (msg == null)
 						continue;
-					else
-						msg = (!Settings.Messages.TIMED_PREFIX.isEmpty() ? Settings.Messages.TIMED_PREFIX + " " : "") + msg + " " + Settings.Messages.TIMED_SUFFIX;
-
+					else {
+						String prefix = Settings.Messages.TIMED_PREFIX;
+						String suffix = Settings.Messages.TIMED_SUFFIX;
+							
+						msg = (!prefix.isEmpty() ? prefix + " " : "") + msg + (!suffix.isEmpty() ? " " + suffix : "");
+					}
+						
 					Common.Debug(msg);
 					
 					if (world.equalsIgnoreCase("global")) {

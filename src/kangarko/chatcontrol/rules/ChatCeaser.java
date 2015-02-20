@@ -434,7 +434,7 @@ public final class ChatCeaser {
 	private String parsePacketRule(String world, String msg) throws PacketCancelledException {
 		if (msg == null || msg.isEmpty())
 			return msg;
-		
+
 		msg = Common.stripColors(msg);
 
 		for (Rule standardrule : rulesMap.get(PACKET)) {
@@ -456,8 +456,15 @@ public final class ChatCeaser {
 					throw new PacketCancelledException();
 				}
 
-				else if (rule.getRewritePerWorld() != null && rule.getRewritePerWorld().get(world) != null)
+				else if (rule.getRewritePerWorld() != null && rule.getRewritePerWorld().get(world) != null) {
 					msg = Common.colorize(replaceVariables(standardrule, rule.getRewritePerWorld().get(world)));
+
+					if (msg.equalsIgnoreCase("none") || msg.equalsIgnoreCase("hidden")) {
+						if (!rule.doNotVerboe())
+							Common.Verbose("&fPacket sending &ccancelled&f.");
+						throw new PacketCancelledException();
+					}
+				}
 
 				else if (rule.getRewritePacket() != null)
 					msg = Common.colorize(replaceVariables(standardrule, rule.getRewritePacket()));
