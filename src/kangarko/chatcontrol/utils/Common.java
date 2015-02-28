@@ -19,14 +19,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.fusesource.jansi.Ansi;
-import org.fusesource.jansi.Ansi.Attribute;
 
 public class Common {
 
-	private static final ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();
+	private static final ConsoleCommandSender console = Bukkit.getServer().getConsoleSender();	
 	private static String INTERNAL_PREFIX = "";
-
+	
 	public static void addLoggingPrefix() {
 		INTERNAL_PREFIX = "[ChatControl] ";
 	}
@@ -140,7 +138,15 @@ public class Common {
 		}
 		return tempMessage.trim();
 	}
+	
+	public static String colorize(String str) {
+		return ChatColor.translateAlternateColorCodes('&', setPrefix(str));
+	}
 
+	public static String consoleLine() {
+		return "&6*----------------------------------------------*";
+	}	
+	
 	// ---------------------------- PRIVATE --------------------------------------
 
 	private static String setPrefix(String str) {
@@ -150,11 +156,56 @@ public class Common {
 	private static boolean isDomain(String str) {
 		return str.matches("(https?:\\/\\/)?([\\da-z\\.-]+)\\.([a-z\\.]{2,6})([\\/\\w \\.-]*)*\\/?$");
 	}
+	
+	private static String resolvedSender(CommandSender sender) {
+		if (sender instanceof Player)
+			return sender.getName();
+
+		return Localization.Parts.CONSOLE;
+	}
+	
+	// Example implementation of the Levenshtein Edit Distance
+	// See http://rosettacode.org/wiki/Levenshtein_distance#Java
+	private static int editDistance(String s1, String s2) {
+		s1 = s1.toLowerCase();
+		s2 = s2.toLowerCase();
+
+		int[] costs = new int[s2.length() + 1];
+		for (int i = 0; i <= s1.length(); i++) {
+			int lastValue = i;
+			for (int j = 0; j <= s2.length(); j++)
+				if (i == 0)
+					costs[j] = j;
+				else if (j > 0) {
+					int newValue = costs[j - 1];
+					if (s1.charAt(i - 1) != s2.charAt(j - 1))
+						newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+					costs[j - 1] = lastValue;
+					lastValue = newValue;
+				}
+			if (i > 0)
+				costs[s2.length()] = lastValue;
+		}
+		return costs[s2.length()];
+	}
 
 	// -------------------------------------------------------------------
 
 	public static void Log(String str) {
 		console.sendMessage(colorize(INTERNAL_PREFIX + str.replace("\n", "\n&r")));
+	}
+	
+	public static void LogInFrame(boolean disable, String... messages) {
+		Log(consoleLine());
+		for (String msg : messages)
+			Log(" &c" + msg);
+
+		if (disable) {
+			Bukkit.getPluginManager().disablePlugin(ChatControl.instance());
+			Log(" &cPlugin is now disabled.");
+		}
+
+		Log(consoleLine());
 	}
 
 	public static void Warn(String str) {
@@ -178,30 +229,8 @@ public class Common {
 	public static void Error(String str) {
 		Bukkit.getLogger().log(Level.SEVERE, "[ChatControl " + ChatControl.instance().getDescription().getVersion() + "] " + str);
 	}
-
-	public static void LogInFrame(boolean disable, String... messages) {
-		Log(consoleLine());
-		for (String msg : messages)
-			Log(" &c" + msg);
-
-		if (disable) {
-			Bukkit.getPluginManager().disablePlugin(ChatControl.instance());
-			Log(" &cPlugin is now disabled.");
-		}
-
-		Log(consoleLine());
-	}
-
-	public static String colorize(String str) {
-		return ChatColor.translateAlternateColorCodes('&', setPrefix(str));
-	}
-
-	public static String resolvedSender(CommandSender sender) {
-		if (sender instanceof Player)
-			return sender.getName();
-
-		return Localization.Parts.CONSOLE;
-	}
+	
+	// -------------------------------------------------------------------
 
 	public static String prepareForSimilarityCheck(String str) {
 		if (Settings.AntiSpam.STRIP_SPECIAL_CHARS)
@@ -267,33 +296,6 @@ public class Common {
 		return sum;
 	}
 
-	public static String toAnsiColors(String str) {
-		str = str.replace(ChatColor.COLOR_CHAR, '&') + ChatColor.RESET;
-		str = str.replace("&0", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLACK).boldOff().toString());
-		str = str.replace("&1", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLUE).boldOff().toString());
-		str = str.replace("&2", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.GREEN).boldOff().toString());
-		str = str.replace("&3", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.CYAN).boldOff().toString());
-		str = str.replace("&4", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.RED).boldOff().toString());
-		str = str.replace("&5", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.MAGENTA).boldOff().toString());
-		str = str.replace("&6", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.YELLOW).boldOff().toString());
-		str = str.replace("&7", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.WHITE).boldOff().toString());
-		str = str.replace("&8", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLACK).bold().toString());
-		str = str.replace("&9", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.BLUE).bold().toString());
-		str = str.replace("&a", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.GREEN).bold().toString());
-		str = str.replace("&b", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.CYAN).bold().toString());
-		str = str.replace("&c", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.RED).bold().toString());
-		str = str.replace("&d", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.MAGENTA).bold().toString());
-		str = str.replace("&e", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.YELLOW).bold().toString());
-		str = str.replace("&f", Ansi.ansi().a(Attribute.RESET).fg(Ansi.Color.WHITE).bold().toString());
-		str = str.replace("&k", Ansi.ansi().a(Attribute.BLINK_SLOW).toString());
-		str = str.replace("&l", Ansi.ansi().a(Attribute.UNDERLINE_DOUBLE).toString());
-		str = str.replace("&m", Ansi.ansi().a(Attribute.STRIKETHROUGH_ON).toString());
-		str = str.replace("&n", Ansi.ansi().a(Attribute.UNDERLINE).toString());
-		str = str.replace("&o", Ansi.ansi().a(Attribute.ITALIC).toString());
-		str = str.replace("&r", Ansi.ansi().a(Attribute.RESET).toString());
-		return str;
-	}
-
 	public static boolean regExMatch(String regex, String plain_msg) {
 		regex = stripColors(regex);
 		plain_msg = stripColors(plain_msg);
@@ -343,35 +345,6 @@ public class Common {
 
 		return (int) (result * 100);
 
-	}
-
-	// Example implementation of the Levenshtein Edit Distance
-	// See http://rosettacode.org/wiki/Levenshtein_distance#Java
-	private static int editDistance(String s1, String s2) {
-		s1 = s1.toLowerCase();
-		s2 = s2.toLowerCase();
-
-		int[] costs = new int[s2.length() + 1];
-		for (int i = 0; i <= s1.length(); i++) {
-			int lastValue = i;
-			for (int j = 0; j <= s2.length(); j++)
-				if (i == 0)
-					costs[j] = j;
-				else if (j > 0) {
-					int newValue = costs[j - 1];
-					if (s1.charAt(i - 1) != s2.charAt(j - 1))
-						newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
-					costs[j - 1] = lastValue;
-					lastValue = newValue;
-				}
-			if (i > 0)
-				costs[s2.length()] = lastValue;
-		}
-		return costs[s2.length()];
-	}
-
-	public static String consoleLine() {
-		return "&6*----------------------------------------------*";
 	}
 
 	public static String shortLocation(Location loc) {

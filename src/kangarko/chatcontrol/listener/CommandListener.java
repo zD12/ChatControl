@@ -25,7 +25,7 @@ public class CommandListener implements Listener {
 			return;
 
 		LagCatcher.start("Command event");
-		
+
 		String command = e.getMessage();
 		String[] args = command.split(" ");
 
@@ -115,7 +115,7 @@ public class CommandListener implements Listener {
 
 				player.playSound(player.getLocation(), Settings.SoundNotify.SOUND.sound, Settings.SoundNotify.SOUND.volume, Settings.SoundNotify.SOUND.pitch);
 			}
-		
-		LagCatcher.end("Command event");
+
+			LagCatcher.end("Command event");
 	}
 }

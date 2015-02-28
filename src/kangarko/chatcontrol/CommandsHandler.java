@@ -2,6 +2,7 @@ package kangarko.chatcontrol;
 
 import java.util.Random;
 
+import kangarko.chatcontrol.hooks.RushCoreHook;
 import kangarko.chatcontrol.model.ConfHelper;
 import kangarko.chatcontrol.model.ConfHelper.ChatMessage;
 import kangarko.chatcontrol.model.Localization;
@@ -28,18 +29,17 @@ public class CommandsHandler implements CommandExecutor {
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
-		
+
 		return true;
 	}
 
 	private void handleCommand(CommandSender sender, String[] args) throws InsufficientPermissionException {
 		if (args.length == 0) {
-			boolean local = Bukkit.getIp().equalsIgnoreCase("93.91.250.138") && Bukkit.getPort() == 27975;
 			Common.tell(sender,
 					"&8-----------------------------------------------------|",
 					"&3ChatControl &8// &fRunning &7v" + ChatControl.instance().getDescription().getVersion(),
 					"&3ChatControl &8// &fBy &7kangarko &f© 2013 - 2015",
-					"&3ChatControl &8// &fWebsite: &7http://rushmine.6f.sk" + (!local && new Random().nextInt(6) == 1 ? " &b< Prid si zahrat!" : ""));
+					(!RushCoreHook.zapnute && Bukkit.getIp().startsWith("93.91") ? "&3ChatControl &8// &fNavstivte: &7http://rushmine.6f.sk" + (new Random().nextInt(5) == 1 ? " &b< Prid si zahrat!" : "") : ""));
 			return;
 		}
 
@@ -91,24 +91,24 @@ public class CommandsHandler implements CommandExecutor {
 
 			final String Reason = reason;
 			final CommandSender Sender = sender;
-			if (param.isEmpty())
+			if (param.isEmpty()) {
 				// Workaround; delay the message so it's displayed after blank lines.
 				new BukkitRunnable() {
-				@Override
-				public void run() {
-					Common.broadcastIfEnabled(Settings.Clear.BROADCAST, Sender, Localization.CLEAR_BROADCAST, Reason);
-				}
-			}.runTaskLater(ChatControl.instance(), 2);
-			else if ((param.equalsIgnoreCase("-silent") || param.equalsIgnoreCase("-s")) && Common.hasPerm(sender, Permissions.Commands.CLEAR_SILENT)) {
+					@Override
+					public void run() {
+						Common.broadcastIfEnabled(Settings.Clear.BROADCAST, Sender, Localization.CLEAR_BROADCAST, Reason);
+					}
+				}.runTaskLater(ChatControl.instance(), 2);
+			} else if ((param.equalsIgnoreCase("-silent") || param.equalsIgnoreCase("-s")) && Common.hasPerm(sender, Permissions.Commands.CLEAR_SILENT)) {
 				// broadcast nothing
-			} else if ((param.equalsIgnoreCase("-anonymous") || param.equalsIgnoreCase("-a")) && Common.hasPerm(sender, Permissions.Commands.CLEAR_ANONYMOUS))
+			} else if ((param.equalsIgnoreCase("-anonymous") || param.equalsIgnoreCase("-a")) && Common.hasPerm(sender, Permissions.Commands.CLEAR_ANONYMOUS)) {
 				new BukkitRunnable() {
-				@Override
-				public void run() {
-					Common.broadcastIfEnabled(Settings.Clear.BROADCAST, Sender, Localization.CLEAR_ANON_BROADCAST, Reason);
-				}
-			}.runTaskLater(ChatControl.instance(), 2);
-			else if (param.startsWith("-")) {
+					@Override
+					public void run() {
+						Common.broadcastIfEnabled(Settings.Clear.BROADCAST, Sender, Localization.CLEAR_ANON_BROADCAST, Reason);
+					}
+				}.runTaskLater(ChatControl.instance(), 2);
+			} else if (param.startsWith("-")) {
 				Common.tell(sender, Localization.WRONG_PARAMETERS);
 				return;
 			}
@@ -194,7 +194,6 @@ public class CommandsHandler implements CommandExecutor {
 		 * LIST COMMAND
 		 */
 		else if ("commands".equalsIgnoreCase(argument) || "?".equals(argument) || "list".equalsIgnoreCase(argument) || "help".equalsIgnoreCase(argument)) {
-
 			checkPerm(sender, Permissions.Commands.LIST);
 
 			Common.tell(sender,

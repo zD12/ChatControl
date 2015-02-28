@@ -89,7 +89,7 @@ public final class ChatCeaser {
 							if (packetRule)
 								rule.setPacketRule();
 						} else {
-							Objects.requireNonNull(rule, "Cannot define an operator when no rule is being created! Previous rule: \'" + previousRuleName + "\'");
+							Objects.requireNonNull(rule, "Cannot define an operator when no rule is being created! File: \'" + path + "\' Line: \'" + line + "\' Previous rule: \'" + previousRuleName + "\'");
 							// If a rule is being created then attempt to parse operators.
 
 							if (packetRule) {

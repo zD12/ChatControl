@@ -130,7 +130,7 @@ public class ChatControl extends JavaPlugin {
 
 			Common.Log("&4!----------------------------------------------!");
 			Common.Log(" &cError loading ChatControl, plugin is disabled!");
-			Common.Log(" &cRunning on server " + Common.getServerVersion() + " and Java " + System.getProperty("java.version"));
+			Common.Log(" &cRunning on " + getServer().getVersion() + " (" + Common.getServerVersion() + ") and Java " + System.getProperty("java.version"));
 			Common.Log("&4!----------------------------------------------!");
 
 			if (t instanceof InvalidConfigurationException) {
@@ -141,6 +141,7 @@ public class ChatControl extends JavaPlugin {
 
 			} else if (t instanceof IllegalLocaleException)
 				Common.Log(" &cChatControl doesn't have the locale: " + Settings.LOCALIZATION_SUFFIX);
+			
 			else if (t instanceof InBuiltFileMissingException) {
 				Common.Log(" &c" + t.getMessage());
 				Common.Log(" &cTo fix it, create a blank file with");
