@@ -11,6 +11,9 @@ public class ConsoleFilter implements Filter {
 	@Override
 	public boolean isLoggable(LogRecord record) {
 		String msg = record.getMessage();
+		
+		if (msg == null || msg.isEmpty())
+			return false;
 
 		for (String ignored : Settings.Console.FILTER_MESSAGES) {
 			if (msg.equalsIgnoreCase(ignored) || msg.toLowerCase().contains(ignored.toLowerCase()))
