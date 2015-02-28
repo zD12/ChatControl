@@ -17,7 +17,7 @@ Links
 
 * [Homepage](http://www.spigotmc.org/resources/chatcontrol.271)
 * [ChatControl's Wiki](https://github.com/kangarko/ChatControl/wiki/Frequently-asked-questions-or-issues)
-* Releases: in folder precompiled or on the homepage
+* Releases: in folder [recompiled](https://github.com/kangarko/ChatControl/tree/master/precompiled) or on the [releases tab](https://github.com/kangarko/ChatControl/releases)
 
 Dave Thomas, founder of OTI, godfather of the Eclipse strategy:
 
